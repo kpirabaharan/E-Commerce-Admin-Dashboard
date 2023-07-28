@@ -7,7 +7,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ScaleLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
 
 import useStoreModal from '@/hooks/useStoreModal';
 
@@ -24,15 +23,12 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 const formSchema = z.object({
-  name: z
-    .string()
-    .min(1, { message: 'Name of atleast one character required' }),
+  name: z.string().min(1),
 });
 
 const StoreModal = () => {
   const { isOpen, onClose } = useStoreModal();
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,12 +59,17 @@ const StoreModal = () => {
     }
   };
 
+  const onCloseHandler = () => {
+    form.reset();
+    onClose();
+  };
+
   return (
     <Modal
       title='Create Store'
       description='Add a new store to manage products and categories'
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={onCloseHandler}
     >
       <div className='flex flex-col gap-y-4'>
         <Form {...form}>
@@ -90,7 +91,7 @@ const StoreModal = () => {
               <Button
                 disabled={isLoading}
                 variant={'outline'}
-                onClick={onClose}
+                onClick={onCloseHandler}
               >
                 {isLoading ? (
                   <ScaleLoader color='black' height={15} />

@@ -4,6 +4,8 @@ import { auth } from '@clerk/nextjs';
 
 import prismadb from '@/lib/prismadb';
 
+import Navbar from '@/components/Navbar';
+
 interface RootLayoutProps extends PropsWithChildren {
   params: { storeId: string };
 }
@@ -28,7 +30,7 @@ const RootLayout = async ({ children, params }: RootLayoutProps) => {
 
   return (
     <>
-      <div>Nav</div>
+      <Navbar />
       {children}
     </>
   );
