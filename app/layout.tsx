@@ -1,6 +1,7 @@
-import './globals.css';
-import { Inter } from 'next/font/google';
+import { PropsWithChildren } from 'react';
 import { ClerkProvider } from '@clerk/nextjs';
+import { Inter } from 'next/font/google';
+import './globals.css';
 
 import ModalProvider from '@/providers/ModalProvider';
 import ToastProvider from '@/providers/ToastProvider';
@@ -12,11 +13,9 @@ export const metadata = {
   description: 'Admin Dashboard',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+interface RootLayoutprops extends PropsWithChildren {}
+
+const RootLayout = ({ children }: RootLayoutprops) => {
   return (
     <ClerkProvider>
       <html lang='en'>
@@ -28,4 +27,6 @@ export default function RootLayout({
       </html>
     </ClerkProvider>
   );
-}
+};
+
+export default RootLayout;

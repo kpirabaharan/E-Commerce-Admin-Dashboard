@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ScaleLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 import useStoreModal from '@/hooks/useStoreModal';
 
@@ -31,6 +32,7 @@ const formSchema = z.object({
 const StoreModal = () => {
   const { isOpen, onClose } = useStoreModal();
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,6 +58,8 @@ const StoreModal = () => {
       }
     } finally {
       setIsLoading(false);
+      onClose();
+      router.refresh();
     }
   };
 
