@@ -19,8 +19,6 @@ const SetupLayout = async ({ children }: SetupLayoutProps) => {
     redirect(`/${store.id}`);
   }
 
-  // ! Seems Page is Setup Page is Loading After Redirect Causing Modal to Open
-
   return <>{children}</>;
 };
 
