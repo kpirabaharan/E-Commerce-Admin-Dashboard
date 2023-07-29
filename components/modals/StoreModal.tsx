@@ -93,6 +93,7 @@ const StoreModal = () => {
                 disabled={isLoading}
                 variant={'outline'}
                 onClick={onCloseHandler}
+                type={'button'}
               >
                 {isLoading ? (
                   <ScaleLoader color='black' height={15} />
