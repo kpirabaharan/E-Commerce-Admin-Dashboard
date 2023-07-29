@@ -2,12 +2,7 @@
 
 import { ComponentPropsWithoutRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import {
-  PlusCircle,
-  Check,
-  ChevronsUpDown,
-  Store as StoreIcon,
-} from 'lucide-react';
+import { PlusCircle, StoreIcon, Check, ChevronsUpDown } from 'lucide-react';
 
 import { Store } from '@prisma/client';
 import { cn } from '@/lib/utils';
@@ -87,7 +82,15 @@ const StoreSwitcher = ({ className, items = [] }: StoreSwitcherProps) => {
                   }}
                 >
                   <StoreIcon className='mx-1 h-4 w-4' />
-                  <p>{store.label}</p>
+                  <p
+                    className={`${
+                      currentStore?.value === store.value
+                        ? 'font-bold'
+                        : 'font-normal'
+                    }`}
+                  >
+                    {store.label}
+                  </p>
                   <Check
                     className={cn(
                       'ml-auto h-4 w-4',

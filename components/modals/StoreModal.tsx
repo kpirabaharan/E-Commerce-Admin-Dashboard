@@ -79,7 +79,7 @@ const StoreModal = () => {
               name='name'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Store Name</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input disabled={isLoading} {...field} />
                   </FormControl>
@@ -87,6 +87,7 @@ const StoreModal = () => {
                 </FormItem>
               )}
             />
+            <div></div>
             <div className='flex items-center justify-end pt-4 gap-x-2 w-full'>
               <Button
                 disabled={isLoading}
