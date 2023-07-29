@@ -11,6 +11,7 @@ import { toast } from 'react-hot-toast';
 import { Trash } from 'lucide-react';
 
 import { Store } from '@prisma/client';
+import useAlertModal from '@/hooks/useAlertModal';
 
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
@@ -24,7 +25,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import AlertModal from '@/components/modals/AlertModal';
 
 interface SettingsFormProps {
   initialData: Store;
@@ -40,7 +40,7 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
   const params = useParams();
   const router = useRouter();
 
-  const [isOpen, setIsOpen] = useState(false);
+  const { onOpen } = useAlertModal();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<SettingsFormValues>({
@@ -48,7 +48,7 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
     defaultValues: initialData,
   });
 
-  const onSubmit = async (values: SettingsFormValues) => {
+  const onUpdate = async (values: SettingsFormValues) => {
     try {
       setIsLoading(true);
 
@@ -73,45 +73,15 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
     }
   };
 
-  const onDelete = async () => {
-    try {
-      setIsLoading(true);
-
-      const response = await axios.delete(`/api/stores/${params.storeId}`);
-
-      if (response.status === 200) {
-        setIsLoading(false);
-        toast.success(response.data.message);
-        router.refresh();
-        router.push('/');
-      }
-    } catch (err: any) {
-      if (err.response.data) {
-        toast.error(err.response.data);
-      } else {
-        toast.error('Please delete all products and categories first.');
-      }
-    } finally {
-      setIsLoading(false);
-      setIsOpen(false);
-    }
-  };
-
   return (
     <>
-      <AlertModal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        onConfirm={() => onDelete()}
-        isLoading={isLoading}
-      />
       <div className='flex flex-row items-center justify-between'>
         <Heading title='Settings' description='Manage store preferences' />
         <Button
           disabled={isLoading}
           variant={'destructive'}
           size={'icon'}
-          onClick={() => setIsOpen(true)}
+          onClick={() => onOpen(params.storeId)}
         >
           <Trash className='h-4 w-4' />
         </Button>
@@ -119,7 +89,7 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
       <Separator />
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onUpdate)}
           className='space-y-8 w-full'
         >
           <div className='grid grid-cols-3 gap-8'>
