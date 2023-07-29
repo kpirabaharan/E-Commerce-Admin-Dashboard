@@ -1,9 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import axios from 'axios';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ScaleLoader } from 'react-spinners';
+import { toast } from 'react-hot-toast';
 import { Trash } from 'lucide-react';
 
 import { Store } from '@prisma/client';
@@ -32,6 +36,9 @@ const formSchema = z.object({
 type SettingsFormValues = z.infer<typeof formSchema>;
 
 const SettingsForm = ({ initialData }: SettingsFormProps) => {
+  const params = useParams();
+  const router = useRouter();
+
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,15 +48,44 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
   });
 
   const onSubmit = async (values: SettingsFormValues) => {
-    console.log(values);
-    // TODO: Delete Form
+    try {
+      setIsLoading(true);
+
+      console.log(params.storeId);
+
+      const response = await axios.patch(
+        `/api/stores/${params.storeId}`,
+        values,
+      );
+
+      console.log(response);
+
+      if (response.status === 200) {
+        setIsLoading(false);
+        toast.success(response.data.message);
+        router.refresh();
+      }
+    } catch (err: any) {
+      if (err.response.data) {
+        toast.error(err.response.data);
+      } else {
+        toast.error('Something Went Wrong');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <>
       <div className='flex flex-row items-center justify-between'>
         <Heading title='Settings' description='Manage store preferences' />
-        <Button variant={'destructive'} size={'icon'} onClick={() => {}}>
+        <Button
+          disabled={isLoading}
+          variant={'destructive'}
+          size={'icon'}
+          onClick={() => setIsOpen(true)}
+        >
           <Trash className='h-4 w-4' />
         </Button>
       </div>
@@ -74,8 +110,12 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
               )}
             />
           </div>
-          <Button type={'submit'} disabled={isLoading}>
-            Save Changes
+          <Button disabled={isLoading} type='submit'>
+            {isLoading ? (
+              <ScaleLoader color='white' height={15} />
+            ) : (
+              <p>Save Changes</p>
+            )}
           </Button>
         </form>
       </Form>
