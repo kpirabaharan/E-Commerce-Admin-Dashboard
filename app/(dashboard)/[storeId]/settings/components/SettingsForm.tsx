@@ -24,6 +24,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import AlertModal from '@/components/modals/AlertModal';
 
 interface SettingsFormProps {
   initialData: Store;
@@ -51,14 +52,10 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
     try {
       setIsLoading(true);
 
-      console.log(params.storeId);
-
       const response = await axios.patch(
         `/api/stores/${params.storeId}`,
         values,
       );
-
-      console.log(response);
 
       if (response.status === 200) {
         setIsLoading(false);
@@ -76,8 +73,38 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
     }
   };
 
+  const onDelete = async () => {
+    try {
+      setIsLoading(true);
+
+      const response = await axios.delete(`/api/stores/${params.storeId}`);
+
+      if (response.status === 200) {
+        setIsLoading(false);
+        toast.success(response.data.message);
+        router.refresh();
+        router.push('/');
+      }
+    } catch (err: any) {
+      if (err.response.data) {
+        toast.error(err.response.data);
+      } else {
+        toast.error('Please delete all products and categories first.');
+      }
+    } finally {
+      setIsLoading(false);
+      setIsOpen(false);
+    }
+  };
+
   return (
     <>
+      <AlertModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onConfirm={() => onDelete()}
+        isLoading={isLoading}
+      />
       <div className='flex flex-row items-center justify-between'>
         <Heading title='Settings' description='Manage store preferences' />
         <Button
