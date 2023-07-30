@@ -15,7 +15,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       return new NextResponse('Unauthorized User', { status: 401 });
     }
 
-    const { name } = await req.json();
+    const { name, icon } = await req.json();
 
     if (!name) {
       return NextResponse.json('Name is Required', { status: 400 });
@@ -31,6 +31,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
         userId,
       },
       data: {
+        icon,
         name,
       },
     });

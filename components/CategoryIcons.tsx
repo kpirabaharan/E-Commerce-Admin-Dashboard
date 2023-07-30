@@ -1,18 +1,18 @@
 'use client';
 
-import { buttons } from '@/lib/buttonlist';
+import { iconList } from '@/lib/icon-list';
 
 import { Button } from '@/components/ui/button';
 
-interface CategoryButtonsProps {
+interface CategoryIconsProps {
   icon: string;
   setIcon: (icon: string) => void;
 }
 
-const CategoryButtons = ({ icon, setIcon }: CategoryButtonsProps) => {
+const CategoryIcons = ({ icon, setIcon }: CategoryIconsProps) => {
   return (
-    <div className='grid grid-cols-8 pt-4 gap-y-4 place-items-center'>
-      {buttons.map((btn) => (
+    <>
+      {iconList.map((btn) => (
         <Button
           suppressHydrationWarning
           key={btn.value}
@@ -24,8 +24,8 @@ const CategoryButtons = ({ icon, setIcon }: CategoryButtonsProps) => {
           {<btn.icon size={24} />}
         </Button>
       ))}
-    </div>
+    </>
   );
 };
 
-export default CategoryButtons;
+export default CategoryIcons;

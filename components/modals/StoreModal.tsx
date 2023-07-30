@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import CategoryButtons from '@/components/CategoryButtons';
+import CategoryIcons from '@/components/CategoryIcons';
 
 const formSchema = z.object({
   name: z.string().min(1),
@@ -91,7 +91,9 @@ const StoreModal = () => {
             />
 
             {/* Icons */}
-            <CategoryButtons icon={icon} setIcon={setIcon} />
+            <div className='grid grid-cols-8 pt-4 gap-y-4 place-items-center'>
+              <CategoryIcons icon={icon} setIcon={setIcon} />
+            </div>
 
             <div className='flex items-center justify-end pt-4 gap-x-2 w-full'>
               <Button

@@ -25,6 +25,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import CategoryIcons from '@/components/CategoryIcons';
 
 interface SettingsFormProps {
   initialData: Store;
@@ -39,6 +40,7 @@ type SettingsFormValues = z.infer<typeof formSchema>;
 const SettingsForm = ({ initialData }: SettingsFormProps) => {
   const params = useParams();
   const router = useRouter();
+  const [icon, setIcon] = useState(initialData.icon);
 
   const { onOpen } = useAlertModal();
   const [isLoading, setIsLoading] = useState(false);
@@ -52,10 +54,10 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
     try {
       setIsLoading(true);
 
-      const response = await axios.patch(
-        `/api/stores/${params.storeId}`,
-        values,
-      );
+      const response = await axios.patch(`/api/stores/${params.storeId}`, {
+        ...values,
+        icon,
+      });
 
       if (response.status === 200) {
         setIsLoading(false);
@@ -90,22 +92,30 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onUpdate)}
-          className='space-y-8 w-full'
+          className='space-y-4 w-full'
         >
-          <div className='grid grid-cols-3 gap-8'>
-            <FormField
-              control={form.control}
-              name='name'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input disabled={isLoading} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <div className='grid grid-cols-3 gap-x-4 gap-y-2'>
+            <div className='col-span-2 sm:col-span-1'>
+              <FormField
+                control={form.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input disabled={isLoading} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className='d col-span-3 sm:col-span-2 xl:col-span-1'>
+              <FormLabel>Icon</FormLabel>
+              <div className='grid grid-cols-8 lg:grid-cols-10 xl:grid-cols-8 pt-2 gap-y-4'>
+                <CategoryIcons icon={icon} setIcon={setIcon} />
+              </div>
+            </div>
           </div>
           <Button disabled={isLoading} type='submit'>
             {isLoading ? (

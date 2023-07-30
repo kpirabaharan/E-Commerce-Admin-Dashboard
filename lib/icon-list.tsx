@@ -21,7 +21,7 @@ import { MdOutlineLaptop } from 'react-icons/md';
 import { TbPerfume } from 'react-icons/tb';
 import { PiCarBold } from 'react-icons/pi';
 
-export const buttons = [
+export const iconList = [
   {
     icon: StoreIcon,
     value: 'store',

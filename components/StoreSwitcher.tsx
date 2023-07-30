@@ -7,7 +7,7 @@ import { PlusCircle, StoreIcon, Check, ChevronsUpDown } from 'lucide-react';
 import { Store } from '@prisma/client';
 import { cn } from '@/lib/utils';
 import useStoreModal from '@/hooks/useStoreModal';
-import { buttons } from '@/lib/buttonlist';
+import { iconList } from '@/lib/icon-list';
 
 import {
   Popover,
@@ -40,7 +40,7 @@ const StoreSwitcher = ({ className, items = [] }: StoreSwitcherProps) => {
   const formattedItems = items.map((item) => ({
     value: item.id,
     label: item.name,
-    icon: buttons.find((btn) => btn.value === item.icon)?.icon,
+    icon: iconList.find((btn) => btn.value === item.icon)?.icon,
   }));
 
   const currentStore = formattedItems.find(
