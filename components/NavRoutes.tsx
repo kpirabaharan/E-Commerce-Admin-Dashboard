@@ -19,6 +19,11 @@ const NavRoutes = ({
       href: `/${params.storeId}`,
     },
     {
+      label: 'Billboards',
+      active: pathname === `/${params.storeId}/billboards`,
+      href: `/${params.storeId}/billboards`,
+    },
+    {
       label: 'Settings',
       active: pathname === `/${params.storeId}/settings`,
       href: `/${params.storeId}/settings`,
