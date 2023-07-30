@@ -11,7 +11,7 @@ export const POST = async (req: Request) => {
       return new NextResponse('Unauthorized User', { status: 401 });
     }
 
-    const { name } = await req.json();
+    const { name, icon } = await req.json();
 
     if (!name) {
       return NextResponse.json('Name is Required', { status: 400 });
@@ -27,7 +27,7 @@ export const POST = async (req: Request) => {
       });
     } else {
       const store = await prismadb.store.create({
-        data: { name, userId },
+        data: { name, icon, userId },
       });
 
       return NextResponse.json(store, { status: 201 });

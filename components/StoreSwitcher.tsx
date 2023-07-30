@@ -7,6 +7,7 @@ import { PlusCircle, StoreIcon, Check, ChevronsUpDown } from 'lucide-react';
 import { Store } from '@prisma/client';
 import { cn } from '@/lib/utils';
 import useStoreModal from '@/hooks/useStoreModal';
+import { buttons } from '@/lib/buttonlist';
 
 import {
   Popover,
@@ -39,6 +40,7 @@ const StoreSwitcher = ({ className, items = [] }: StoreSwitcherProps) => {
   const formattedItems = items.map((item) => ({
     value: item.id,
     label: item.name,
+    icon: buttons.find((btn) => btn.value === item.icon)?.icon,
   }));
 
   const currentStore = formattedItems.find(
@@ -61,7 +63,11 @@ const StoreSwitcher = ({ className, items = [] }: StoreSwitcherProps) => {
           aria-label='Select a Store'
           role='combobox'
         >
-          <StoreIcon className='h-4 w-4' />
+          {currentStore?.icon ? (
+            <currentStore.icon size={16} />
+          ) : (
+            <StoreIcon size={16} />
+          )}
           <p>{currentStore?.label}</p>
           <ChevronsUpDown className='ml-auto h-4 w-4 shrink-0 opacity-50' />
         </Button>
@@ -81,7 +87,11 @@ const StoreSwitcher = ({ className, items = [] }: StoreSwitcherProps) => {
                     setIsOpen(false);
                   }}
                 >
-                  <StoreIcon className='mx-1 h-4 w-4' />
+                  {store.icon ? (
+                    <store.icon className='mx-1' size={16} />
+                  ) : (
+                    <StoreIcon className='mx-1' size={16} />
+                  )}
                   <p
                     className={`${
                       currentStore?.value === store.value

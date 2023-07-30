@@ -13,6 +13,7 @@ datasource db {
 model Store {
   id        String   @id @default(uuid())
   name      String
+  icon      String
   userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

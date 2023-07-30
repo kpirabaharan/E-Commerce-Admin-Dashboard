@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import ButtonList from '@/components/ButtonList';
+import CategoryButtons from '@/components/CategoryButtons';
 
 const formSchema = z.object({
   name: z.string().min(1),
@@ -43,7 +43,7 @@ const StoreModal = () => {
     try {
       setIsLoading(true);
 
-      const response = await axios.post('/api/stores', values);
+      const response = await axios.post('/api/stores', { ...values, icon });
 
       if (response.status === 201) {
         setIsLoading(false);
@@ -91,7 +91,7 @@ const StoreModal = () => {
             />
 
             {/* Icons */}
-            <ButtonList icon={icon} setIcon={setIcon} />
+            <CategoryButtons icon={icon} setIcon={setIcon} />
 
             <div className='flex items-center justify-end pt-4 gap-x-2 w-full'>
               <Button
