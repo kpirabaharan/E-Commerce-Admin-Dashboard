@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
+import { useState } from 'react';
 import axios from 'axios';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
@@ -22,10 +21,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-// import ButtonList from '@/components/ButtonList';
-const ButtonList = dynamic(() => import('@/components/ButtonList'), {
-  ssr: false,
-});
+import ButtonList from '@/components/ButtonList';
 
 const formSchema = z.object({
   name: z.string().min(1),

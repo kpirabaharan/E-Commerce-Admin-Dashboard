@@ -126,6 +126,7 @@ const ButtonList = ({ icon, setIcon }: ButtonListProps) => {
     <div className='grid grid-cols-8 pt-4 gap-y-4 place-items-center'>
       {buttons.map((btn) => (
         <Button
+          suppressHydrationWarning
           key={btn.value}
           type={'button'}
           size={'icon'}
