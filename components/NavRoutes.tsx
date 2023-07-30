@@ -14,6 +14,11 @@ const NavRoutes = ({
 
   const routes = [
     {
+      label: 'Home',
+      active: pathname === `/${params.storeId}`,
+      href: `/${params.storeId}`,
+    },
+    {
       label: 'Settings',
       active: pathname === `/${params.storeId}/settings`,
       href: `/${params.storeId}/settings`,

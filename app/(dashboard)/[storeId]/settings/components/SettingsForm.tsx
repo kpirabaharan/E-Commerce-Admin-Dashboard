@@ -15,7 +15,6 @@ import useAlertModal from '@/hooks/useAlertModal';
 
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { Heading } from '@/components/ui/Heading';
 import {
   Form,
   FormControl,
@@ -25,7 +24,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import CategoryIcons from '@/components/CategoryIcons';
+
+import { CategoryIcons } from '@/components/CategoryIcons';
+import { Heading } from '@/components/ui/Heading';
+import { ApiAlert } from '@/components/ui/ApiAlert';
 
 interface SettingsFormProps {
   initialData: Store;
@@ -92,7 +94,7 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onUpdate)}
-          className='space-y-4 w-full'
+          className='space-y-6 w-full'
         >
           <div className='grid grid-cols-3 gap-x-4 gap-y-2'>
             <div className='col-span-2 sm:col-span-1'>
@@ -110,14 +112,21 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
                 )}
               />
             </div>
-            <div className='d col-span-3 sm:col-span-2 xl:col-span-1'>
+            <div className='col-span-3 sm:col-span-2'>
               <FormLabel>Icon</FormLabel>
-              <div className='grid grid-cols-8 lg:grid-cols-10 xl:grid-cols-8 pt-2 gap-y-4'>
+              <div
+                className='grid grid-cols-8 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12
+                2xl:grid-cols-16 pt-2 gap-y-4'
+              >
                 <CategoryIcons icon={icon} setIcon={setIcon} />
               </div>
             </div>
           </div>
-          <Button disabled={isLoading} type='submit'>
+          <Button
+            className='relative left-full -translate-x-[100%]'
+            disabled={isLoading}
+            type='submit'
+          >
             {isLoading ? (
               <ScaleLoader color='white' height={15} />
             ) : (
@@ -126,6 +135,12 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
           </Button>
         </form>
       </Form>
+      <Separator />
+      <ApiAlert
+        title='NEXT_PUBLIC_API_URL'
+        description={`${origin}/api/${params.storeId}`}
+        variant={'public'}
+      />
     </>
   );
 };

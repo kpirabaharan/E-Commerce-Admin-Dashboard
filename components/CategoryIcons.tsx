@@ -9,7 +9,7 @@ interface CategoryIconsProps {
   setIcon: (icon: string) => void;
 }
 
-const CategoryIcons = ({ icon, setIcon }: CategoryIconsProps) => {
+export const CategoryIcons = ({ icon, setIcon }: CategoryIconsProps) => {
   return (
     <>
       {iconList.map((btn) => (
@@ -27,5 +27,3 @@ const CategoryIcons = ({ icon, setIcon }: CategoryIconsProps) => {
     </>
   );
 };
-
-export default CategoryIcons;
