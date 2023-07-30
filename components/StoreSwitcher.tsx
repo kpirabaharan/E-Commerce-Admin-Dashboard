@@ -6,8 +6,8 @@ import { PlusCircle, StoreIcon, Check, ChevronsUpDown } from 'lucide-react';
 import { Store } from '@prisma/client';
 
 import { cn } from '@/lib/utils';
-import { iconList } from '@/lib/icon-list';
-import {useStoreModal} from '@/hooks/useStoreModal';
+import { useIcons } from '@/hooks/useIcons';
+import { useStoreModal } from '@/hooks/useStoreModal';
 
 import {
   Popover,
@@ -36,6 +36,8 @@ const StoreSwitcher = ({ className, items = [] }: StoreSwitcherProps) => {
   const { onOpen } = useStoreModal();
   const params = useParams();
   const router = useRouter();
+
+  const iconList = useIcons();
 
   const formattedItems = items.map((item) => ({
     value: item.id,

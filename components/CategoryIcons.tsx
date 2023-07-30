@@ -1,6 +1,6 @@
 'use client';
 
-import { iconList } from '@/lib/icon-list';
+import { useIcons } from '@/hooks/useIcons';
 
 import { Button } from '@/components/ui/button';
 
@@ -10,6 +10,8 @@ interface CategoryIconsProps {
 }
 
 export const CategoryIcons = ({ icon, setIcon }: CategoryIconsProps) => {
+  const iconList = useIcons();
+
   return (
     <>
       {iconList.map((btn) => (
