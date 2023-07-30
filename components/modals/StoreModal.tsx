@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ScaleLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
 
-import useStoreModal from '@/hooks/useStoreModal';
+import { useStoreModal } from '@/hooks/useStoreModal';
 
 import { Modal } from '@/components//ui/modal';
 import {

@@ -6,7 +6,7 @@ import axios from 'axios';
 import { ScaleLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
 
-import useAlertModal from '@/hooks/useAlertModal';
+import { useAlertModal } from '@/hooks/useAlertModal';
 
 import { Modal } from '@/components/ui/modal';
 import { Button } from '@/components/ui/button';

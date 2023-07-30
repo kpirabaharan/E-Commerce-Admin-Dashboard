@@ -3,11 +3,11 @@
 import { ComponentPropsWithoutRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { PlusCircle, StoreIcon, Check, ChevronsUpDown } from 'lucide-react';
-
 import { Store } from '@prisma/client';
+
 import { cn } from '@/lib/utils';
-import useStoreModal from '@/hooks/useStoreModal';
 import { iconList } from '@/lib/icon-list';
+import {useStoreModal} from '@/hooks/useStoreModal';
 
 import {
   Popover,

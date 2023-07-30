@@ -9,9 +9,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ScaleLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
 import { Trash } from 'lucide-react';
-
 import { Store } from '@prisma/client';
-import useAlertModal from '@/hooks/useAlertModal';
+
+import { useAlertModal } from '@/hooks/useAlertModal';
+import { useOrigin } from '@/hooks/useOrigin';
 
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
@@ -42,10 +43,11 @@ type SettingsFormValues = z.infer<typeof formSchema>;
 const SettingsForm = ({ initialData }: SettingsFormProps) => {
   const params = useParams();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const [icon, setIcon] = useState(initialData.icon);
 
+  const origin = useOrigin();
   const { onOpen } = useAlertModal();
-  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(formSchema),
