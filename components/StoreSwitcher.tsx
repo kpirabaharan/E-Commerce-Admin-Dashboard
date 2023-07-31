@@ -23,6 +23,7 @@ import {
   CommandItem,
   CommandSeparator,
 } from '@/components/ui/command';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 
 type PopoverTriggerProps = ComponentPropsWithoutRef<typeof PopoverTrigger>;
@@ -68,7 +69,7 @@ const StoreSwitcher = ({ className, items = [] }: StoreSwitcherProps) => {
           {currentStore?.icon ? (
             <currentStore.icon size={16} />
           ) : (
-            <div className='w-4 h-4' />
+            <Skeleton className='h-4 w-4 rounded-md' />
           )}
           <p>{currentStore?.label}</p>
           <ChevronsUpDown className='ml-auto h-4 w-4 shrink-0 opacity-50' />
@@ -92,7 +93,7 @@ const StoreSwitcher = ({ className, items = [] }: StoreSwitcherProps) => {
                   {store.icon ? (
                     <store.icon className='mx-1' size={16} />
                   ) : (
-                    <div className='w-4 h-4' />
+                    <Skeleton className='h-4 w-4 rounded-md' />
                   )}
                   <p
                     className={`${
