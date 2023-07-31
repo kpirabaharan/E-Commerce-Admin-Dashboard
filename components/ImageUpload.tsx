@@ -9,14 +9,22 @@ import Image from 'next/image';
 interface ImageUploadProps {
   image: string | null;
   setImage: (value: any) => void;
+  onChange: (url: string) => void;
+  onRemove: () => void;
 }
 
-const ImageUpload = ({ image, setImage }: ImageUploadProps) => {
+const ImageUpload = ({
+  image,
+  setImage,
+  onChange,
+  onRemove,
+}: ImageUploadProps) => {
   return (
     <Dropzone
-      onDrop={(acceptedFiles) =>
-        setImage(URL.createObjectURL(acceptedFiles[0]))
-      }
+      onDrop={(acceptedFiles) => {
+        setImage(URL.createObjectURL(acceptedFiles[0]));
+        onChange(acceptedFiles[0].name);
+      }}
     >
       {({ getRootProps, getInputProps }) => (
         <div
@@ -25,7 +33,7 @@ const ImageUpload = ({ image, setImage }: ImageUploadProps) => {
           border-dashed rounded-md h-[197px] w-[350px] relative cursor-pointer'
         >
           <input {...getInputProps()} />
-          <p>Add Image Here</p>
+          {!image && <p>Add Image Here</p>}
           {image && (
             <Image
               src={image}
@@ -43,6 +51,7 @@ const ImageUpload = ({ image, setImage }: ImageUploadProps) => {
               onClick={(e) => {
                 e.stopPropagation();
                 setImage(null);
+                onRemove();
               }}
             >
               <Trash className='h-4 w-4' />

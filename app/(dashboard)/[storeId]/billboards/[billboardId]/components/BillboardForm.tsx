@@ -59,20 +59,24 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
     defaultValues: initialData || { label: '', imageUrl: '' },
   });
 
-  const onUpdate = async (values: BillboardFormValues) => {
+  const onSubmit = async (values: BillboardFormValues) => {
     try {
       setIsLoading(true);
+      console.log(values.imageUrl);
 
-      const response = await axios.patch(
-        `/api/stores/${params.storeId}`,
-        values,
-      );
-
-      if (response.status === 200) {
-        setIsLoading(false);
-        toast.success(response.data.message);
-        router.refresh();
+      if (initialData) {
+        const response = await axios.patch(
+          `/api/${params.storeId}/billboards/${params.billboardId}`,
+          values,
+        );
+      } else {
+        const response = await axios.post(
+          `/api/${params.storeId}/billboards`,
+          values,
+        );
       }
+      router.refresh();
+      toast.success(toastMessage);
     } catch (err: any) {
       if (err.response.data) {
         toast.error(err.response.data);
@@ -84,8 +88,25 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
     }
   };
 
-  const onUpload = async () => {
-    console.log(image);
+  const onDelete = async () => {
+    try {
+      setIsLoading(true);
+
+      const response = await axios.delete(
+        `/api/${params.storeId}/billboards/${params.billboardId}`,
+      );
+
+      router.refresh();
+      toast.success('Billboard Deleted');
+    } catch (err: any) {
+      if (err.response.data) {
+        toast.error(err.response.data);
+      } else {
+        toast.error('Please delete all categories using this billboard');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -106,7 +127,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
       <Separator />
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onUpdate)}
+          onSubmit={form.handleSubmit(onSubmit)}
           className='space-y-6 w-full'
         >
           <div className='flex flex-col md:flex-row gap-x-4 gap-y-4'>
@@ -137,13 +158,18 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
                 <FormItem>
                   <FormLabel>Background Image</FormLabel>
                   <FormControl>
-                    <ImageUpload image={image} setImage={setImage} />
+                    <ImageUpload
+                      image={image}
+                      setImage={setImage}
+                      onChange={(url) => field.onChange(url)}
+                      onRemove={() => field.onChange('')}
+                    />
                   </FormControl>
                 </FormItem>
               )}
             />
           </div>
-          <Button disabled={isLoading} type='button' onClick={onUpload}>
+          <Button disabled={isLoading} type='submit'>
             {isLoading ? (
               <ScaleLoader color='white' height={15} />
             ) : (

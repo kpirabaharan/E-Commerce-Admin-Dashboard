@@ -34,7 +34,7 @@ const AlertModal = () => {
       if (err.response.data) {
         toast.error(err.response.data);
       } else {
-        toast.error('Please delete all products and categories first.');
+        toast.error('Please delete all products and categories first');
       }
     } finally {
       setIsLoading(false);
@@ -45,7 +45,7 @@ const AlertModal = () => {
   return (
     <Modal
       title='Are you sure?'
-      description='This action cannot be undone.'
+      description='This action cannot be undone'
       isOpen={isOpen}
       onClose={onClose}
     >
