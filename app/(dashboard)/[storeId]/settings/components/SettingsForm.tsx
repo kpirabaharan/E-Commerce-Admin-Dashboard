@@ -98,7 +98,7 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
           onSubmit={form.handleSubmit(onUpdate)}
           className='space-y-6 w-full'
         >
-          <div className='grid grid-cols-3 gap-x-4 gap-y-2'>
+          <div className='grid grid-cols-3 gap-x-4 gap-y-4'>
             <div className='col-span-2 sm:col-span-1'>
               <FormField
                 control={form.control}
@@ -124,11 +124,7 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
               </div>
             </div>
           </div>
-          <Button
-            className='relative left-full -translate-x-[100%]'
-            disabled={isLoading}
-            type='submit'
-          >
+          <Button disabled={isLoading} type='submit'>
             {isLoading ? (
               <ScaleLoader color='white' height={15} />
             ) : (

@@ -34,7 +34,7 @@ interface BillboardFormProps {
 
 const formSchema = z.object({
   label: z.string().min(1),
-  imageUrl: z.string().min(1),
+  imageUrl: z.string(),
 });
 
 type BillboardFormValues = z.infer<typeof formSchema>;
@@ -43,6 +43,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
   const params = useParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [image, setImage] = useState<string | null>(null);
 
   const { onOpen } = useAlertModal();
 
@@ -83,6 +84,10 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
     }
   };
 
+  const onUpload = async () => {
+    console.log(image);
+  };
+
   return (
     <>
       <div className='flex flex-row items-center justify-between'>
@@ -104,33 +109,41 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
           onSubmit={form.handleSubmit(onUpdate)}
           className='space-y-6 w-full'
         >
-          <div className='grid grid-cols-3 gap-x-4 gap-y-2'>
-            <div className='col-span-2 sm:col-span-1'>
-              <FormField
-                control={form.control}
-                name='label'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Label</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='BIllboard label'
-                        disabled={isLoading}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <ImageUpload />
+          <div className='flex flex-col md:flex-row gap-x-4 gap-y-4'>
+            {/* Label */}
+            <FormField
+              control={form.control}
+              name='label'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Label</FormLabel>
+                  <FormControl>
+                    <Input
+                      className='w-[300px]'
+                      placeholder='Billboard label'
+                      disabled={isLoading}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Image */}
+            <FormField
+              control={form.control}
+              name='imageUrl'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Background Image</FormLabel>
+                  <FormControl>
+                    <ImageUpload image={image} setImage={setImage} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
           </div>
-          <Button
-            className='relative left-full -translate-x-[100%]'
-            disabled={isLoading}
-            type='submit'
-          >
+          <Button disabled={isLoading} type='button' onClick={onUpload}>
             {isLoading ? (
               <ScaleLoader color='white' height={15} />
             ) : (
