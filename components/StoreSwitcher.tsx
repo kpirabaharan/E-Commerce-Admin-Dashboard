@@ -68,7 +68,7 @@ const StoreSwitcher = ({ className, items = [] }: StoreSwitcherProps) => {
           {currentStore?.icon ? (
             <currentStore.icon size={16} />
           ) : (
-            <StoreIcon size={16} />
+            <div className='w-4 h-4' />
           )}
           <p>{currentStore?.label}</p>
           <ChevronsUpDown className='ml-auto h-4 w-4 shrink-0 opacity-50' />
@@ -92,7 +92,7 @@ const StoreSwitcher = ({ className, items = [] }: StoreSwitcherProps) => {
                   {store.icon ? (
                     <store.icon className='mx-1' size={16} />
                   ) : (
-                    <StoreIcon className='mx-1' size={16} />
+                    <div className='w-4 h-4' />
                   )}
                   <p
                     className={`${

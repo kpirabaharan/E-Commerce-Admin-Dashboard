@@ -27,8 +27,8 @@ import {
 import { Input } from '@/components/ui/input';
 
 import { CategoryIcons } from '@/components/CategoryIcons';
-import { Heading } from '@/components/ui/Heading';
-import { ApiAlert } from '@/components/ui/ApiAlert';
+import { Heading } from '@/components/Heading';
+import { ApiAlert } from '@/components/ApiAlert';
 
 interface SettingsFormProps {
   initialData: Store;
