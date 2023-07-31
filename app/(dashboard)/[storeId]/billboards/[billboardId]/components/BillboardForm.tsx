@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input';
 
 import { Heading } from '@/components/Heading';
 import ImageUpload from '@/components/ImageUpload';
+import { config } from 'process';
 
 interface BillboardFormProps {
   initialData: Billboard | null;
@@ -43,7 +44,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
   const params = useParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [image, setImage] = useState<string | null>(null);
+  const [file, setFile] = useState<string | Blob>('');
 
   const { onOpen } = useAlertModal();
 
@@ -62,7 +63,6 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
   const onSubmit = async (values: BillboardFormValues) => {
     try {
       setIsLoading(true);
-      console.log(values.imageUrl);
 
       if (initialData) {
         const response = await axios.patch(
@@ -70,11 +70,21 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
           values,
         );
       } else {
-        const response = await axios.post(
-          `/api/${params.storeId}/billboards`,
-          values,
-        );
+        console.log(file);
+        console.log(values);
+
+        const { data } = await axios.post(`/api/${params.storeId}/billboards`, {
+          ...values,
+          file,
+        });
+
+        console.log(data);
+
+        // const response = await axios.put(data.uploadUrl, file);
+
+        // console.log(response);
       }
+
       router.refresh();
       toast.success(toastMessage);
     } catch (err: any) {
@@ -159,8 +169,8 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
                   <FormLabel>Background Image</FormLabel>
                   <FormControl>
                     <ImageUpload
-                      image={image}
-                      setImage={setImage}
+                      file={file}
+                      setFile={setFile}
                       onChange={(url) => field.onChange(url)}
                       onRemove={() => field.onChange('')}
                     />

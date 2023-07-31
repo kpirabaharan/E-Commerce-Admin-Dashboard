@@ -7,22 +7,22 @@ import { Trash } from 'lucide-react';
 import Image from 'next/image';
 
 interface ImageUploadProps {
-  image: string | null;
-  setImage: (value: any) => void;
+  file: any;
+  setFile: (value: any) => void;
   onChange: (url: string) => void;
   onRemove: () => void;
 }
 
 const ImageUpload = ({
-  image,
-  setImage,
+  file,
+  setFile,
   onChange,
   onRemove,
 }: ImageUploadProps) => {
   return (
     <Dropzone
       onDrop={(acceptedFiles) => {
-        setImage(URL.createObjectURL(acceptedFiles[0]));
+        setFile(acceptedFiles[0]);
         onChange(acceptedFiles[0].name);
       }}
     >
@@ -33,16 +33,16 @@ const ImageUpload = ({
           border-dashed rounded-md h-[197px] w-[350px] relative cursor-pointer'
         >
           <input {...getInputProps()} />
-          {!image && <p>Add Image Here</p>}
-          {image && (
+          {!file && <p>Add Image Here</p>}
+          {file && (
             <Image
-              src={image}
+              src={URL.createObjectURL(file)}
               alt='Image'
               fill
               className='object-cover rounded-md'
             />
           )}
-          {image && (
+          {file && (
             <Button
               className='absolute top-2 right-2'
               variant={'destructive'}
@@ -50,7 +50,7 @@ const ImageUpload = ({
               size={'icon'}
               onClick={(e) => {
                 e.stopPropagation();
-                setImage(null);
+                setFile('');
                 onRemove();
               }}
             >

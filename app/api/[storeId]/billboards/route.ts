@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs';
 
 import prismadb from '@/lib/prismadb';
+import { createUploadURL } from '@/lib/aws-helper';
 
 export const POST = async (
   req: Request,
@@ -14,10 +15,9 @@ export const POST = async (
       return new NextResponse('Unauthorized User', { status: 401 });
     }
 
-    const { label, imageUrl } = await req.json();
+    const { label, imageUrl, file } = await req.json();
 
-    console.log(label, imageUrl);
-    console.log(params.storeId);
+    console.log(file);
 
     if (!label) {
       return NextResponse.json('Label is Required', { status: 400 });
@@ -40,7 +40,16 @@ export const POST = async (
         data: { label, imageUrl, storeId: params.storeId },
       });
 
-      return NextResponse.json(billboard, { status: 201 });
+      const ext = imageUrl.split('.')[1];
+
+      const uploadURL = createUploadURL(
+        `${params.storeId}-${imageUrl}`,
+        `image/${ext}`,
+      );
+
+      console.log({ uploadURL });
+
+      return NextResponse.json(uploadURL, { status: 201 });
     }
   } catch (err) {
     console.log('[STORES_POST]:', err);
