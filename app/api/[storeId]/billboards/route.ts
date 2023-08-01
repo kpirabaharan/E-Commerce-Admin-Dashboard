@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs';
+import { randomUUID } from 'crypto';
 
 import prismadb from '@/lib/prismadb';
-import { createUploadURL } from '@/lib/aws-helper';
+import s3 from '@/lib/aws-client';
 
 export const POST = async (
   req: Request,
@@ -15,16 +16,18 @@ export const POST = async (
       return new NextResponse('Unauthorized User', { status: 401 });
     }
 
-    const { label, imageUrl, file } = await req.json();
-
-    console.log(file);
+    const { label, imageName } = await req.json();
 
     if (!label) {
       return NextResponse.json('Label is Required', { status: 400 });
     }
 
-    if (!imageUrl) {
+    if (!imageName) {
       return NextResponse.json('Image URL is Required', { status: 400 });
+    }
+
+    if(!params.storeId){
+      return NextResponse.json('Store Id is Required', { status: 400 });
     }
 
     const existingBillboard = await prismadb.billboard.findFirst({
@@ -36,23 +39,27 @@ export const POST = async (
         status: 400,
       });
     } else {
+      const key = randomUUID();
+
       const billboard = await prismadb.billboard.create({
-        data: { label, imageUrl, storeId: params.storeId },
+        data: { label, imageUrl: key, storeId: params.storeId },
       });
 
-      const ext = imageUrl.split('.')[1];
+      const ext = imageName.split('.')[1];
 
-      const uploadURL = createUploadURL(
-        `${params.storeId}-${imageUrl}`,
-        `image/${ext}`,
-      );
+      const s3Params = {
+        Bucket: process.env.S3_BUCKET,
+        Key: `${key}.${ext}`,
+        Expires: 60,
+        ContentType: `image/${ext}`,
+      };
 
-      console.log({ uploadURL });
+      const uploadUrl = s3.getSignedUrl('putObject', s3Params);
 
-      return NextResponse.json(uploadURL, { status: 201 });
+      return NextResponse.json({ billboard, uploadUrl }, { status: 201 });
     }
   } catch (err) {
-    console.log('[STORES_POST]:', err);
+    console.log('[BILLBOARDS_POST]:', err);
     return new NextResponse('Internal Error', { status: 500 });
   }
 };

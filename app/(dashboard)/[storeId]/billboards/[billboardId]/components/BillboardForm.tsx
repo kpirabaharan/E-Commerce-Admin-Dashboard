@@ -27,7 +27,6 @@ import { Input } from '@/components/ui/input';
 
 import { Heading } from '@/components/Heading';
 import ImageUpload from '@/components/ImageUpload';
-import { config } from 'process';
 
 interface BillboardFormProps {
   initialData: Billboard | null;
@@ -35,7 +34,7 @@ interface BillboardFormProps {
 
 const formSchema = z.object({
   label: z.string().min(1),
-  imageUrl: z.string(),
+  imageName: z.string(),
 });
 
 type BillboardFormValues = z.infer<typeof formSchema>;
@@ -57,7 +56,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
 
   const form = useForm<BillboardFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || { label: '', imageUrl: '' },
+    defaultValues: initialData || { label: '', imageName: '' },
   });
 
   const onSubmit = async (values: BillboardFormValues) => {
@@ -70,23 +69,21 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
           values,
         );
       } else {
-        console.log(file);
-        console.log(values);
+        /* Create Database Entry of Billboard */
+        const {
+          data: { uploadUrl },
+          status: postStatus,
+        } = await axios.post(`/api/${params.storeId}/billboards`, values);
 
-        const { data } = await axios.post(`/api/${params.storeId}/billboards`, {
-          ...values,
-          file,
-        });
-
-        console.log(data);
-
-        // const response = await axios.put(data.uploadUrl, file);
-
-        // console.log(response);
+        /* Upload Image to S3 with URL Created by AWS-SDK */
+        if (postStatus === 201) {
+          const {status: putStatus} = await axios.put(uploadUrl, file);
+          if (putStatus === 200) {
+            toast.success(toastMessage);
+            router.refresh();
+          }
+        }
       }
-
-      router.refresh();
-      toast.success(toastMessage);
     } catch (err: any) {
       if (err.response.data) {
         toast.error(err.response.data);
@@ -163,7 +160,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
             {/* Image */}
             <FormField
               control={form.control}
-              name='imageUrl'
+              name='imageName'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Background Image</FormLabel>
