@@ -4,7 +4,7 @@ import { auth } from '@clerk/nextjs';
 import prismadb from '@/lib/prismadb';
 
 interface RequestProps {
-  params: { storeId: string };
+  params: { storeId: string; billboardId: string };
 }
 
 export const PATCH = async (req: Request, { params }: RequestProps) => {
@@ -15,29 +15,35 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       return new NextResponse('Unauthenticated', { status: 401 });
     }
 
-    const { name, icon } = await req.json();
+    const { label, imageName } = await req.json();
 
-    if (!name) {
-      return NextResponse.json('Name is Required', { status: 400 });
+    if (!label) {
+      return NextResponse.json('Label is Required', { status: 400 });
     }
 
-    if (!params.storeId) {
-      return NextResponse.json('Store Id is Required', { status: 400 });
+    if (!imageName) {
+      return NextResponse.json('Image URL is Required', { status: 400 });
     }
 
-    const store = await prismadb.store.update({
-      where: {
-        id: params.storeId,
-        userId,
-      },
-      data: {
-        icon,
-        name,
-      },
+    if (!params.billboardId) {
+      return NextResponse.json('Billboard Id is Required', { status: 400 });
+    }
+
+    const storeByUserId = await prismadb.store.findFirst({
+      where: { id: params.storeId, userId },
+    });
+
+    if (!storeByUserId) {
+      return NextResponse.json('Unauthorized', { status: 403 });
+    }
+
+    const billboard = await prismadb.billboard.update({
+      where: { id: params.billboardId },
+      data: { label },
     });
 
     return NextResponse.json(
-      { store, message: 'Store Updated' },
+      { billboard, message: 'Billboard Name Updated' },
       {
         status: 200,
       },

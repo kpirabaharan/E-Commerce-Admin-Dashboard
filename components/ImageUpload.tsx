@@ -50,7 +50,7 @@ const ImageUpload = ({
               size={'icon'}
               onClick={(e) => {
                 e.stopPropagation();
-                setFile('');
+                setFile(null);
                 onRemove();
               }}
             >

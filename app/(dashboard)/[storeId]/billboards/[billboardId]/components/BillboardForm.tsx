@@ -43,7 +43,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
   const params = useParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [file, setFile] = useState<string | Blob>('');
+  const [file, setFile] = useState(null);
 
   const { onOpen } = useAlertModal();
 
@@ -51,7 +51,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
   const description = initialData
     ? 'Modify existing billboard'
     : 'Create a new billboard';
-  const toastMessage = initialData ? 'Billboard updated' : 'Billboard created';
+  const toastMessage = initialData ? 'Billboard Updated' : 'Billboard Created';
   const action = initialData ? 'Save Changes' : 'Create Billboard';
 
   const form = useForm<BillboardFormValues>({
@@ -77,7 +77,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
 
         /* Upload Image to S3 with URL Created by AWS-SDK */
         if (postStatus === 201) {
-          const {status: putStatus} = await axios.put(uploadUrl, file);
+          const { status: putStatus } = await axios.put(uploadUrl, file);
           if (putStatus === 200) {
             toast.success(toastMessage);
             router.refresh();
