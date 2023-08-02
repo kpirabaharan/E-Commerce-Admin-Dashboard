@@ -34,7 +34,7 @@ interface BillboardFormProps {
 
 const formSchema = z.object({
   label: z.string().min(1),
-  imageName: z.string(),
+  imageName: z.string().min(1, { message: 'Please attach an image' }),
 });
 
 type BillboardFormValues = z.infer<typeof formSchema>;
@@ -63,10 +63,14 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
     try {
       setIsLoading(true);
 
+      if (!file) {
+        return;
+      }
+
       if (initialData) {
         const response = await axios.patch(
           `/api/${params.storeId}/billboards/${params.billboardId}`,
-          values,
+          { ...values, initialImageUrl: initialData.imageUrl },
         );
       } else {
         /* Create Database Entry of Billboard */
@@ -78,9 +82,11 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
         /* Upload Image to S3 with URL Created by AWS-SDK */
         if (postStatus === 201) {
           const { status: putStatus } = await axios.put(uploadUrl, file);
+
           if (putStatus === 200) {
             toast.success(toastMessage);
             router.refresh();
+            router.push(`/${params.storeId}/billboards`)
           }
         }
       }
@@ -172,6 +178,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
                       onRemove={() => field.onChange('')}
                     />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />

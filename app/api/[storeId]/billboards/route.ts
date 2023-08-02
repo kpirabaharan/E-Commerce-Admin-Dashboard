@@ -70,26 +70,27 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       return NextResponse.json('A billboard with that name exists!', {
         status: 400,
       });
-    } else {
-      const key = randomUUID();
-
-      const billboard = await prismadb.billboard.create({
-        data: { label, imageUrl: key, storeId: params.storeId },
-      });
-
-      const ext = imageName.split('.')[1];
-
-      const s3Params = {
-        Bucket: process.env.S3_BUCKET,
-        Key: `${key}.${ext}`,
-        Expires: 60,
-        ContentType: `image/${ext}`,
-      };
-
-      const uploadUrl = s3.getSignedUrl('putObject', s3Params);
-
-      return NextResponse.json({ billboard, uploadUrl }, { status: 201 });
     }
+
+    /* Create Random UUID for ImageURL (ensures storage on AWS) */
+    const key = randomUUID();
+
+    const billboard = await prismadb.billboard.create({
+      data: { label, imageUrl: key, storeId: params.storeId },
+    });
+
+    const ext = imageName.split('.')[1];
+
+    const s3Params = {
+      Bucket: process.env.S3_BUCKET ?? '',
+      Key: `${key}.${ext}`,
+      Expires: 60,
+      ContentType: `image/${ext}`,
+    };
+
+    const uploadUrl = s3.getSignedUrl('putObject', s3Params);
+
+    return NextResponse.json({ billboard, uploadUrl }, { status: 201 });
   } catch (err) {
     console.log('[BILLBOARDS_POST]:', err);
     return new NextResponse('Internal Error', { status: 500 });
