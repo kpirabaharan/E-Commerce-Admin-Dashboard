@@ -26,13 +26,13 @@ import { Input } from '@/components/ui/input';
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  searchKey: string;
+  filterKey: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  searchKey,
+  filterKey,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
@@ -53,9 +53,9 @@ export function DataTable<TData, TValue>({
       <div className='flex items-center py-4'>
         <Input
           placeholder='Search...'
-          value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ''}
+          value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn(searchKey)?.setFilterValue(event.target.value)
+            table.getColumn(filterKey)?.setFilterValue(event.target.value)
           }
           className='max-w-sm'
         />
@@ -66,8 +66,10 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
+                  console.log(header);
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className={``}>
+                      {/* ${header.id === 'createdAt' && 'w-[200px]'} */}
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -87,14 +89,17 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    // console.log(cell);
+                    return (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (

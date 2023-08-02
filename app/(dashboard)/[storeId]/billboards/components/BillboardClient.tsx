@@ -32,7 +32,7 @@ export const BillboardClient = ({ billboards }: BillboardClientProps) => {
         </Button>
       </div>
       <Separator />
-      <DataTable columns={columns} data={billboards} searchKey='label' />
+      <DataTable columns={columns} data={billboards} filterKey='label' />
     </>
   );
 };
