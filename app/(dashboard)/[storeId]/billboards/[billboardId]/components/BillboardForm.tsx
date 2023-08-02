@@ -40,6 +40,7 @@ const formSchema = z.object({
 type BillboardFormValues = z.infer<typeof formSchema>;
 
 const BillboardForm = ({ initialData }: BillboardFormProps) => {
+  console.log(initialData)
   const params = useParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -101,26 +102,26 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
     }
   };
 
-  const onDelete = async () => {
-    try {
-      setIsLoading(true);
+  // const onDelete = async () => {
+  //   try {
+  //     setIsLoading(true);
 
-      const response = await axios.delete(
-        `/api/${params.storeId}/billboards/${params.billboardId}`,
-      );
+  //     const response = await axios.delete(
+  //       `/api/${params.storeId}/billboards/${params.billboardId}`,
+  //     );
 
-      router.refresh();
-      toast.success('Billboard Deleted');
-    } catch (err: any) {
-      if (err.response.data) {
-        toast.error(err.response.data);
-      } else {
-        toast.error('Please delete all categories using this billboard');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     router.refresh();
+  //     toast.success('Billboard Deleted');
+  //   } catch (err: any) {
+  //     if (err.response.data) {
+  //       toast.error(err.response.data);
+  //     } else {
+  //       toast.error('Please delete all categories using this billboard');
+  //     }
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   return (
     <>

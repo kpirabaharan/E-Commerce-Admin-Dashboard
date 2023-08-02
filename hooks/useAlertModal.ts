@@ -1,15 +1,15 @@
 import { create } from 'zustand';
 
 interface AlertModalStore {
-  storeId: string | undefined;
+  id: string | undefined;
   isOpen: boolean;
   onOpen: (id: string) => void;
   onClose: () => void;
 }
 
 export const useAlertModal = create<AlertModalStore>((set) => ({
-  storeId: undefined,
+  id: undefined,
   isOpen: false,
-  onOpen: (id: string) => set({ isOpen: true, storeId: id }),
-  onClose: () => set({ isOpen: false, storeId: undefined }),
+  onOpen: (id: string) => set({ isOpen: true, id }),
+  onClose: () => set({ isOpen: false, id: undefined }),
 }));

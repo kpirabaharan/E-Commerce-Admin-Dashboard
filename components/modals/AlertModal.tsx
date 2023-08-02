@@ -13,15 +13,18 @@ import { Button } from '@/components/ui/button';
 
 const AlertModal = () => {
   const router = useRouter();
-  const { isOpen, onClose, storeId } = useAlertModal();
+  const { isOpen, onClose, id } = useAlertModal();
 
   const [isLoading, setIsLoading] = useState(false);
+
+  // TODO: Dynamically create URL to delete both stores and billboards
+  // TODO: Loading state managed by zuustand so other buttons can spin?
 
   const onDelete = async () => {
     try {
       setIsLoading(true);
 
-      const response = await axios.delete(`/api/stores/${storeId}`);
+      const response = await axios.delete(`/api/stores/${id}`);
 
       if (response.status === 200) {
         setIsLoading(false);
