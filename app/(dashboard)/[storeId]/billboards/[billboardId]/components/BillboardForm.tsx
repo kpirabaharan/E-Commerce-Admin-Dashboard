@@ -60,7 +60,6 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
   const description = initialData
     ? 'Modify existing billboard'
     : 'Create a new billboard';
-  const toastMessage = initialData ? 'Billboard Updated' : 'Billboard Created';
   const action = initialData ? 'Save Changes' : 'Create Billboard';
 
   const form = useForm<BillboardFormValues>({
@@ -85,7 +84,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
       if (initialData) {
         /* Create Database Entry of Billboard */
         const {
-          data: { uploadUrl },
+          data: { uploadUrl, message },
           status: patchStatus,
         } = await axios.patch(
           `/api/${params.storeId}/billboards/${params.billboardId}`,
@@ -97,12 +96,12 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
           const { status: putStatus } = await axios.put(uploadUrl, file);
 
           if (putStatus === 200) {
-            toast.success(toastMessage);
+            toast.success(message);
             router.refresh();
             router.push(`/${params.storeId}/billboards`);
           }
         } else if (patchStatus === 200) {
-          toast.success(toastMessage);
+          toast.success(message);
           router.refresh();
           router.push(`/${params.storeId}/billboards`);
         } else {
@@ -111,7 +110,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
       } else {
         /* Create Database Entry of Billboard */
         const {
-          data: { uploadUrl },
+          data: { uploadUrl, message },
           status: postStatus,
         } = await axios.post(`/api/${params.storeId}/billboards`, values);
 
@@ -120,7 +119,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
           const { status: putStatus } = await axios.put(uploadUrl, file);
 
           if (putStatus === 200) {
-            toast.success(toastMessage);
+            toast.success(message);
             router.refresh();
             router.push(`/${params.storeId}/billboards`);
           } else {

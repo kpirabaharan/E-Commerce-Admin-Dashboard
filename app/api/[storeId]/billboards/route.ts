@@ -83,7 +83,6 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     });
 
     const s3Params = {
-      ACL: 'public-read',
       Bucket: process.env.S3_BUCKET ?? '',
       Key: imageUrl,
       Expires: 60,
@@ -92,7 +91,12 @@ export const POST = async (req: Request, { params }: RequestProps) => {
 
     const uploadUrl = s3.getSignedUrl('putObject', s3Params);
 
-    return NextResponse.json({ billboard, uploadUrl }, { status: 201 });
+    console.log(uploadUrl);
+
+    return NextResponse.json(
+      { billboard, uploadUrl, message: 'Billboard Created' },
+      { status: 201 },
+    );
   } catch (err) {
     console.log('[BILLBOARDS_POST]:', err);
     return new NextResponse('Internal Error', { status: 500 });

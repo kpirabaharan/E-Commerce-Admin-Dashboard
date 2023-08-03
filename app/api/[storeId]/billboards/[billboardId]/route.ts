@@ -21,10 +21,7 @@ export const GET = async (req: Request, { params }: RequestProps) => {
       },
     });
 
-    return NextResponse.json(
-      { billboard, message: 'Fetched Billboard' },
-      { status: 200 },
-    );
+    return NextResponse.json({ billboard }, { status: 200 });
   } catch (err) {
     console.log('[STORE_GET]:', err);
     return new NextResponse('Internal Error', { status: 500 });
@@ -83,7 +80,6 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       await s3.deleteObject(s3DeleteParams).promise();
 
       const s3PutParams = {
-        ACL: 'public-read',
         Bucket: process.env.S3_BUCKET ?? '',
         Key: updatedImageUrl,
         Expires: 60,
@@ -93,14 +89,14 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       const uploadUrl = s3.getSignedUrl('putObject', s3PutParams);
 
       return NextResponse.json(
-        { billboard, uploadUrl },
+        { billboard, uploadUrl, message: 'Billboard Updated' },
         {
           status: 201,
         },
       );
     } else {
       return NextResponse.json(
-        { billboard },
+        { billboard, message: 'Billboard Updated' },
         {
           status: 200,
         },
@@ -132,13 +128,23 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
       return NextResponse.json('Unauthorized', { status: 403 });
     }
 
-    await prismadb.billboard.delete({
+    const billboard = await prismadb.billboard.delete({
       where: {
         id: params.billboardId,
       },
     });
 
-    return NextResponse.json({ message: 'Deleted Billboard' }, { status: 200 });
+    const s3DeleteParams = {
+      Bucket: process.env.S3_BUCKET ?? '',
+      Key: billboard.imageUrl,
+    };
+
+    await s3.deleteObject(s3DeleteParams).promise();
+
+    return NextResponse.json(
+      { billboard, message: 'Billboard Deleted' },
+      { status: 200 },
+    );
   } catch (err) {
     console.log('[STORE_DELETE]:', err);
     return new NextResponse('Internal Error', { status: 500 });
