@@ -83,6 +83,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     });
 
     const s3Params = {
+      ACL: 'public-read',
       Bucket: process.env.S3_BUCKET ?? '',
       Key: imageUrl,
       Expires: 60,

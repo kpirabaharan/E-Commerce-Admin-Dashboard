@@ -1,15 +1,24 @@
 import { create } from 'zustand';
 
+interface AlertModalStoreProps {
+  deleteUrl: string;
+  deleteType: 'store' | 'billboard';
+}
+
 interface AlertModalStore {
-  id: string | undefined;
+  deleteUrl: string | undefined;
+  deleteType: 'store' | 'billboard' | undefined;
   isOpen: boolean;
-  onOpen: (id: string) => void;
+  onOpen: ({ deleteUrl, deleteType }: AlertModalStoreProps) => void;
   onClose: () => void;
 }
 
 export const useAlertModal = create<AlertModalStore>((set) => ({
-  id: undefined,
+  deleteUrl: undefined,
+  deleteType: undefined,
   isOpen: false,
-  onOpen: (id: string) => set({ isOpen: true, id }),
-  onClose: () => set({ isOpen: false, id: undefined }),
+  onOpen: ({ deleteUrl, deleteType }: AlertModalStoreProps) =>
+    set({ isOpen: true, deleteUrl, deleteType }),
+  onClose: () =>
+    set({ isOpen: false, deleteUrl: undefined, deleteType: undefined }),
 }));

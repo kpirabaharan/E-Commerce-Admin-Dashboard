@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import { ScaleLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
@@ -13,25 +13,32 @@ import { Button } from '@/components/ui/button';
 
 const AlertModal = () => {
   const router = useRouter();
-  const { isOpen, onClose, id } = useAlertModal();
+  const params = useParams();
+  const { isOpen, onClose, deleteType, deleteUrl } = useAlertModal();
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // TODO: Dynamically create URL to delete both stores and billboards
   // TODO: Loading state managed by zuustand so other buttons can spin?
 
   const onDelete = async () => {
     try {
       setIsLoading(true);
 
-      const response = await axios.delete(`/api/stores/${id}`);
+      const {
+        status,
+        data: { message },
+      } = await axios.delete(deleteUrl!);
 
-      if (response.status === 200) {
+      if (status === 200) {
         setIsLoading(false);
-        toast.success(response.data.message);
+        toast.success(message);
         onClose();
         router.refresh();
-        router.push('/');
+        if (deleteType === 'store') {
+          router.push('/');
+        } else if (deleteType === 'billboard') {
+          router.push(`/${params.storeId}/billboards`);
+        }
       }
     } catch (err: any) {
       if (err.response.data) {

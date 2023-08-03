@@ -87,7 +87,12 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
           disabled={isLoading}
           variant={'destructive'}
           size={'icon'}
-          onClick={() => onOpen(params.storeId)}
+          onClick={() =>
+            onOpen({
+              deleteType: 'store',
+              deleteUrl: `/api/stores/${params.storeId}`,
+            })
+          }
         >
           <Trash className='h-4 w-4' />
         </Button>

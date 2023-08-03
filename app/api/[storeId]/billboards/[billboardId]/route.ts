@@ -83,6 +83,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       await s3.deleteObject(s3DeleteParams).promise();
 
       const s3PutParams = {
+        ACL: 'public-read',
         Bucket: process.env.S3_BUCKET ?? '',
         Key: updatedImageUrl,
         Expires: 60,
@@ -90,6 +91,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       };
 
       const uploadUrl = s3.getSignedUrl('putObject', s3PutParams);
+
       return NextResponse.json(
         { billboard, uploadUrl },
         {

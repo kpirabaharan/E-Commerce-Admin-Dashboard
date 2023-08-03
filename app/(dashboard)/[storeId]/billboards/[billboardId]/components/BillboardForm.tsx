@@ -81,7 +81,9 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
         return;
       }
 
+      /* Patch or Post Billboard */
       if (initialData) {
+        /* Create Database Entry of Billboard */
         const {
           data: { uploadUrl },
           status: patchStatus,
@@ -90,6 +92,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
           { ...values, initialImageUrl: initialData.imageUrl },
         );
 
+        /* Upload Image to S3 with URL Created by AWS-SDK */
         if (patchStatus === 201) {
           const { status: putStatus } = await axios.put(uploadUrl, file);
 
@@ -136,27 +139,6 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
     }
   };
 
-  // const onDelete = async () => {
-  //   try {
-  //     setIsLoading(true);
-
-  //     const response = await axios.delete(
-  //       `/api/${params.storeId}/billboards/${params.billboardId}`,
-  //     );
-
-  //     router.refresh();
-  //     toast.success('Billboard Deleted');
-  //   } catch (err: any) {
-  //     if (err.response.data) {
-  //       toast.error(err.response.data);
-  //     } else {
-  //       toast.error('Please delete all categories using this billboard');
-  //     }
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
   return (
     <>
       <div className='flex flex-row items-center justify-between'>
@@ -166,7 +148,12 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
             disabled={isLoading}
             variant={'destructive'}
             size={'icon'}
-            onClick={() => onOpen(params.storeId)}
+            onClick={() =>
+              onOpen({
+                deleteType: 'billboard',
+                deleteUrl: `/api/${params.storeId}/billboards/${params.billboardId}`,
+              })
+            }
           >
             <Trash className='h-4 w-4' />
           </Button>
