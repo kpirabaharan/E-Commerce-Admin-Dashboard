@@ -4,6 +4,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { Copy, Edit, MoreHorizontal, Trash } from 'lucide-react';
 
+import { useAlertModal } from '@/hooks/useAlertModal';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,10 +24,18 @@ interface CellActionProps {
 const CellAction = ({ data }: CellActionProps) => {
   const router = useRouter();
   const params = useParams();
+  const { onOpen } = useAlertModal();
 
   const onCopy = () => {
     navigator.clipboard.writeText(data.id);
     toast.success('Billboard Id copied to clipboard');
+  };
+
+  const onDelete = () => {
+    onOpen({
+      deleteType: 'billboard',
+      deleteUrl: `/api/${params.storeId}/billboards/${data.id}`,
+    });
   };
 
   return (
@@ -50,7 +60,7 @@ const CellAction = ({ data }: CellActionProps) => {
           <Edit className='mr-2' size={16} />
           <p>Update</p>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={onDelete}>
           <Trash className='mr-2 text-destructive' size={16} />
           <p className='text-destructive'>Delete</p>
         </DropdownMenuItem>
