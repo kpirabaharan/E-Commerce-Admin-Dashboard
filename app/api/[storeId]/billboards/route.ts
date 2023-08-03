@@ -74,7 +74,8 @@ export const POST = async (req: Request, { params }: RequestProps) => {
 
     /* Create Random UUID for ImageURL (ensures storage on AWS) */
     const key = randomUUID();
-    const ext = imageName.split('.')[1];
+    var ext = imageName.split('.')[1];
+    ext === 'jpg' ? (ext = 'jpeg') : (ext = ext);
     const imageUrl = `${key}.${ext}`;
 
     const billboard = await prismadb.billboard.create({

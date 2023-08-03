@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import * as z from 'zod';
@@ -40,13 +40,21 @@ const formSchema = z.object({
 type BillboardFormValues = z.infer<typeof formSchema>;
 
 const BillboardForm = ({ initialData }: BillboardFormProps) => {
-  console.log(initialData)
   const params = useParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState(null);
+  const [image, setImage] = useState('');
 
   const { onOpen } = useAlertModal();
+
+  useEffect(() => {
+    if (initialData) {
+      setImage(
+        `https://ecommerce-admin-kpirabaharan-billboards.s3.amazonaws.com/${initialData.imageUrl}`,
+      );
+    }
+  }, [initialData]);
 
   const title = initialData ? 'Edit Billboard' : 'Create Billboard';
   const description = initialData
@@ -87,7 +95,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
           if (putStatus === 200) {
             toast.success(toastMessage);
             router.refresh();
-            router.push(`/${params.storeId}/billboards`)
+            router.push(`/${params.storeId}/billboards`);
           }
         }
       }
@@ -173,8 +181,9 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
                   <FormLabel>Background Image</FormLabel>
                   <FormControl>
                     <ImageUpload
-                      file={file}
                       setFile={setFile}
+                      image={image}
+                      setImage={setImage}
                       onChange={(url) => field.onChange(url)}
                       onRemove={() => field.onChange('')}
                     />

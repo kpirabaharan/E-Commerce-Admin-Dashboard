@@ -1,28 +1,39 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Dropzone from 'react-dropzone';
 
 import { Button } from '@/components/ui/button';
 import { Trash } from 'lucide-react';
 import Image from 'next/image';
+import { Skeleton } from './ui/skeleton';
 
 interface ImageUploadProps {
-  file: any;
   setFile: (value: any) => void;
+  image: string;
+  setImage: (image: string) => void;
   onChange: (url: string) => void;
   onRemove: () => void;
 }
 
 const ImageUpload = ({
-  file,
   setFile,
+  image,
+  setImage,
   onChange,
   onRemove,
 }: ImageUploadProps) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <Dropzone
       onDrop={(acceptedFiles) => {
         setFile(acceptedFiles[0]);
+        setImage(URL.createObjectURL(acceptedFiles[0]));
         onChange(acceptedFiles[0].name);
       }}
     >
@@ -33,16 +44,17 @@ const ImageUpload = ({
           border-dashed rounded-md h-[197px] w-[350px] relative cursor-pointer'
         >
           <input {...getInputProps()} />
-          {!file && <p>Add Image Here</p>}
-          {file && (
+          {!isMounted && <Skeleton className='bg-gray-300 w-full h-full' />}
+          {isMounted && !image && <p>Add Image Here</p>}
+          {image && (
             <Image
-              src={URL.createObjectURL(file)}
+              src={image}
               alt='Image'
               fill
               className='object-cover rounded-md'
             />
           )}
-          {file && (
+          {image && (
             <Button
               className='absolute top-2 right-2'
               variant={'destructive'}
@@ -51,6 +63,7 @@ const ImageUpload = ({
               onClick={(e) => {
                 e.stopPropagation();
                 setFile(null);
+                setImage('');
                 onRemove();
               }}
             >
