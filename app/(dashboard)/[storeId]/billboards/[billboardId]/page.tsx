@@ -6,6 +6,8 @@ interface BillboardPageProps {
   params: { billboardId: string };
 }
 
+export const revalidate = 0;
+
 const BillboardPage = async ({ params }: BillboardPageProps) => {
   const billboard = await prismadb.billboard.findUnique({
     where: { id: params.billboardId },

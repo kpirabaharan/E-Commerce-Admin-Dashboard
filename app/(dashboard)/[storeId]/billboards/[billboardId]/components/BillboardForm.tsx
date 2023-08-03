@@ -65,22 +65,46 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
 
   const form = useForm<BillboardFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || { label: '', imageName: '' },
+    defaultValues: initialData
+      ? { label: initialData?.label, imageName: initialData.imageUrl }
+      : {
+          label: '',
+          imageName: '',
+        },
   });
 
   const onSubmit = async (values: BillboardFormValues) => {
     try {
       setIsLoading(true);
 
-      if (!file) {
+      if (!image) {
         return;
       }
 
       if (initialData) {
-        const response = await axios.patch(
+        const {
+          data: { uploadUrl },
+          status: patchStatus,
+        } = await axios.patch(
           `/api/${params.storeId}/billboards/${params.billboardId}`,
           { ...values, initialImageUrl: initialData.imageUrl },
         );
+
+        if (patchStatus === 201) {
+          const { status: putStatus } = await axios.put(uploadUrl, file);
+
+          if (putStatus === 200) {
+            toast.success(toastMessage);
+            router.refresh();
+            router.push(`/${params.storeId}/billboards`);
+          }
+        } else if (patchStatus === 200) {
+          toast.success(toastMessage);
+          router.refresh();
+          router.push(`/${params.storeId}/billboards`);
+        } else {
+          toast.error('Something Went Wrong');
+        }
       } else {
         /* Create Database Entry of Billboard */
         const {
@@ -96,6 +120,8 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
             toast.success(toastMessage);
             router.refresh();
             router.push(`/${params.storeId}/billboards`);
+          } else {
+            toast.error('Something Went Wrong');
           }
         }
       }

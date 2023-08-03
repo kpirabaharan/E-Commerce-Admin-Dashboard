@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs';
+import { randomUUID } from 'crypto';
 
 import prismadb from '@/lib/prismadb';
 import s3 from '@/lib/aws-client';
@@ -40,6 +41,8 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
 
     const { label, imageName, initialImageUrl } = await req.json();
 
+    console.log(imageName, initialImageUrl);
+
     if (!label) {
       return NextResponse.json('Label is Required', { status: 400 });
     }
@@ -60,31 +63,47 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       return NextResponse.json('Unauthorized', { status: 403 });
     }
 
-    const ext = imageName.split('.')[1];
-    const updatedImageUrl = `${initialImageUrl.split('.')[0]}.${ext}`;
-
-    console.log(updatedImageUrl);
+    const key = randomUUID();
+    var ext = imageName.split('.')[1];
+    ext === 'jpg' ? (ext = 'jpeg') : (ext = ext);
+    const updatedImageUrl =
+      imageName === initialImageUrl ? imageName : `${key}.${ext}`;
 
     const billboard = await prismadb.billboard.update({
       where: { id: params.billboardId },
       data: { label, imageUrl: updatedImageUrl },
     });
 
-    // const s3Params = {
-    //   Bucket: process.env.S3_BUCKET ?? '',
-    //   Key: `${key}.${ext}`,
-    //   Expires: 60,
-    //   ContentType: `image/${ext}`,
-    // };
+    if (imageName !== initialImageUrl) {
+      const s3DeleteParams = {
+        Bucket: process.env.S3_BUCKET ?? '',
+        Key: initialImageUrl,
+      };
 
-    // const uploadUrl = s3.getSignedUrl('putObject', s3Params);
+      await s3.deleteObject(s3DeleteParams).promise();
 
-    return NextResponse.json(
-      { billboard, message: 'Updated Billboard' },
-      {
-        status: 200,
-      },
-    );
+      const s3PutParams = {
+        Bucket: process.env.S3_BUCKET ?? '',
+        Key: updatedImageUrl,
+        Expires: 60,
+        ContentType: `image/${ext}`,
+      };
+
+      const uploadUrl = s3.getSignedUrl('putObject', s3PutParams);
+      return NextResponse.json(
+        { billboard, uploadUrl },
+        {
+          status: 201,
+        },
+      );
+    } else {
+      return NextResponse.json(
+        { billboard },
+        {
+          status: 200,
+        },
+      );
+    }
   } catch (err) {
     console.log('[STORE_PATCH]:', err);
     return new NextResponse('Internal Error', { status: 500 });

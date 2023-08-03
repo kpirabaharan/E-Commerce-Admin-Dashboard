@@ -9,6 +9,8 @@ interface BillboardsPageProps {
   params: { storeId: string };
 }
 
+export const revalidate = 0;
+
 const BillboardsPage = async ({ params }: BillboardsPageProps) => {
   const billboards = await prismadb.billboard.findMany({
     where: { storeId: params.storeId },
