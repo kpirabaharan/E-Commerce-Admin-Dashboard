@@ -22,6 +22,10 @@ export const columns: ColumnDef<BillboardColumn>[] = [
   },
   {
     id: 'actions',
-    cell: ({ row }) => <CellAction data={row.original} />,
+    cell: ({ row }) => (
+      <div className='absolute top-[50%] -translate-y-[50%] left-[50%] -translate-x-[50%]'>
+        <CellAction data={row.original} />
+      </div>
+    ),
   },
 ];

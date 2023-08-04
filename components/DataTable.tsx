@@ -66,10 +66,8 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  console.log(header);
                   return (
-                    <TableHead key={header.id} className={``}>
-                      {/* ${header.id === 'createdAt' && 'w-[200px]'} */}
+                    <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -90,9 +88,14 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map((cell) => {
-                    // console.log(cell);
+                    console.log(cell.column.id);
                     return (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        key={cell.id}
+                        className={`relative 
+                        ${cell.column.id === 'createdAt' && 'w-[200px]' || cell.column.id === 'actions' && 'w-[75px]'}
+                        }`}
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),
