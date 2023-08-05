@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ScaleLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
 import { Trash } from 'lucide-react';
-import { Category } from '@prisma/client';
+import { Billboard, Category } from '@prisma/client';
 
 import { useAlertModal } from '@/hooks/useAlertModal';
 
@@ -24,11 +24,19 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 import { Heading } from '@/components/Heading';
 
 interface CategoryFormProps {
   initialData: Category | null;
+  billboards: Billboard[];
 }
 
 const formSchema = z.object({
@@ -38,7 +46,7 @@ const formSchema = z.object({
 
 type CategoryFormValues = z.infer<typeof formSchema>;
 
-const CategoryForm = ({ initialData }: CategoryFormProps) => {
+const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
   const params = useParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -170,6 +178,41 @@ const CategoryForm = ({ initialData }: CategoryFormProps) => {
                 </FormItem>
               )}
             />
+            {/* Billboard Select */}
+            <div className='w-[300px]'>
+              <FormField
+                control={form.control}
+                name='billboardId'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Billboard</FormLabel>
+                    <Select
+                      disabled={isLoading}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            defaultValue={field.value}
+                            placeholder='Select a billboard'
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {billboards.map((billboard) => (
+                          <SelectItem key={billboard.id} value={billboard.id}>
+                            {billboard.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
           <div className='flex flex-row gap-x-2'>
             {initialData && (
