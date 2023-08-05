@@ -205,13 +205,29 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
               )}
             />
           </div>
-          <Button disabled={isLoading} type='submit'>
-            {isLoading ? (
-              <ScaleLoader color='white' height={15} />
-            ) : (
-              <p>{action}</p>
+          <div className='flex flex-row gap-x-2'>
+            {initialData && (
+              <Button
+                disabled={isLoading}
+                variant={'outline'}
+                type='button'
+                onClick={() => router.push(`/${params.storeId}/billboards`)}
+              >
+                {isLoading ? (
+                  <ScaleLoader color='black' height={15} />
+                ) : (
+                  <p>Cancel</p>
+                )}
+              </Button>
             )}
-          </Button>
+            <Button disabled={isLoading} type='submit'>
+              {isLoading ? (
+                <ScaleLoader color='white' height={15} />
+              ) : (
+                <p>{action}</p>
+              )}
+            </Button>
+          </div>
         </form>
       </Form>
       <Separator />
