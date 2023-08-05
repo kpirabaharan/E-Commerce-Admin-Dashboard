@@ -6,15 +6,16 @@ import { useParams, useRouter } from 'next/navigation';
 import { Heading } from '@/components/Heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { BillboardColumn, columns } from './Columns';
+
 import { DataTable } from '@/components/DataTable';
 import { ApiList } from '@/components/ApiList';
+import { CategoryColumn, columns } from './Columns';
 
-interface BillboardClientProps {
-  billboards: BillboardColumn[];
+interface CategoryClientProps {
+  categories: CategoryColumn[];
 }
 
-export const BillboardClient = ({ billboards }: BillboardClientProps) => {
+export const CategoryClient = ({ categories }: CategoryClientProps) => {
   const router = useRouter();
   const params = useParams();
 
@@ -22,21 +23,21 @@ export const BillboardClient = ({ billboards }: BillboardClientProps) => {
     <>
       <div className='flex flex-row items-center justify-between'>
         <Heading
-          title={`Billboards (${billboards.length})`}
-          description={'Manage billboards for your store'}
+          title={`Categories (${categories.length})`}
+          description={'Manage categories for your store'}
         />
         <Button
-          onClick={() => router.push(`/${params.storeId}/billboards/new`)}
+          onClick={() => router.push(`/${params.storeId}/categories/new`)}
         >
           <Plus className='mr-2' size={16} />
-          <p>Create Billboard</p>
+          <p>Create Category</p>
         </Button>
       </div>
       <Separator />
-      <DataTable filterKey='label' columns={columns} data={billboards} />
-      <Heading title='APIs' description='API calls for Billboards' />
+      <DataTable filterKey='name' columns={columns} data={categories}  />
+      <Heading title='APIs' description='API calls for Categories' />
       <Separator />
-      <ApiList entityName='billboards' enttityIdName='billboardId'/>
+      <ApiList entityName='categories' enttityIdName='categoryId' />
     </>
   );
 };

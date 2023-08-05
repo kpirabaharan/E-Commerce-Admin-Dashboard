@@ -1,13 +1,15 @@
 import { create } from 'zustand';
 
+type DeleteType = 'store' | 'billboard' | 'category' | undefined;
+
 interface AlertModalStoreProps {
   deleteUrl: string;
-  deleteType: 'store' | 'billboard';
+  deleteType: DeleteType;
 }
 
 interface AlertModalStore {
   deleteUrl: string | undefined;
-  deleteType: 'store' | 'billboard' | undefined;
+  deleteType: DeleteType;
   isOpen: boolean;
   onOpen: ({ deleteUrl, deleteType }: AlertModalStoreProps) => void;
   onClose: () => void;

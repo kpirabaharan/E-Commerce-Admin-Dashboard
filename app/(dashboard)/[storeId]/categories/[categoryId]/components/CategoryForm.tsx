@@ -1,0 +1,204 @@
+'use client';
+
+import { useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import axios from 'axios';
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ScaleLoader } from 'react-spinners';
+import { toast } from 'react-hot-toast';
+import { Trash } from 'lucide-react';
+import { Category } from '@prisma/client';
+
+import { useAlertModal } from '@/hooks/useAlertModal';
+
+import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+
+import { Heading } from '@/components/Heading';
+
+interface CategoryFormProps {
+  initialData: Category | null;
+}
+
+const formSchema = z.object({
+  name: z.string().min(1),
+  billboardId: z.string().min(1),
+});
+
+type CategoryFormValues = z.infer<typeof formSchema>;
+
+const CategoryForm = ({ initialData }: CategoryFormProps) => {
+  const params = useParams();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [file, setFile] = useState(null);
+
+  const { onOpen } = useAlertModal();
+
+  const title = initialData ? 'Edit Category' : 'Create Category';
+  const description = initialData
+    ? 'Modify existing category'
+    : 'Create a new category';
+  const action = initialData ? 'Save Changes' : 'Create Category';
+
+  const form = useForm<CategoryFormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: initialData
+      ? { name: initialData?.name, billboardId: initialData?.billboardId }
+      : {
+          name: '',
+          billboardId: '',
+        },
+  });
+
+  const onSubmit = async (values: CategoryFormValues) => {
+    try {
+      setIsLoading(true);
+
+      /* Patch or Post Category */
+      if (initialData) {
+        /* Create Database Entry of Category */
+        const {
+          data: { uploadUrl, message },
+          status: patchStatus,
+        } = await axios.patch(
+          `/api/${params.storeId}/categories/${params.categoryId}`,
+          values,
+        );
+
+        /* Upload Image to S3 with URL Created by AWS-SDK */
+        if (patchStatus === 201) {
+          const { status: putStatus } = await axios.put(uploadUrl, file);
+
+          if (putStatus === 200) {
+            toast.success(message);
+            router.refresh();
+            router.push(`/${params.storeId}/categories`);
+          }
+        } else if (patchStatus === 200) {
+          toast.success(message);
+          router.refresh();
+          router.push(`/${params.storeId}/categories`);
+        } else {
+          toast.error('Something Went Wrong');
+        }
+      } else {
+        /* Create Database Entry of Category */
+        const {
+          data: { uploadUrl, message },
+          status: postStatus,
+        } = await axios.post(`/api/${params.storeId}/category`, values);
+
+        /* Upload Image to S3 with URL Created by AWS-SDK */
+        if (postStatus === 201) {
+          const { status: putStatus } = await axios.put(uploadUrl, file);
+
+          if (putStatus === 200) {
+            toast.success(message);
+            router.refresh();
+            router.push(`/${params.storeId}/categories`);
+          } else {
+            toast.error('Something Went Wrong');
+          }
+        }
+      }
+    } catch (err: any) {
+      if (err.response.data) {
+        toast.error(err.response.data);
+      } else {
+        toast.error('Something Went Wrong');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <div className='flex flex-row items-center justify-between'>
+        <Heading title={title} description={description} />
+        {initialData && (
+          <Button
+            disabled={isLoading}
+            variant={'destructive'}
+            size={'icon'}
+            onClick={() =>
+              onOpen({
+                deleteType: 'category',
+                deleteUrl: `/api/${params.storeId}/categories/${params.billboardId}`,
+              })
+            }
+          >
+            <Trash className='h-4 w-4' />
+          </Button>
+        )}
+      </div>
+      <Separator />
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className='space-y-6 w-full'
+        >
+          <div className='flex flex-col md:flex-row gap-x-4 gap-y-4'>
+            {/* Name */}
+            <FormField
+              control={form.control}
+              name='name'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      className='w-[300px]'
+                      placeholder='Category name'
+                      disabled={isLoading}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className='flex flex-row gap-x-2'>
+            {initialData && (
+              <Button
+                disabled={isLoading}
+                variant={'outline'}
+                type='button'
+                onClick={() => router.push(`/${params.storeId}/billboards`)}
+              >
+                {isLoading ? (
+                  <ScaleLoader color='black' height={15} />
+                ) : (
+                  <p>Cancel</p>
+                )}
+              </Button>
+            )}
+            <Button disabled={isLoading} type='submit'>
+              {isLoading ? (
+                <ScaleLoader color='white' height={15} />
+              ) : (
+                <p>{action}</p>
+              )}
+            </Button>
+          </div>
+        </form>
+      </Form>
+      <Separator />
+    </>
+  );
+};
+
+export default CategoryForm;
