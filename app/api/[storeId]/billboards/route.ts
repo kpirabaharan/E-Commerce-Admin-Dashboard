@@ -11,12 +11,6 @@ interface RequestProps {
 
 export const GET = async (req: Request, { params }: RequestProps) => {
   try {
-    const { userId } = auth();
-
-    if (!userId) {
-      return new NextResponse('Unauthenticated', { status: 401 });
-    }
-
     if (!params.storeId) {
       return NextResponse.json('Store Id is Required', { status: 400 });
     }
@@ -90,8 +84,6 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     };
 
     const uploadUrl = s3.getSignedUrl('putObject', s3Params);
-
-    console.log(uploadUrl);
 
     return NextResponse.json(
       { billboard, uploadUrl, message: 'Billboard Created' },

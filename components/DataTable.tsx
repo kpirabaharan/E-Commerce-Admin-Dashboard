@@ -88,12 +88,14 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map((cell) => {
-                    console.log(cell.column.id);
                     return (
                       <TableCell
                         key={cell.id}
                         className={`relative 
-                        ${cell.column.id === 'createdAt' && 'w-[200px]' || cell.column.id === 'actions' && 'w-[75px]'}
+                        ${
+                          (cell.column.id === 'createdAt' && 'w-[200px]') ||
+                          (cell.column.id === 'actions' && 'w-[75px]')
+                        }
                         }`}
                       >
                         {flexRender(

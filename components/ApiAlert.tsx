@@ -30,7 +30,7 @@ export const ApiAlert = ({
 }: ApiAlertProps) => {
   const onCopy = () => {
     navigator.clipboard.writeText(description);
-    toast.success('API route copied to clipboard');
+    toast.success('API route copied to clipboard', { id: 'Api Copy' });
   };
 
   return (

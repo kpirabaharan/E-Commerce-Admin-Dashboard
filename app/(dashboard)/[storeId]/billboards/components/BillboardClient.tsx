@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { BillboardColumn, columns } from './Columns';
 import { DataTable } from '@/components/DataTable';
+import { ApiList } from '@/components/ApiList';
 
 interface BillboardClientProps {
   billboards: BillboardColumn[];
@@ -33,6 +34,9 @@ export const BillboardClient = ({ billboards }: BillboardClientProps) => {
       </div>
       <Separator />
       <DataTable columns={columns} data={billboards} filterKey='label' />
+      <Heading title='APIs' description='API calls for Billboards' />
+      <Separator />
+      <ApiList entityName='billboards' enttityIdName='billboardId'/>
     </>
   );
 };

@@ -18,8 +18,6 @@ const AlertModal = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // TODO: Loading state managed by zuustand so other buttons can spin?
-
   const onDelete = async () => {
     try {
       setIsLoading(true);

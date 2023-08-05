@@ -21,7 +21,7 @@ export const GET = async (req: Request, { params }: RequestProps) => {
       },
     });
 
-    return NextResponse.json({ billboard }, { status: 200 });
+    return NextResponse.json(billboard, { status: 200 });
   } catch (err) {
     console.log('[STORE_GET]:', err);
     return new NextResponse('Internal Error', { status: 500 });
@@ -37,8 +37,6 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
     }
 
     const { label, imageName, initialImageUrl } = await req.json();
-
-    console.log(imageName, initialImageUrl);
 
     if (!label) {
       return NextResponse.json('Label is Required', { status: 400 });
