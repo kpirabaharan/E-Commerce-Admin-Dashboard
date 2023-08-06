@@ -36,13 +36,23 @@ const AlertModal = () => {
           router.push('/');
         } else if (deleteType === 'billboard') {
           router.push(`/${params.storeId}/billboards`);
+        } else if (deleteType === 'category') {
+          router.push(`/${params.storeId}/categories`);
         }
       }
     } catch (err: any) {
       if (err.response.data) {
         toast.error(err.response.data);
       } else {
-        toast.error('Please delete all products and categories first');
+        if (deleteType === 'store') {
+          toast.error('Please delete all products and categories first');
+        } else if (deleteType === 'billboard') {
+          toast.error(
+            'Please delete all categories using this billboard first',
+          );
+        } else if (deleteType === 'category') {
+          toast.error('Please delete all products using this category first');
+        }
       }
     } finally {
       setIsLoading(false);

@@ -23,7 +23,7 @@ export const GET = async (req: Request, { params }: RequestProps) => {
 
     return NextResponse.json(billboard, { status: 200 });
   } catch (err) {
-    console.log('[STORE_GET]:', err);
+    console.log('[BILLBOARD_GET]:', err);
     return new NextResponse('Internal Error', { status: 500 });
   }
 };
@@ -101,7 +101,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       );
     }
   } catch (err) {
-    console.log('[STORE_PATCH]:', err);
+    console.log('[BILLBOARD_PATCH]:', err);
     return new NextResponse('Internal Error', { status: 500 });
   }
 };
@@ -144,7 +144,7 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
       { status: 200 },
     );
   } catch (err) {
-    console.log('[STORE_DELETE]:', err);
+    console.log('[BILLBOARD_DELETE]:', err);
     return new NextResponse('Internal Error', { status: 500 });
   }
 };

@@ -15,10 +15,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 
-import { BillboardColumn } from './Columns';
+import { CategoryColumn } from './Columns';
 
 interface CellActionProps {
-  data: BillboardColumn;
+  data: CategoryColumn;
 }
 
 const CellAction = ({ data }: CellActionProps) => {
@@ -28,13 +28,13 @@ const CellAction = ({ data }: CellActionProps) => {
 
   const onCopy = () => {
     navigator.clipboard.writeText(data.id);
-    toast.success('Billboard Id copied to clipboard');
+    toast.success('Category Id copied to clipboard');
   };
 
   const onDelete = () => {
     onOpen({
-      deleteType: 'billboard',
-      deleteUrl: `/api/${params.storeId}/billboards/${data.id}`,
+      deleteType: 'category',
+      deleteUrl: `/api/${params.storeId}/categories/${data.id}`,
     });
   };
 
@@ -54,7 +54,7 @@ const CellAction = ({ data }: CellActionProps) => {
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() =>
-            router.push(`/${params.storeId}/billboards/${data.id}`)
+            router.push(`/${params.storeId}/categories/${data.id}`)
           }
         >
           <Edit className='mr-2' size={16} />

@@ -74,52 +74,31 @@ const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
     try {
       setIsLoading(true);
 
+      var message: string;
+      var status: number;
+
       /* Patch or Post Category */
       if (initialData) {
         /* Create Database Entry of Category */
-        const {
-          data: { uploadUrl, message },
-          status: patchStatus,
-        } = await axios.patch(
+        const { data, status: responseStatus } = await axios.patch(
           `/api/${params.storeId}/categories/${params.categoryId}`,
           values,
         );
-
-        /* Upload Image to S3 with URL Created by AWS-SDK */
-        if (patchStatus === 201) {
-          const { status: putStatus } = await axios.put(uploadUrl, file);
-
-          if (putStatus === 200) {
-            toast.success(message);
-            router.refresh();
-            router.push(`/${params.storeId}/categories`);
-          }
-        } else if (patchStatus === 200) {
-          toast.success(message);
-          router.refresh();
-          router.push(`/${params.storeId}/categories`);
-        } else {
-          toast.error('Something Went Wrong');
-        }
+        message = data.message;
+        status = responseStatus;
       } else {
         /* Create Database Entry of Category */
-        const {
-          data: { uploadUrl, message },
-          status: postStatus,
-        } = await axios.post(`/api/${params.storeId}/category`, values);
-
-        /* Upload Image to S3 with URL Created by AWS-SDK */
-        if (postStatus === 201) {
-          const { status: putStatus } = await axios.put(uploadUrl, file);
-
-          if (putStatus === 200) {
-            toast.success(message);
-            router.refresh();
-            router.push(`/${params.storeId}/categories`);
-          } else {
-            toast.error('Something Went Wrong');
-          }
-        }
+        const { data, status: responseStatus } = await axios.post(
+          `/api/${params.storeId}/categories`,
+          values,
+        );
+        message = data.message;
+        status = responseStatus;
+      }
+      if ([200, 201].includes(status)) {
+        toast.success(message);
+        router.refresh();
+        router.push(`/${params.storeId}/categories`);
       }
     } catch (err: any) {
       if (err.response.data) {
@@ -144,7 +123,7 @@ const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
             onClick={() =>
               onOpen({
                 deleteType: 'category',
-                deleteUrl: `/api/${params.storeId}/categories/${params.billboardId}`,
+                deleteUrl: `/api/${params.storeId}/categories/${params.categoryId}`,
               })
             }
           >
@@ -220,7 +199,7 @@ const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
                 disabled={isLoading}
                 variant={'outline'}
                 type='button'
-                onClick={() => router.push(`/${params.storeId}/billboards`)}
+                onClick={() => router.push(`/${params.storeId}/categories`)}
               >
                 {isLoading ? (
                   <ScaleLoader color='black' height={15} />
