@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ScaleLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
 import { Trash } from 'lucide-react';
-import { Billboard, Category } from '@prisma/client';
+import { Size } from '@prisma/client';
 
 import { useAlertModal } from '@/hooks/useAlertModal';
 
@@ -24,71 +24,63 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 import { Heading } from '@/components/Heading';
 
-interface CategoryFormProps {
-  initialData: Category | null;
-  billboards: Billboard[];
+interface SizeFormProps {
+  initialData: Size | null;
 }
 
 const formSchema = z.object({
   name: z.string().min(1),
-  billboardId: z.string().min(1),
+  value: z.string().min(1),
 });
 
-type CategoryFormValues = z.infer<typeof formSchema>;
+type SizeFormValues = z.infer<typeof formSchema>;
 
-const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
+const SizeForm = ({ initialData }: SizeFormProps) => {
   const params = useParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const { onOpen } = useAlertModal();
 
-  const title = initialData ? 'Edit Category' : 'Create Category';
+  const title = initialData ? 'Edit Size' : 'Create Size';
   const description = initialData
-    ? 'Modify existing category'
-    : 'Create a new category';
-  const action = initialData ? 'Save Changes' : 'Create Category';
+    ? 'Modify existing size'
+    : 'Create a new size';
+  const action = initialData ? 'Save Changes' : 'Create Size';
 
-  const form = useForm<CategoryFormValues>({
+  const form = useForm<SizeFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData
-      ? { name: initialData?.name, billboardId: initialData?.billboardId }
+      ? { name: initialData.name, value: initialData.value }
       : {
           name: '',
-          billboardId: '',
+          value: '',
         },
   });
 
-  const onSubmit = async (values: CategoryFormValues) => {
+  const onSubmit = async (values: SizeFormValues) => {
     try {
       setIsLoading(true);
 
       var message: string;
       var status: number;
 
-      /* Patch or Post Category */
+      /* Patch or Post Size */
       if (initialData) {
-        /* Create Database Entry of Category */
+        /* Create Database Entry of Size */
         const { data, status: responseStatus } = await axios.patch(
-          `/api/${params.storeId}/categories/${params.categoryId}`,
+          `/api/${params.storeId}/sizes/${params.sizeId}`,
           values,
         );
         message = data.message;
         status = responseStatus;
       } else {
-        /* Create Database Entry of Category */
+        /* Create Database Entry of Size */
         const { data, status: responseStatus } = await axios.post(
-          `/api/${params.storeId}/categories`,
+          `/api/${params.storeId}/sizes`,
           values,
         );
         message = data.message;
@@ -97,7 +89,7 @@ const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
       if ([200, 201].includes(status)) {
         toast.success(message);
         router.refresh();
-        router.push(`/${params.storeId}/categories`);
+        router.push(`/${params.storeId}/sizes`);
       }
     } catch (err: any) {
       if (err.response.data) {
@@ -121,8 +113,8 @@ const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
             size={'icon'}
             onClick={() =>
               onOpen({
-                deleteType: 'category',
-                deleteUrl: `/api/${params.storeId}/categories/${params.categoryId}`,
+                deleteType: 'size',
+                deleteUrl: `/api/${params.storeId}/sizes/${params.sizeId}`,
               })
             }
           >
@@ -147,7 +139,7 @@ const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
                   <FormControl>
                     <Input
                       className='w-[300px]'
-                      placeholder='Category name'
+                      placeholder='Size name'
                       disabled={isLoading}
                       {...field}
                     />
@@ -156,41 +148,25 @@ const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
                 </FormItem>
               )}
             />
-            {/* Billboard Select */}
-            <div className='w-[300px]'>
-              <FormField
-                control={form.control}
-                name='billboardId'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Billboard</FormLabel>
-                    <Select
+            {/* Value */}
+            <FormField
+              control={form.control}
+              name='value'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Value</FormLabel>
+                  <FormControl>
+                    <Input
+                      className='w-[300px]'
+                      placeholder='Size value'
                       disabled={isLoading}
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue
-                            defaultValue={field.value}
-                            placeholder='Select a billboard'
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {billboards.map((billboard) => (
-                          <SelectItem key={billboard.id} value={billboard.id}>
-                            {billboard.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
           <div className='flex flex-row gap-x-2'>
             {initialData && (
@@ -198,7 +174,7 @@ const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
                 disabled={isLoading}
                 variant={'outline'}
                 type='button'
-                onClick={() => router.push(`/${params.storeId}/categories`)}
+                onClick={() => router.push(`/${params.storeId}/sizes`)}
               >
                 {isLoading ? (
                   <ScaleLoader color='black' height={15} />
@@ -222,4 +198,4 @@ const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
   );
 };
 
-export default CategoryForm;
+export default SizeForm;

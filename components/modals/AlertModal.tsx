@@ -38,6 +38,8 @@ const AlertModal = () => {
           router.push(`/${params.storeId}/billboards`);
         } else if (deleteType === 'category') {
           router.push(`/${params.storeId}/categories`);
+        } else if (deleteType === 'size') {
+          router.push(`/${params.storeId}/sizes`);
         }
       }
     } catch (err: any) {
@@ -52,6 +54,8 @@ const AlertModal = () => {
           );
         } else if (deleteType === 'category') {
           toast.error('Please delete all products using this category first');
+        } else if (deleteType === 'size') {
+          toast.error('Please delete all products using this size first');
         }
       }
     } finally {

@@ -28,7 +28,7 @@ const CellAction = ({ data }: CellActionProps) => {
 
   const onCopy = () => {
     navigator.clipboard.writeText(data.id);
-    toast.success('Category Id copied to clipboard');
+    toast.success('Category Id copied to clipboard', { id: 'Category Id' });
   };
 
   const onDelete = () => {

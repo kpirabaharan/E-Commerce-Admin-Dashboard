@@ -65,7 +65,7 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
 
       if (response.status === 200) {
         setIsLoading(false);
-        toast.success(response.data.message);
+        toast.success(response.data.message, { id: 'Settings Update' });
         router.refresh();
       }
     } catch (err: any) {
