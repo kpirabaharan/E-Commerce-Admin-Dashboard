@@ -39,6 +39,11 @@ const NavRoutes = ({
       href: `/${params.storeId}/colors`,
     },
     {
+      label: 'Products',
+      active: pathname === `/${params.storeId}/products`,
+      href: `/${params.storeId}/products`,
+    },
+    {
       label: 'Settings',
       active: pathname === `/${params.storeId}/settings`,
       href: `/${params.storeId}/settings`,

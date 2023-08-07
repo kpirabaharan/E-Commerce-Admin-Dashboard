@@ -9,9 +9,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ScaleLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
 import { Trash } from 'lucide-react';
-import { Color } from '@prisma/client';
 import { ChromePicker, ColorResult } from 'react-color';
 
+import { Color } from '@prisma/client';
 import { useAlertModal } from '@/hooks/useAlertModal';
 
 import { Separator } from '@/components/ui/separator';

@@ -10,7 +10,7 @@ import { ScaleLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
 import { Trash } from 'lucide-react';
 
-import { Billboard } from '@prisma/client';
+import { Product, Image } from '@prisma/client';
 import { useAlertModal } from '@/hooks/useAlertModal';
 
 import { Separator } from '@/components/ui/separator';
@@ -28,18 +28,24 @@ import { Input } from '@/components/ui/input';
 import { Heading } from '@/components/Heading';
 import ImageUpload from '@/components/ImageUpload';
 
-interface BillboardFormProps {
-  initialData: Billboard | null;
+interface ProductFormProps {
+  initialData: (Product & { images: Image[] }) | null;
 }
 
 const formSchema = z.object({
-  label: z.string().min(1),
-  imageName: z.string().min(1, { message: 'Please attach an image' }),
+  name: z.string().min(1),
+  images: z.object({ url: z.string() }).array(),
+  price: z.coerce.number().min(1),
+  categoryId: z.string().min(1),
+  colorId: z.string().min(1),
+  sizeId: z.string().min(1),
+  isFeatured: z.boolean().default(false).optional(),
+  isArchived: z.boolean().default(false).optional(),
 });
 
-type BillboardFormValues = z.infer<typeof formSchema>;
+type ProductFormValues = z.infer<typeof formSchema>;
 
-const BillboardForm = ({ initialData }: BillboardFormProps) => {
+const ProductForm = ({ initialData }: ProductFormProps) => {
   const params = useParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -48,31 +54,37 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
 
   const { onOpen } = useAlertModal();
 
-  useEffect(() => {
-    if (initialData) {
-      setImage(
-        `https://ecommerce-admin-kpirabaharan-billboards.s3.amazonaws.com/${initialData.imageUrl}`,
-      );
-    }
-  }, [initialData]);
+  // useEffect(() => {
+  //   if (initialData) {
+  //     setImage(
+  //       `https://ecommerce-admin-kpirabaharan-products.s3.amazonaws.com/${initialData.imageUrl}`,
+  //     );
+  //   }
+  // }, [initialData]);
 
-  const title = initialData ? 'Edit Billboard' : 'Create Billboard';
+  const title = initialData ? 'Edit Product' : 'Create Product';
   const description = initialData
-    ? 'Modify existing billboard'
-    : 'Create a new billboard';
-  const action = initialData ? 'Save Changes' : 'Create Billboard';
+    ? 'Modify existing product'
+    : 'Create a new product';
+  const action = initialData ? 'Save Changes' : 'Create Product';
 
-  const form = useForm<BillboardFormValues>({
+  const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData
-      ? { label: initialData?.label, imageName: initialData.imageUrl }
+      ? { ...initialData, price: parseFloat(String(initialData?.price)) }
       : {
-          label: '',
-          imageName: '',
+          name: '',
+          images: [],
+          price: 0,
+          categoryId: '',
+          colorId: '',
+          sizeId: '',
+          isFeatured: false,
+          isArchived: false,
         },
   });
 
-  const onSubmit = async (values: BillboardFormValues) => {
+  const onSubmit = async (values: ProductFormValues) => {
     try {
       setIsLoading(true);
 
@@ -80,15 +92,15 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
         return;
       }
 
-      /* Patch or Post Billboard */
+      /* Patch or Post Product */
       if (initialData) {
-        /* Create Database Entry of Billboard */
+        /* Create Database Entry of Product */
         const {
           data: { uploadUrl, message },
           status: patchStatus,
         } = await axios.patch(
-          `/api/${params.storeId}/billboards/${params.billboardId}`,
-          { ...values, initialImageUrl: initialData.imageUrl },
+          `/api/${params.storeId}/products/${params.productId}`,
+          { ...values },
         );
 
         /* Upload Image to S3 with URL Created by AWS-SDK */
@@ -98,21 +110,21 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
           if (putStatus === 200) {
             toast.success(message);
             router.refresh();
-            router.push(`/${params.storeId}/billboards`);
+            router.push(`/${params.storeId}/products`);
           }
         } else if (patchStatus === 200) {
           toast.success(message);
           router.refresh();
-          router.push(`/${params.storeId}/billboards`);
+          router.push(`/${params.storeId}/products`);
         } else {
           toast.error('Something Went Wrong');
         }
       } else {
-        /* Create Database Entry of Billboard */
+        /* Create Database Entry of Product */
         const {
           data: { uploadUrl, message },
           status: postStatus,
-        } = await axios.post(`/api/${params.storeId}/billboards`, values);
+        } = await axios.post(`/api/${params.storeId}/products`, values);
 
         /* Upload Image to S3 with URL Created by AWS-SDK */
         if (postStatus === 201) {
@@ -121,7 +133,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
           if (putStatus === 200) {
             toast.success(message);
             router.refresh();
-            router.push(`/${params.storeId}/billboards`);
+            router.push(`/${params.storeId}/products`);
           } else {
             toast.error('Something Went Wrong');
           }
@@ -149,8 +161,8 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
             size={'icon'}
             onClick={() =>
               onOpen({
-                deleteType: 'billboard',
-                deleteUrl: `/api/${params.storeId}/billboards/${params.billboardId}`,
+                deleteType: 'product',
+                deleteUrl: `/api/${params.storeId}/products/${params.productId}`,
               })
             }
           >
@@ -168,14 +180,14 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
             {/* Label */}
             <FormField
               control={form.control}
-              name='label'
+              name='name'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Label</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input
                       className='w-[300px]'
-                      placeholder='Billboard label'
+                      placeholder='Product name'
                       disabled={isLoading}
                       {...field}
                     />
@@ -187,10 +199,10 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
             {/* Image */}
             <FormField
               control={form.control}
-              name='imageName'
+              name='images'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Background Image</FormLabel>
+                  <FormLabel>Images</FormLabel>
                   <FormControl>
                     <ImageUpload
                       setFile={setFile}
@@ -211,7 +223,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
                 disabled={isLoading}
                 variant={'outline'}
                 type='button'
-                onClick={() => router.push(`/${params.storeId}/billboards`)}
+                onClick={() => router.push(`/${params.storeId}/products`)}
               >
                 {isLoading ? (
                   <ScaleLoader color='black' height={15} />
@@ -235,4 +247,4 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
   );
 };
 
-export default BillboardForm;
+export default ProductForm;

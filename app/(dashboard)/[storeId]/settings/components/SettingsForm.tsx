@@ -9,8 +9,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ScaleLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
 import { Trash } from 'lucide-react';
-import { Store } from '@prisma/client';
 
+import { Store } from '@prisma/client';
 import { useAlertModal } from '@/hooks/useAlertModal';
 import { useOrigin } from '@/hooks/useOrigin';
 

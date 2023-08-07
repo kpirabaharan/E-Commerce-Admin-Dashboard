@@ -6,6 +6,7 @@ type DeleteType =
   | 'category'
   | 'size'
   | 'color'
+  | 'product'
   | undefined;
 
 interface AlertModalStoreProps {
