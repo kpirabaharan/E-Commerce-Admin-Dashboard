@@ -63,7 +63,7 @@ const ColorForm = ({ initialData }: ColorFormProps) => {
       ? { name: initialData.name, value: initialData.value }
       : {
           name: '',
-          value: '#FFFFFF',
+          value: '#ffffff',
         },
   });
 

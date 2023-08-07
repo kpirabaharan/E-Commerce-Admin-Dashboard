@@ -14,14 +14,14 @@ export const revalidate = 0;
 const SizesPage = async ({ params }: SizesPageProps) => {
   const sizes = await prismadb.size.findMany({
     where: { storeId: params.storeId },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { updatedAt: 'desc' },
   });
 
   const formattedSizes: SizeColumn[] = sizes.map((item) => ({
     id: item.id,
     name: item.name,
     value: item.value,
-    createdAt: format(item.createdAt, 'MMMM do, yyyy'),
+    updatedAt: format(item.updatedAt, 'MMMM do, yyyy'),
   }));
 
   return (

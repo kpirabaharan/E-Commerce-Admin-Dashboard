@@ -1,30 +1,60 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
+import { ArrowUpDown } from 'lucide-react';
+
 import CellAction from './CellAction';
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type CategoryColumn = {
   id: string;
   name: string;
   billboardLabel: string;
-  createdAt: string;
+  updatedAt: string;
 };
 
 export const columns: ColumnDef<CategoryColumn>[] = [
   {
     accessorKey: 'name',
-    header: 'Name',
+    header: ({ column }) => {
+      return (
+        <div
+          className='flex flex-row items-center cursor-pointer hover:text-black w-fit'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Name
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </div>
+      );
+    },
   },
   {
-    accessorKey: 'billboard',
-    header: 'Billboard',
+    accessorKey: 'billboardLabel',
+    header: ({ column }) => {
+      return (
+        <div
+          className='flex flex-row items-center cursor-pointer hover:text-black w-fit'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Billboard
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </div>
+      );
+    },
     cell: ({ row }) => row.original.billboardLabel,
   },
   {
-    accessorKey: 'createdAt',
-    header: 'Date',
+    accessorKey: 'updatedAt',
+    header: ({ column }) => {
+      return (
+        <div
+          className='flex flex-row items-center cursor-pointer hover:text-black w-fit'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Date
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </div>
+      );
+    },
   },
   {
     id: 'actions',

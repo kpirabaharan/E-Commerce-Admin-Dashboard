@@ -1,6 +1,8 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
+import { ArrowUpDown } from 'lucide-react';
+
 import CellAction from './CellAction';
 
 // This type is used to define the shape of our data.
@@ -9,20 +11,40 @@ export type ColorColumn = {
   id: string;
   name: string;
   value: string;
-  createdAt: string;
+  updatedAt: string;
 };
 
 export const columns: ColumnDef<ColorColumn>[] = [
   {
     accessorKey: 'name',
-    header: 'Name',
+    header: ({ column }) => {
+      return (
+        <div
+          className='flex flex-row items-center cursor-pointer hover:text-black w-fit'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Name
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </div>
+      );
+    },
   },
   {
     accessorKey: 'value',
-    header: 'Value',
+    header: ({ column }) => {
+      return (
+        <div
+          className='flex flex-row items-center cursor-pointer hover:text-black w-fit'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Value
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </div>
+      );
+    },
     cell: ({ row }) => (
       <div className='flex items-center gap-x-2'>
-        {row.original.value}
+        <p className='w-[65px]'>{row.original.value}</p>
         <div
           className='h-6 w-6 rounded-full border'
           style={{ backgroundColor: row.original.value }}
@@ -31,8 +53,18 @@ export const columns: ColumnDef<ColorColumn>[] = [
     ),
   },
   {
-    accessorKey: 'createdAt',
-    header: 'Date',
+    accessorKey: 'updatedAt',
+    header: ({ column }) => {
+      return (
+        <div
+          className='flex flex-row items-center cursor-pointer hover:text-black w-fit'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Date
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </div>
+      );
+    },
   },
   {
     id: 'actions',

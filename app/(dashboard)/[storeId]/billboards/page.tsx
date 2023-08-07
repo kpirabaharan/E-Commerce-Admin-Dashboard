@@ -14,13 +14,13 @@ export const revalidate = 0;
 const BillboardsPage = async ({ params }: BillboardsPageProps) => {
   const billboards = await prismadb.billboard.findMany({
     where: { storeId: params.storeId },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { updatedAt: 'desc' },
   });
 
   const formattedBillboards: BillboardColumn[] = billboards.map((item) => ({
     id: item.id,
     label: item.label,
-    createdAt: format(item.createdAt, 'MMMM do, yyyy'),
+    updatedAt: format(item.updatedAt, 'MMMM do, yyyy'),
   }));
 
   return (

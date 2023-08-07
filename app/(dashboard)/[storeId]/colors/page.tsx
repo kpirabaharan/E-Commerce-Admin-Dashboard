@@ -14,14 +14,14 @@ export const revalidate = 0;
 const ColorsPage = async ({ params }: ColorsPageProps) => {
   const colors = await prismadb.color.findMany({
     where: { storeId: params.storeId },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { updatedAt: 'desc' },
   });
 
   const formattedColors: ColorColumn[] = colors.map((item) => ({
     id: item.id,
     name: item.name,
     value: item.value,
-    createdAt: format(item.createdAt, 'MMMM do, yyyy'),
+    updatedAt: format(item.updatedAt, 'MMMM do, yyyy'),
   }));
 
   return (
