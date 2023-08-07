@@ -40,6 +40,8 @@ const AlertModal = () => {
           router.push(`/${params.storeId}/categories`);
         } else if (deleteType === 'size') {
           router.push(`/${params.storeId}/sizes`);
+        } else if (deleteType === 'color') {
+          router.push(`/${params.storeId}/colors`);
         }
       }
     } catch (err: any) {
@@ -56,6 +58,8 @@ const AlertModal = () => {
           toast.error('Please delete all products using this category first');
         } else if (deleteType === 'size') {
           toast.error('Please delete all products using this size first');
+        } else if (deleteType === 'color') {
+          toast.error('Please delete all products using this color first');
         }
       }
     } finally {

@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 
-type DeleteType = 'store' | 'billboard' | 'category' | 'size' | undefined;
+type DeleteType =
+  | 'store'
+  | 'billboard'
+  | 'category'
+  | 'size'
+  | 'color'
+  | undefined;
 
 interface AlertModalStoreProps {
   deleteUrl: string;
