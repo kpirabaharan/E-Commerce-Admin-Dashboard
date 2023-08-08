@@ -43,7 +43,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
     }
 
     if (!imageName) {
-      return NextResponse.json('Image URL is Required', { status: 400 });
+      return NextResponse.json('Image is Required', { status: 400 });
     }
 
     if (!params.billboardId) {

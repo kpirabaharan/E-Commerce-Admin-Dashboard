@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import * as z from 'zod';
@@ -28,13 +28,38 @@ import { Input } from '@/components/ui/input';
 import { Heading } from '@/components/Heading';
 import ImageUpload from '@/components/ImageUpload';
 
+const MAX_FILE_SIZE = 10000000;
+const ACCEPTED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+];
+
 interface BillboardFormProps {
   initialData: Billboard | null;
 }
 
 const formSchema = z.object({
   label: z.string().min(1),
-  imageName: z.string().min(1, { message: 'Please attach an image' }),
+  image: z
+    .object({
+      file: z.any(),
+      path: z.string().min(1),
+    })
+    .refine((image) => image.path, {
+      message: 'Drag and drop an image above.',
+    })
+    .refine((image) => !image?.file || image?.file?.size <= MAX_FILE_SIZE, {
+      message: 'Max image size is 10MB.',
+    })
+    .refine(
+      (image) =>
+        !image?.file || ACCEPTED_IMAGE_TYPES.includes(image?.file?.type),
+      {
+        message: 'Only .jpg, .jpeg, .png and .webp formats are supported.',
+      },
+    ),
 });
 
 type BillboardFormValues = z.infer<typeof formSchema>;
@@ -43,18 +68,8 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
   const params = useParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [file, setFile] = useState(null);
-  const [image, setImage] = useState('');
 
   const { onOpen } = useAlertModal();
-
-  useEffect(() => {
-    if (initialData) {
-      setImage(
-        `https://ecommerce-admin-kpirabaharan-billboards.s3.amazonaws.com/${initialData.imageUrl}`,
-      );
-    }
-  }, [initialData]);
 
   const title = initialData ? 'Edit Billboard' : 'Create Billboard';
   const description = initialData
@@ -65,10 +80,15 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
   const form = useForm<BillboardFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData
-      ? { label: initialData?.label, imageName: initialData.imageUrl }
+      ? {
+          ...initialData,
+          image: {
+            path: `https://ecommerce-admin-kpirabaharan-billboards.s3.amazonaws.com/${initialData.imageUrl}`,
+          },
+        }
       : {
           label: '',
-          imageName: '',
+          image: { file: {}, path: '' },
         },
   });
 
@@ -76,8 +96,8 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
     try {
       setIsLoading(true);
 
-      if (!image) {
-        return;
+      if (values.image.path.includes('s3.amazonaws.com/')) {
+        values.image.path = values.image.path.split('s3.amazonaws.com/')[1];
       }
 
       /* Patch or Post Billboard */
@@ -88,12 +108,19 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
           status: patchStatus,
         } = await axios.patch(
           `/api/${params.storeId}/billboards/${params.billboardId}`,
-          { ...values, initialImageUrl: initialData.imageUrl },
+          {
+            label: values.label,
+            imageName: values.image.path,
+            initialImageUrl: initialData.imageUrl,
+          },
         );
 
         /* Upload Image to S3 with URL Created by AWS-SDK */
         if (patchStatus === 201) {
-          const { status: putStatus } = await axios.put(uploadUrl, file);
+          const { status: putStatus } = await axios.put(
+            uploadUrl,
+            values.image.file,
+          );
 
           if (putStatus === 200) {
             toast.success(message);
@@ -105,25 +132,31 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
           router.refresh();
           router.push(`/${params.storeId}/billboards`);
         } else {
-          toast.error('Something Went Wrong');
+          toast.error('Failed to Upload Image to S3');
         }
       } else {
         /* Create Database Entry of Billboard */
         const {
           data: { uploadUrl, message },
           status: postStatus,
-        } = await axios.post(`/api/${params.storeId}/billboards`, values);
+        } = await axios.post(`/api/${params.storeId}/billboards`, {
+          label: values.label,
+          type: values.image.file.type,
+        });
 
         /* Upload Image to S3 with URL Created by AWS-SDK */
         if (postStatus === 201) {
-          const { status: putStatus } = await axios.put(uploadUrl, file);
+          const { status: putStatus } = await axios.put(
+            uploadUrl,
+            values.image.file,
+          );
 
           if (putStatus === 200) {
             toast.success(message);
             router.refresh();
             router.push(`/${params.storeId}/billboards`);
           } else {
-            toast.error('Something Went Wrong');
+            toast.error('Failed to Upload Image to S3');
           }
         }
       }
@@ -187,17 +220,20 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
             {/* Image */}
             <FormField
               control={form.control}
-              name='imageName'
+              name='image'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Background Image</FormLabel>
                   <FormControl>
                     <ImageUpload
-                      setFile={setFile}
-                      image={image}
-                      setImage={setImage}
-                      onChange={(url) => field.onChange(url)}
-                      onRemove={() => field.onChange('')}
+                      image={field.value}
+                      onChange={(file) =>
+                        field.onChange({
+                          file,
+                          path: URL.createObjectURL(file),
+                        })
+                      }
+                      onRemove={() => field.onChange({ file: null, path: '' })}
                     />
                   </FormControl>
                   <FormMessage />

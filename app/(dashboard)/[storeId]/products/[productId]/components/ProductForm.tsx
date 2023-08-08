@@ -204,13 +204,13 @@ const ProductForm = ({ initialData }: ProductFormProps) => {
                 <FormItem>
                   <FormLabel>Images</FormLabel>
                   <FormControl>
-                    <ImageUpload
+                    {/* <ImageUpload
                       setFile={setFile}
                       image={image}
                       setImage={setImage}
                       onChange={(url) => field.onChange(url)}
                       onRemove={() => field.onChange('')}
-                    />
+                    /> */}
                   </FormControl>
                   <FormMessage />
                 </FormItem>

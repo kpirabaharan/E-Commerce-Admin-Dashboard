@@ -34,14 +34,14 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       return new NextResponse('Unauthenticated', { status: 401 });
     }
 
-    const { label, imageName } = await req.json();
+    const { label, type } = await req.json();
 
     if (!label) {
       return NextResponse.json('Label is Required', { status: 400 });
     }
 
-    if (!imageName) {
-      return NextResponse.json('Image URL is Required', { status: 400 });
+    if (!type) {
+      return NextResponse.json('Image is Required', { status: 400 });
     }
 
     if (!params.storeId) {
@@ -68,8 +68,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
 
     /* Create Random UUID for ImageURL (ensures storage on AWS) */
     const key = randomUUID();
-    var ext = imageName.split('.')[1];
-    ext === 'jpg' ? (ext = 'jpeg') : (ext = ext);
+    const ext = type.split('/')[1];
     const imageUrl = `${key}.${ext}`;
 
     const billboard = await prismadb.billboard.create({
@@ -80,7 +79,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       Bucket: process.env.S3_BUCKET ?? '',
       Key: imageUrl,
       Expires: 60,
-      ContentType: `image/${ext}`,
+      ContentType: type,
     };
 
     const uploadUrl = s3.getSignedUrl('putObject', s3Params);

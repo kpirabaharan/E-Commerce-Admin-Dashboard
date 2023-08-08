@@ -34,12 +34,7 @@ interface ColorFormProps {
 
 const formSchema = z.object({
   name: z.string().min(1),
-  value: z
-    .string()
-    .regex(/^#/, { message: 'Hex code must have #' })
-    .refine((val) => [4, 7].includes(val.length), {
-      message: 'Hex code must have 4 or 7 characters',
-    }),
+  value: z.string(),
 });
 
 type ColorFormValues = z.infer<typeof formSchema>;
