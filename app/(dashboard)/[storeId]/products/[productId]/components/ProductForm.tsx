@@ -225,7 +225,13 @@ const ProductForm = ({ initialData }: ProductFormProps) => {
                           })),
                         )
                       }
-                      onRemove={() => field.onChange([])}
+                      onRemove={(file) =>
+                        field.onChange([
+                          ...field.value.filter(
+                            (current) => current.file !== file,
+                          ),
+                        ])
+                      }
                     />
                   </FormControl>
                   <FormMessage />
