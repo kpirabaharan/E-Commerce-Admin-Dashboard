@@ -28,9 +28,12 @@ const MultiImageUpload = ({
   return (
     <div className='h-full w-full min-h-[229px] mx-auto relative'>
       <Dropzone
-        onDrop={(acceptedFiles) => {
-          console.log({ acceptedFiles });
-          return onChange(acceptedFiles);
+        onDrop={(acceptedFiles) => onChange(acceptedFiles)}
+        maxFiles={3}
+        accept={{
+          'image/png': ['.png'],
+          'image/jpeg': ['.jpeg', '.jpg'],
+          'image/webp': ['.webp'],
         }}
       >
         {({ getRootProps, getInputProps }) => (

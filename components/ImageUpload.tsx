@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Dropzone from 'react-dropzone';
+import { Trash } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Trash } from 'lucide-react';
-import Image from 'next/image';
-import { Skeleton } from './ui/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ImageUploadProps {
   image: { file?: any; path: string };
@@ -22,7 +22,14 @@ const ImageUpload = ({ image, onChange, onRemove }: ImageUploadProps) => {
   }, []);
 
   return (
-    <Dropzone onDrop={(acceptedFiles) => onChange(acceptedFiles[0])}>
+    <Dropzone
+      onDrop={(acceptedFiles) => onChange(acceptedFiles[0])}
+      accept={{
+        'image/png': ['.png'],
+        'image/jpeg': ['.jpeg', '.jpg'],
+        'image/webp': ['.webp'],
+      }}
+    >
       {({ getRootProps, getInputProps }) => (
         <div
           {...getRootProps()}

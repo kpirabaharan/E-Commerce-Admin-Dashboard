@@ -42,13 +42,19 @@ interface ProductFormProps {
 }
 
 const formSchema = z.object({
-  name: z.string().min(1),
+  name: z
+    .string()
+    .min(1)
+    .refine((name) => name.includes('A'), { message: 'Test' }),
   images: z
     .object({
       file: z.any(),
       path: z.string().min(1),
     })
-    .array(),
+    .array()
+    .refine((images) => images.length <= 3, {
+      message: 'Max Number of Images is 3.',
+    }),
   price: z.coerce.number().min(1),
   categoryId: z.string().min(1),
   colorId: z.string().min(1),
@@ -63,8 +69,6 @@ const ProductForm = ({ initialData }: ProductFormProps) => {
   const params = useParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [file, setFile] = useState(null);
-  const [image, setImage] = useState('');
 
   const { onOpen } = useAlertModal();
 
@@ -219,10 +223,12 @@ const ProductForm = ({ initialData }: ProductFormProps) => {
                       images={field.value}
                       onChange={(files) =>
                         field.onChange(
-                          files.map((file) => ({
-                            file,
-                            path: URL.createObjectURL(file),
-                          })),
+                          field.value.concat(
+                            files.map((file) => ({
+                              file,
+                              path: URL.createObjectURL(file),
+                            })),
+                          ),
                         )
                       }
                       onRemove={(file) =>
