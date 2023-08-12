@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import * as z from 'zod';
@@ -10,7 +10,7 @@ import { ScaleLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
 import { Trash } from 'lucide-react';
 
-import { Product, Image } from '@prisma/client';
+import { Product, Image, Category, Size, Color } from '@prisma/client';
 import { useAlertModal } from '@/hooks/useAlertModal';
 
 import { Separator } from '@/components/ui/separator';
@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,8 +27,15 @@ import {
 import { Input } from '@/components/ui/input';
 
 import { Heading } from '@/components/Heading';
-import ImageUpload from '@/components/ImageUpload';
 import MultiImageUpload from '@/components/MultiImageUpload';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const MAX_FILE_SIZE = 10000000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -39,6 +47,9 @@ const ACCEPTED_IMAGE_TYPES = [
 
 interface ProductFormProps {
   initialData: (Product & { images: Image[] }) | null;
+  categories: Category[];
+  sizes: Size[];
+  colors: Color[];
 }
 
 const formSchema = z.object({
@@ -65,7 +76,12 @@ const formSchema = z.object({
 
 type ProductFormValues = z.infer<typeof formSchema>;
 
-const ProductForm = ({ initialData }: ProductFormProps) => {
+const ProductForm = ({
+  initialData,
+  categories,
+  sizes,
+  colors,
+}: ProductFormProps) => {
   const params = useParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -91,10 +107,6 @@ const ProductForm = ({ initialData }: ProductFormProps) => {
       : {
           name: '',
           images: [],
-          price: 0,
-          categoryId: '',
-          colorId: '',
-          sizeId: '',
           isFeatured: false,
           isArchived: false,
         },
@@ -108,52 +120,58 @@ const ProductForm = ({ initialData }: ProductFormProps) => {
       console.log(values?.images);
 
       /* Patch or Post Product */
-      // if (initialData) {
-      //   /* Create Database Entry of Product */
-      //   const {
-      //     data: { uploadUrl, message },
-      //     status: patchStatus,
-      //   } = await axios.patch(
-      //     `/api/${params.storeId}/products/${params.productId}`,
-      //     { ...values },
-      //   );
+      if (initialData) {
+        /* Create Database Entry of Product */
+        const {
+          data: { uploadUrl, message },
+          status: patchStatus,
+        } = await axios.patch(
+          `/api/${params.storeId}/products/${params.productId}`,
+          values,
+        );
 
-      //   /* Upload Image to S3 with URL Created by AWS-SDK */
-      //   if (patchStatus === 201) {
-      //     const { status: putStatus } = await axios.put(uploadUrl, file);
+        /* Upload Image to S3 with URL Created by AWS-SDK */
+        if (patchStatus === 201) {
+          const { status: putStatus } = await axios.put(
+            uploadUrl,
+            values.images,
+          );
 
-      //     if (putStatus === 200) {
-      //       toast.success(message);
-      //       router.refresh();
-      //       router.push(`/${params.storeId}/products`);
-      //     }
-      //   } else if (patchStatus === 200) {
-      //     toast.success(message);
-      //     router.refresh();
-      //     router.push(`/${params.storeId}/products`);
-      //   } else {
-      //     toast.error('Something Went Wrong');
-      //   }
-      // } else {
-      //   /* Create Database Entry of Product */
-      //   const {
-      //     data: { uploadUrl, message },
-      //     status: postStatus,
-      //   } = await axios.post(`/api/${params.storeId}/products`, values);
+          if (putStatus === 200) {
+            toast.success(message);
+            router.refresh();
+            router.push(`/${params.storeId}/products`);
+          }
+        } else if (patchStatus === 200) {
+          toast.success(message);
+          router.refresh();
+          router.push(`/${params.storeId}/products`);
+        } else {
+          toast.error('Something Went Wrong');
+        }
+      } else {
+        /* Create Database Entry of Product */
+        const {
+          data: { uploadUrl, message },
+          status: postStatus,
+        } = await axios.post(`/api/${params.storeId}/products`, values);
 
-      //   /* Upload Image to S3 with URL Created by AWS-SDK */
-      //   if (postStatus === 201) {
-      //     const { status: putStatus } = await axios.put(uploadUrl, file);
+        /* Upload Image to S3 with URL Created by AWS-SDK */
+        if (postStatus === 201) {
+          const { status: putStatus } = await axios.put(
+            uploadUrl,
+            values.images,
+          );
 
-      //     if (putStatus === 200) {
-      //       toast.success(message);
-      //       router.refresh();
-      //       router.push(`/${params.storeId}/products`);
-      //     } else {
-      //       toast.error('Something Went Wrong');
-      //     }
-      //   }
-      // }
+          if (putStatus === 200) {
+            toast.success(message);
+            router.refresh();
+            router.push(`/${params.storeId}/products`);
+          } else {
+            toast.error('Something Went Wrong');
+          }
+        }
+      }
     } catch (err: any) {
       if (err.response.data) {
         toast.error(err.response.data);
@@ -191,26 +209,193 @@ const ProductForm = ({ initialData }: ProductFormProps) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className='space-y-6 w-full'
         >
-          <div className='flex flex-col gap-x-4 gap-y-4'>
-            {/* Label */}
-            <FormField
-              control={form.control}
-              name='name'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      className='w-[300px]'
-                      placeholder='Product name'
+          <div className='flex flex-col gap-4'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+              {/* Label */}
+              <FormField
+                control={form.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Product name'
+                        disabled={isLoading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Price */}
+              <FormField
+                control={form.control}
+                name='price'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='number'
+                        placeholder='ex. 9.99'
+                        disabled={isLoading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Category  */}
+              <FormField
+                control={form.control}
+                name='categoryId'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select
                       disabled={isLoading}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            defaultValue={field.value}
+                            placeholder='Select a category'
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Size  */}
+              <FormField
+                control={form.control}
+                name='sizeId'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Size</FormLabel>
+                    <Select
+                      disabled={isLoading}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            defaultValue={field.value}
+                            placeholder='Select a size'
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {sizes.map((size) => (
+                          <SelectItem key={size.id} value={size.id}>
+                            {size.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Colors  */}
+              <FormField
+                control={form.control}
+                name='colorId'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Color</FormLabel>
+                    <Select
+                      disabled={isLoading}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            defaultValue={field.value}
+                            placeholder='Select a color'
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {colors.map((color) => (
+                          <SelectItem key={color.id} value={color.id}>
+                            <div className='flex flex-row items-center gap-x-8 justify-between'>
+                              <p className=''>{color.name}</p>
+                              <div
+                                className='rounded-full h-4 w-4'
+                                style={{ backgroundColor: color.value }}
+                              />
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Featured */}
+              <FormField
+                control={form.control}
+                name='isFeatured'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Featured</FormLabel>
+                    <div className='flex flex-row items-center gap-x-3 gap-y-0 rounded-md border p-4'>
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        This product will appear on the home page
+                      </FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              {/* Archived */}
+              <FormField
+                control={form.control}
+                name='isArchived'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Archived</FormLabel>
+                    <div className='flex flex-row items-center gap-x-3 gap-y-0 rounded-md border p-4'>
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        This product will not appear anywhere in the store
+                      </FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </div>
             {/* Image */}
             <FormField
               control={form.control}

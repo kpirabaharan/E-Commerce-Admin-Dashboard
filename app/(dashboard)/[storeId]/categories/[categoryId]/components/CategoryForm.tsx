@@ -65,7 +65,6 @@ const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
       ? { name: initialData?.name, billboardId: initialData?.billboardId }
       : {
           name: '',
-          billboardId: '',
         },
   });
 
