@@ -15,13 +15,13 @@ export const GET = async (req: Request, { params }: RequestProps) => {
       return NextResponse.json('Store Id is Required', { status: 400 });
     }
 
-    const billboards = await prismadb.billboard.findMany({
+    const products = await prismadb.product.findMany({
       where: { storeId: params.storeId },
     });
 
-    return NextResponse.json(billboards, { status: 200 });
+    return NextResponse.json(products, { status: 200 });
   } catch (err) {
-    console.log('[BILLBOARDS_GET]:', err);
+    console.log('[PRODUCTS_GET]:', err);
     return new NextResponse('Internal Error', { status: 500 });
   }
 };
@@ -34,10 +34,35 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       return new NextResponse('Unauthenticated', { status: 401 });
     }
 
-    const { label, type } = await req.json();
+    const {
+      name,
+      price,
+      categoryId,
+      sizeId,
+      colorId,
+      isFeatured,
+      isArchived,
+      type,
+    } = await req.json();
 
-    if (!label) {
-      return NextResponse.json('Label is Required', { status: 400 });
+    if (!name) {
+      return NextResponse.json('Name is Required', { status: 400 });
+    }
+
+    if (!price) {
+      return NextResponse.json('Price is Required', { status: 400 });
+    }
+
+    if (!categoryId) {
+      return NextResponse.json('Category is Required', { status: 400 });
+    }
+
+    if (!sizeId) {
+      return NextResponse.json('Size is Required', { status: 400 });
+    }
+
+    if (!colorId) {
+      return NextResponse.json('Color is Required', { status: 400 });
     }
 
     if (!type) {
@@ -56,12 +81,11 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       return NextResponse.json('Unauthorized', { status: 403 });
     }
 
-    const existingBillboard = await prismadb.billboard.findFirst({
-      where: { label, storeId: params.storeId },
+    const existingProduct = await prismadb.product.findFirst({
+      where: { name, storeId: params.storeId },
     });
-
-    if (existingBillboard) {
-      return NextResponse.json('A billboard with that name exists!', {
+    if (existingProduct) {
+      return NextResponse.json('A product with that name exists!', {
         status: 400,
       });
     }
@@ -71,8 +95,17 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     const ext = type.split('/')[1];
     const imageUrl = `${key}.${ext}`;
 
-    const billboard = await prismadb.billboard.create({
-      data: { label, imageUrl, storeId: params.storeId },
+    const product = await prismadb.product.create({
+      data: {
+        name,
+        price,
+        categoryId,
+        sizeId,
+        colorId,
+        isFeatured,
+        isArchived,
+        storeId: params.storeId,
+      },
     });
 
     const s3Params = {
@@ -85,11 +118,11 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     const uploadUrl = s3.getSignedUrl('putObject', s3Params);
 
     return NextResponse.json(
-      { billboard, uploadUrl, message: 'Billboard Created' },
+      { product, uploadUrl, message: 'Billboard Created' },
       { status: 201 },
     );
   } catch (err) {
-    console.log('[BILLBOARDS_POST]:', err);
+    console.log('[PRODUCTS_POST]:', err);
     return new NextResponse('Internal Error', { status: 500 });
   }
 };

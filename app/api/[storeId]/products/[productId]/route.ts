@@ -6,24 +6,24 @@ import prismadb from '@/lib/prismadb';
 import s3 from '@/lib/aws-client';
 
 interface RequestProps {
-  params: { storeId: string; billboardId: string };
+  params: { storeId: string; productId: string };
 }
 
 export const GET = async (req: Request, { params }: RequestProps) => {
   try {
-    if (!params.billboardId) {
-      return NextResponse.json('Billboard Id is Required', { status: 400 });
+    if (!params.productId) {
+      return NextResponse.json('Product Id is Required', { status: 400 });
     }
 
     const billboard = await prismadb.billboard.findUnique({
       where: {
-        id: params.billboardId,
+        id: params.productId,
       },
     });
 
     return NextResponse.json(billboard, { status: 200 });
   } catch (err) {
-    console.log('[BILLBOARD_GET]:', err);
+    console.log('[PRODUCT_GET]:', err);
     return new NextResponse('Internal Error', { status: 500 });
   }
 };
@@ -46,7 +46,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       return NextResponse.json('Image is Required', { status: 400 });
     }
 
-    if (!params.billboardId) {
+    if (!params.productId) {
       return NextResponse.json('Billboard Id is Required', { status: 400 });
     }
 
@@ -65,7 +65,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       imageName === initialImageUrl ? imageName : `${key}.${ext}`;
 
     const billboard = await prismadb.billboard.update({
-      where: { id: params.billboardId },
+      where: { id: params.productId },
       data: { label, imageUrl: updatedImageUrl },
     });
 
@@ -101,7 +101,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       );
     }
   } catch (err) {
-    console.log('[BILLBOARD_PATCH]:', err);
+    console.log('[PRODUCT_PATCH]:', err);
     return new NextResponse('Internal Error', { status: 500 });
   }
 };
@@ -114,7 +114,7 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
       return new NextResponse('Unauthenticated', { status: 401 });
     }
 
-    if (!params.billboardId) {
+    if (!params.productId) {
       return NextResponse.json('Billboard Id is Required', { status: 400 });
     }
 
@@ -128,7 +128,7 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
 
     const billboard = await prismadb.billboard.delete({
       where: {
-        id: params.billboardId,
+        id: params.productId,
       },
     });
 
@@ -144,7 +144,7 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
       { status: 200 },
     );
   } catch (err) {
-    console.log('[BILLBOARD_DELETE]:', err);
+    console.log('[PRODUCT_DELETE]:', err);
     return new NextResponse('Internal Error', { status: 500 });
   }
 };
