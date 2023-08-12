@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "sst bind next dev",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint"
@@ -55,6 +55,9 @@
     "zustand": "^4.3.9"
   },
   "devDependencies": {
-    "prisma": "^5.0.0"
+    "prisma": "^5.0.0",
+    "sst": "^2.23.15",
+    "aws-cdk-lib": "2.84.0",
+    "constructs": "10.1.156"
   }
 }

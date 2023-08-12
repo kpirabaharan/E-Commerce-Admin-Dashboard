@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-1.0.x"]
 }
 
 datasource db {
@@ -75,12 +76,12 @@ model Product {
   name       String
   price      Decimal
   isFeatured Boolean  @default(false)
-  isArchived  Boolean  @default(false)
+  isArchived Boolean  @default(false)
   store      Store    @relation("StoreToProduct", fields: [storeId], references: [id])
   category   Category @relation("CategoryToProduct", fields: [categoryId], references: [id])
   size       Size     @relation(fields: [sizeId], references: [id])
   color      Color    @relation(fields: [colorId], references: [id])
-  images      Image[]
+  images     Image[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
