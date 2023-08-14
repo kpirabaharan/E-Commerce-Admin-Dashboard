@@ -102,7 +102,7 @@ const ProductForm = ({
           ...initialData,
           price: parseFloat(String(initialData?.price)),
           images: initialData.images.map((image) => ({
-            path: `https://ecommerce-admin-kpirabaharan-billboards.s3.amazonaws.com/${image.url}`,
+            path: `https://ecommerce-admin-kpirabaharan-products.s3.amazonaws.com/${image.url}`,
           })),
         }
       : {

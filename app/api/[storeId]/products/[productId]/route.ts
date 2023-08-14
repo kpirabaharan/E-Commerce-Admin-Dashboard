@@ -175,14 +175,17 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
       where: {
         id: params.productId,
       },
+      include: { images: true },
     });
 
-    // const s3DeleteParams = {
-    //   Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
-    //   Key: product.,
-    // };
+    const S3DeleteParams = product.images.map((image) => ({
+      Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
+      Key: image.url,
+    }));
 
-    // await s3.deleteObject(s3DeleteParams).promise();
+    S3DeleteParams.map(
+      async (S3DeleteParam) => await s3.deleteObject(S3DeleteParam).promise(),
+    );
 
     return NextResponse.json(
       { product, message: 'Product Deleted' },

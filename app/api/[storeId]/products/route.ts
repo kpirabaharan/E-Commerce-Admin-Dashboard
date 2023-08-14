@@ -159,7 +159,6 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       Expires: 60,
       ContentType: `image/${imageUrl.split('.')[1]}`,
     }));
-    console.log({ S3Params });
 
     const uploadUrls = S3Params.map((S3Param) =>
       s3.getSignedUrl('putObject', S3Param),

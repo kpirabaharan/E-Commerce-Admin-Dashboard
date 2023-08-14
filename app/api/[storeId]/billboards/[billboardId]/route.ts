@@ -132,12 +132,12 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
       },
     });
 
-    const s3DeleteParams = {
+    const S3DeleteParams = {
       Bucket: process.env.S3_BILLBOARD_BUCKET ?? '',
       Key: billboard.imageUrl,
     };
 
-    await s3.deleteObject(s3DeleteParams).promise();
+    await s3.deleteObject(S3DeleteParams).promise();
 
     return NextResponse.json(
       { billboard, message: 'Billboard Deleted' },
