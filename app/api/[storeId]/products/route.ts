@@ -11,12 +11,27 @@ interface RequestProps {
 
 export const GET = async (req: Request, { params }: RequestProps) => {
   try {
+    const { searchParams } = new URL(req.url);
+    const categoryId = searchParams.get('categoryId') || undefined;
+    const sizeId = searchParams.get('sizeId') || undefined;
+    const colorId = searchParams.get('colorId') || undefined;
+    const isFeatured = searchParams.get('isFeatured');
+
     if (!params.storeId) {
       return NextResponse.json('Store Id is Required', { status: 400 });
     }
 
     const products = await prismadb.product.findMany({
-      where: { storeId: params.storeId },
+      where: {
+        storeId: params.storeId,
+        categoryId,
+        sizeId,
+        colorId,
+        isFeatured: isFeatured ? true : undefined,
+        isArchived: false,
+      },
+      include: { images: true, category: true, size: true, color: true },
+      orderBy: { createdAt: 'desc' },
     });
 
     return NextResponse.json(products, { status: 200 });
@@ -42,11 +57,37 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       colorId,
       isFeatured,
       isArchived,
-      type,
+      types,
+    }: {
+      name: string;
+      price: number;
+      categoryId: string;
+      sizeId: string;
+      colorId: string;
+      isFeatured: boolean;
+      isArchived: boolean;
+      types: string[];
     } = await req.json();
+
+    console.log({
+      name,
+      price,
+      categoryId,
+      sizeId,
+      colorId,
+      isFeatured,
+      isArchived,
+      types,
+    });
 
     if (!name) {
       return NextResponse.json('Name is Required', { status: 400 });
+    }
+
+    if (!types) {
+      return NextResponse.json('Atleast One Image is Required', {
+        status: 400,
+      });
     }
 
     if (!price) {
@@ -63,10 +104,6 @@ export const POST = async (req: Request, { params }: RequestProps) => {
 
     if (!colorId) {
       return NextResponse.json('Color is Required', { status: 400 });
-    }
-
-    if (!type) {
-      return NextResponse.json('Image is Required', { status: 400 });
     }
 
     if (!params.storeId) {
@@ -91,9 +128,12 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     }
 
     /* Create Random UUID for ImageURL (ensures storage on AWS) */
-    const key = randomUUID();
-    const ext = type.split('/')[1];
-    const imageUrl = `${key}.${ext}`;
+    const imageUrls = types.map((type) => {
+      const key = randomUUID();
+      console.log({ key });
+      const ext = type.split('/')[1];
+      return `${key}.${ext}`;
+    });
 
     const product = await prismadb.product.create({
       data: {
@@ -105,20 +145,31 @@ export const POST = async (req: Request, { params }: RequestProps) => {
         isFeatured,
         isArchived,
         storeId: params.storeId,
+        images: {
+          createMany: {
+            data: imageUrls.map((imageUrl) => ({ url: imageUrl })),
+          },
+        },
       },
     });
 
-    const s3Params = {
-      Bucket: process.env.S3_BUCKET ?? '',
+    const S3Params = imageUrls.map((imageUrl) => ({
+      Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
       Key: imageUrl,
       Expires: 60,
-      ContentType: type,
-    };
+      ContentType: `image/${imageUrl.split('.')[1]}`,
+    }));
+    console.log({ S3Params });
 
-    const uploadUrl = s3.getSignedUrl('putObject', s3Params);
+    const uploadUrls = S3Params.map((S3Param) =>
+      s3.getSignedUrl('putObject', S3Param),
+    );
+
+    console.log({ product });
+    console.log({ uploadUrls });
 
     return NextResponse.json(
-      { product, uploadUrl, message: 'Billboard Created' },
+      { product, uploadUrls, message: 'Product Created' },
       { status: 201 },
     );
   } catch (err) {

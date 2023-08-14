@@ -76,7 +76,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     });
 
     const s3Params = {
-      Bucket: process.env.S3_BUCKET ?? '',
+      Bucket: process.env.S3_BILLBOARD_BUCKET ?? '',
       Key: imageUrl,
       Expires: 60,
       ContentType: type,

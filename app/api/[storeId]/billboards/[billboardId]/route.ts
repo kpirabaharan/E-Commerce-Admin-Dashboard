@@ -71,14 +71,14 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
 
     if (imageName !== initialImageUrl) {
       const s3DeleteParams = {
-        Bucket: process.env.S3_BUCKET ?? '',
+        Bucket: process.env.S3_BILLBOARD_BUCKET ?? '',
         Key: initialImageUrl,
       };
 
       await s3.deleteObject(s3DeleteParams).promise();
 
       const s3PutParams = {
-        Bucket: process.env.S3_BUCKET ?? '',
+        Bucket: process.env.S3_BILLBOARD_BUCKET ?? '',
         Key: updatedImageUrl,
         Expires: 60,
         ContentType: `image/${ext}`,
@@ -133,7 +133,7 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
     });
 
     const s3DeleteParams = {
-      Bucket: process.env.S3_BUCKET ?? '',
+      Bucket: process.env.S3_BILLBOARD_BUCKET ?? '',
       Key: billboard.imageUrl,
     };
 

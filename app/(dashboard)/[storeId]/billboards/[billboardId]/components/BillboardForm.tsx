@@ -29,12 +29,6 @@ import { Heading } from '@/components/Heading';
 import ImageUpload from '@/components/ImageUpload';
 
 const MAX_FILE_SIZE = 10000000;
-const ACCEPTED_IMAGE_TYPES = [
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/webp',
-];
 
 interface BillboardFormProps {
   initialData: Billboard | null;
@@ -52,14 +46,7 @@ const formSchema = z.object({
     })
     .refine((image) => !image?.file || image?.file?.size <= MAX_FILE_SIZE, {
       message: 'Max image size is 10MB.',
-    })
-    .refine(
-      (image) =>
-        !image?.file || ACCEPTED_IMAGE_TYPES.includes(image?.file?.type),
-      {
-        message: 'Only .jpg, .jpeg, .png and .webp formats are supported.',
-      },
-    ),
+    }),
 });
 
 type BillboardFormValues = z.infer<typeof formSchema>;

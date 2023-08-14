@@ -38,12 +38,6 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 
 const MAX_FILE_SIZE = 10000000;
-const ACCEPTED_IMAGE_TYPES = [
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/webp',
-];
 
 interface ProductFormProps {
   initialData: (Product & { images: Image[] }) | null;
@@ -53,19 +47,26 @@ interface ProductFormProps {
 }
 
 const formSchema = z.object({
-  name: z
-    .string()
-    .min(1)
-    .refine((name) => name.includes('A'), { message: 'Test' }),
+  name: z.string().min(1),
   images: z
     .object({
       file: z.any(),
       path: z.string().min(1),
     })
     .array()
+    .refine((images) => images.length != 0, {
+      message: 'Atleast one image is required',
+    })
     .refine((images) => images.length <= 3, {
-      message: 'Max Number of Images is 3.',
-    }),
+      message: 'Max Number of Images is 3',
+    })
+    .refine(
+      (images) =>
+        images.map((image) => image.file.size <= MAX_FILE_SIZE).includes(true),
+      {
+        message: 'Max image size is 10MB',
+      },
+    ),
   price: z.coerce.number().min(1),
   categoryId: z.string().min(1),
   colorId: z.string().min(1),
@@ -116,9 +117,6 @@ const ProductForm = ({
     try {
       setIsLoading(true);
 
-      console.log(values);
-      console.log(values?.images);
-
       /* Patch or Post Product */
       if (initialData) {
         /* Create Database Entry of Product */
@@ -151,26 +149,26 @@ const ProductForm = ({
         }
       } else {
         /* Create Database Entry of Product */
-        const {
-          data: { uploadUrl, message },
-          status: postStatus,
-        } = await axios.post(`/api/${params.storeId}/products`, values);
+        const response = await axios.post(`/api/${params.storeId}/products`, {
+          ...values,
+          types: values.images.map((image) => image.file.type),
+        });
+
+        console.log({ response });
 
         /* Upload Image to S3 with URL Created by AWS-SDK */
-        if (postStatus === 201) {
-          const { status: putStatus } = await axios.put(
-            uploadUrl,
-            values.images,
-          );
+        // if (postStatus === 201) {
+        const responses = response.data.uploadUrls.map(
+          async (uploadUrl: string, index: number) =>
+            await axios.put(uploadUrl, values.images[index].file),
+        );
 
-          if (putStatus === 200) {
-            toast.success(message);
-            router.refresh();
-            router.push(`/${params.storeId}/products`);
-          } else {
-            toast.error('Something Went Wrong');
-          }
-        }
+        console.log({ responses });
+
+        toast.success(response.data.message);
+        router.refresh();
+        router.push(`/${params.storeId}/products`);
+        // }
       }
     } catch (err: any) {
       if (err.response.data) {
