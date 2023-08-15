@@ -45,7 +45,8 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       colorId,
       isFeatured,
       isArchived,
-      types,
+      imageNames,
+      initialImageUrls,
     }: {
       name: string;
       price: number;
@@ -54,14 +55,17 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       colorId: string;
       isFeatured: boolean;
       isArchived: boolean;
-      types: string[];
+      imageNames: string[];
+      initialImageUrls: string[];
     } = await req.json();
+
+    console.log({ imageNames, initialImageUrls });
 
     if (!name) {
       return NextResponse.json('Name is Required', { status: 400 });
     }
 
-    if (!types) {
+    if (!imageNames) {
       return NextResponse.json('Atleast One Image is Required', {
         status: 400,
       });
@@ -95,13 +99,19 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       return NextResponse.json('Unauthorized', { status: 403 });
     }
 
-    // const key = randomUUID();
-    // var ext = imageName.split('.')[1];
-    // ext === 'jpg' ? (ext = 'jpeg') : (ext = ext);
-    // const updatedImageUrl =
-    //   imageName === initialImageUrl ? imageName : `${key}.${ext}`;
+    const updatedImageUrls = imageNames.map((imageName) => {
+      return initialImageUrls.includes(imageName)
+        ? { url: imageName, oldUrl: imageName, changed: false }
+        : {
+            url: `${randomUUID()}.${imageName.split('.')[1]}`,
+            oldUrl: imageName,
+            changed: true,
+          };
+    });
 
-    const product = await prismadb.product.update({
+    console.log({ updatedImageUrls });
+
+    await prismadb.product.update({
       where: { id: params.productId },
       data: {
         name,
@@ -111,40 +121,76 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
         colorId,
         isFeatured,
         isArchived,
+        images: { deleteMany: {} },
       },
     });
 
-    // if (imageName !== initialImageUrl) {
-    //   const s3DeleteParams = {
-    //     Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
-    //     Key: initialImageUrl,
-    //   };
-
-    //   await s3.deleteObject(s3DeleteParams).promise();
-
-    //   const s3PutParams = {
-    //     Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
-    //     Key: updatedImageUrl,
-    //     Expires: 60,
-    //     ContentType: `image/${ext}`,
-    //   };
-
-    //   const uploadUrl = s3.getSignedUrl('putObject', s3PutParams);
-
-    //   return NextResponse.json(
-    //     { product, uploadUrl, message: 'Product Updated' },
-    //     {
-    //       status: 201,
-    //     },
-    //   );
-    // } else {
-    return NextResponse.json(
-      { product, message: 'Product Updated' },
-      {
-        status: 200,
+    const product = await prismadb.product.update({
+      where: { id: params.productId },
+      data: {
+        images: {
+          createMany: {
+            data: updatedImageUrls.map((imageUrl) => ({ url: imageUrl.url })),
+          },
+        },
       },
+    });
+
+    const deletedImages = initialImageUrls.filter(
+      (initialImageUrl) => !imageNames.includes(initialImageUrl),
     );
-    // }
+
+    console.log({ deletedImages });
+
+    deletedImages.map(async (deletedImage) => {
+      const s3DeleteParams = {
+        Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
+        Key: deletedImage,
+      };
+
+      await s3.deleteObject(s3DeleteParams).promise();
+    });
+
+    console.log({ updatedImageUrls });
+
+    updatedImageUrls.map(async (updatedImage) => {
+      if (updatedImage.changed) {
+        const s3DeleteParams = {
+          Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
+          Key: updatedImage.oldUrl,
+        };
+
+        await s3.deleteObject(s3DeleteParams).promise();
+      }
+    });
+
+    const updatedImages = updatedImageUrls.filter(
+      (imageUrl) => imageUrl.changed,
+    );
+
+    const uploadUrls = updatedImages.map((updatedImage) => {
+      const s3PutParams = {
+        Bucket: process.env.S3_BILLBOARD_BUCKET ?? '',
+        Key: updatedImage.url,
+        Expires: 60,
+        ContentType: `image/${updatedImage.url.split('.')[1]}`,
+      };
+
+      return s3.getSignedUrl('putObject', s3PutParams);
+    });
+
+    console.log({ uploadUrls });
+
+    return NextResponse.json(
+      { product, uploadUrls, message: 'Product Updated' },
+      uploadUrls.length === 0
+        ? {
+            status: 200,
+          }
+        : {
+            status: 201,
+          },
+    );
   } catch (err) {
     console.log('[PRODUCT_PATCH]:', err);
     return new NextResponse('Internal Error', { status: 500 });

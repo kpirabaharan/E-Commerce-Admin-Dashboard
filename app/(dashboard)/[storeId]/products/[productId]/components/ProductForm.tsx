@@ -62,7 +62,9 @@ const formSchema = z.object({
     })
     .refine(
       (images) =>
-        images.map((image) => image.file.size <= MAX_FILE_SIZE).includes(true),
+        images
+          .map((image) => image?.file?.size <= MAX_FILE_SIZE)
+          .includes(true),
       {
         message: 'Max image size is 10MB',
       },
@@ -103,6 +105,7 @@ const ProductForm = ({
           price: parseFloat(String(initialData?.price)),
           images: initialData.images.map((image) => ({
             path: `https://ecommerce-admin-kpirabaharan-products.s3.amazonaws.com/${image.url}`,
+            file: {},
           })),
         }
       : {
@@ -117,29 +120,59 @@ const ProductForm = ({
     try {
       setIsLoading(true);
 
+      console.log({ images: values.images });
+
+      const newImages = values.images.filter(
+        (imageUrl) => !imageUrl.path.includes('s3.amazonaws.com/'),
+      );
+
+      console.log({ newImages });
+
+      values.images.map((imageName, index) => {
+        if (imageName.path.includes('s3.amazonaws.com/')) {
+          values.images[index].path =
+            imageName.path.split('s3.amazonaws.com/')[1];
+        } else {
+          values.images[index].path = values.images[index].file.path;
+        }
+      });
+
+      console.log({ images: values.images });
+
       /* Patch or Post Product */
       if (initialData) {
         /* Create Database Entry of Product */
         const {
-          data: { uploadUrl, message },
+          data: { uploadUrls, message },
           status: patchStatus,
         } = await axios.patch(
           `/api/${params.storeId}/products/${params.productId}`,
-          values,
+          {
+            ...values,
+            imageNames: values.images.map((image) => image.path),
+            initialImageUrls: initialData.images.map((image) => image.url),
+          },
         );
+
+        console.log({ patchStatus });
+        console.log({ uploadUrls });
 
         /* Upload Image to S3 with URL Created by AWS-SDK */
         if (patchStatus === 201) {
-          const { status: putStatus } = await axios.put(
-            uploadUrl,
-            values.images,
+          const responses = uploadUrls.map(
+            async (uploadUrl: string, index: number) =>
+              await axios.put(uploadUrl, newImages[index].file),
           );
 
-          if (putStatus === 200) {
-            toast.success(message);
-            router.refresh();
-            router.push(`/${params.storeId}/products`);
-          }
+          console.log({ responses });
+
+          // if (putStatus === 200) {
+          toast.success(message);
+          router.refresh();
+          router.push(`/${params.storeId}/products`);
+          // } else {
+          //   toast.error('Failed to Upload Images to S3');
+          // }
         } else if (patchStatus === 200) {
           toast.success(message);
           router.refresh();
@@ -149,26 +182,31 @@ const ProductForm = ({
         }
       } else {
         /* Create Database Entry of Product */
-        const response = await axios.post(`/api/${params.storeId}/products`, {
+        const {
+          data: { uploadUrls, message },
+          status: postStatus,
+        } = await axios.post(`/api/${params.storeId}/products`, {
           ...values,
           types: values.images.map((image) => image.file.type),
         });
 
-        console.log({ response });
-
         /* Upload Image to S3 with URL Created by AWS-SDK */
-        // if (postStatus === 201) {
-        const responses = response.data.uploadUrls.map(
-          async (uploadUrl: string, index: number) =>
-            await axios.put(uploadUrl, values.images[index].file),
-        );
+        if (postStatus === 201) {
+          const responses = uploadUrls.map(
+            async (uploadUrl: string, index: number) =>
+              await axios.put(uploadUrl, values.images[index].file),
+          );
 
-        console.log({ responses });
+          console.log({ responses });
 
-        toast.success(response.data.message);
-        router.refresh();
-        router.push(`/${params.storeId}/products`);
-        // }
+          // if (putStatus === 200) {
+          toast.success(message);
+          router.refresh();
+          router.push(`/${params.storeId}/products`);
+          // } else {
+          //   toast.error('Failed to Upload Images to S3');
+          // }
+        }
       }
     } catch (err: any) {
       if (err.response.data) {

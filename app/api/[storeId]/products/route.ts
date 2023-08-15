@@ -128,12 +128,9 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     }
 
     /* Create Random UUID for ImageURL (ensures storage on AWS) */
-    const imageUrls = types.map((type) => {
-      const key = randomUUID();
-      console.log({ key });
-      const ext = type.split('/')[1];
-      return `${key}.${ext}`;
-    });
+    const imageUrls = types.map(
+      (type) => `${randomUUID()}.${type.split('/')[1]}`,
+    );
 
     const product = await prismadb.product.create({
       data: {
@@ -163,9 +160,6 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     const uploadUrls = S3Params.map((S3Param) =>
       s3.getSignedUrl('putObject', S3Param),
     );
-
-    console.log({ product });
-    console.log({ uploadUrls });
 
     return NextResponse.json(
       { product, uploadUrls, message: 'Product Created' },
