@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs';
 import { randomUUID } from 'crypto';
 
+import { ImageFile } from '@/types';
+import { map } from 'lodash';
 import prismadb from '@/lib/prismadb';
 import s3 from '@/lib/aws-client';
 
@@ -45,8 +47,9 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       colorId,
       isFeatured,
       isArchived,
-      imageNames,
-      initialImageUrls,
+      oldImages,
+      deletedImages,
+      newImages,
     }: {
       name: string;
       price: number;
@@ -55,17 +58,16 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       colorId: string;
       isFeatured: boolean;
       isArchived: boolean;
-      imageNames: string[];
-      initialImageUrls: string[];
+      oldImages: { key: string }[];
+      deletedImages: { key: string }[];
+      newImages: { type: string }[];
     } = await req.json();
-
-    console.log({ imageNames, initialImageUrls });
 
     if (!name) {
       return NextResponse.json('Name is Required', { status: 400 });
     }
 
-    if (!imageNames) {
+    if (0 == oldImages.length + newImages.length) {
       return NextResponse.json('Atleast One Image is Required', {
         status: 400,
       });
@@ -99,17 +101,10 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       return NextResponse.json('Unauthorized', { status: 403 });
     }
 
-    const updatedImageUrls = imageNames.map((imageName) => {
-      return initialImageUrls.includes(imageName)
-        ? { url: imageName, oldUrl: imageName, changed: false }
-        : {
-            url: `${randomUUID()}.${imageName.split('.')[1]}`,
-            oldUrl: imageName,
-            changed: true,
-          };
-    });
-
-    console.log({ updatedImageUrls });
+    const newImageKeys = newImages.map((image) => ({
+      key: `${randomUUID()}.${image.type.split('/')[1]}`,
+      type: image.type,
+    }));
 
     await prismadb.product.update({
       where: { id: params.productId },
@@ -130,56 +125,42 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       data: {
         images: {
           createMany: {
-            data: updatedImageUrls.map((imageUrl) => ({ url: imageUrl.url })),
+            data: [
+              ...oldImages.map((image) => ({
+                key: image.key,
+                url: `https://ecommerce-admin-kpirabaharan-products.s3.amazonaws.com/${image.key}`,
+              })),
+              ...newImageKeys.map((image) => ({
+                key: image.key,
+                url: `https://ecommerce-admin-kpirabaharan-products.s3.amazonaws.com/${image.key}`,
+              })),
+            ],
           },
         },
       },
     });
 
-    const deletedImages = initialImageUrls.filter(
-      (initialImageUrl) => !imageNames.includes(initialImageUrl),
-    );
-
-    console.log({ deletedImages });
-
-    deletedImages.map(async (deletedImage) => {
+    /* Deleted Old Images (Not Used Anymore) */
+    deletedImages.forEach(async (image) => {
       const s3DeleteParams = {
         Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
-        Key: deletedImage,
+        Key: image.key,
       };
 
       await s3.deleteObject(s3DeleteParams).promise();
     });
 
-    console.log({ updatedImageUrls });
+    /* Created New Image URLs */
+    const S3Params = newImageKeys.map((image) => ({
+      Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
+      Key: image.key,
+      Expires: 60,
+      ContentType: image.type,
+    }));
 
-    updatedImageUrls.map(async (updatedImage) => {
-      if (updatedImage.changed) {
-        const s3DeleteParams = {
-          Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
-          Key: updatedImage.oldUrl,
-        };
-
-        await s3.deleteObject(s3DeleteParams).promise();
-      }
-    });
-
-    const updatedImages = updatedImageUrls.filter(
-      (imageUrl) => imageUrl.changed,
+    const uploadUrls = S3Params.map((S3Param) =>
+      s3.getSignedUrl('putObject', S3Param),
     );
-
-    const uploadUrls = updatedImages.map((updatedImage) => {
-      const s3PutParams = {
-        Bucket: process.env.S3_BILLBOARD_BUCKET ?? '',
-        Key: updatedImage.url,
-        Expires: 60,
-        ContentType: `image/${updatedImage.url.split('.')[1]}`,
-      };
-
-      return s3.getSignedUrl('putObject', s3PutParams);
-    });
-
-    console.log({ uploadUrls });
 
     return NextResponse.json(
       { product, uploadUrls, message: 'Product Updated' },
@@ -226,7 +207,7 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
 
     const S3DeleteParams = product.images.map((image) => ({
       Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
-      Key: image.url,
+      Key: image.key,
     }));
 
     S3DeleteParams.map(

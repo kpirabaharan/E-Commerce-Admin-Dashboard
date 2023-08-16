@@ -57,7 +57,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       colorId,
       isFeatured,
       isArchived,
-      types,
+      newImages,
     }: {
       name: string;
       price: number;
@@ -66,25 +66,14 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       colorId: string;
       isFeatured: boolean;
       isArchived: boolean;
-      types: string[];
+      newImages: { type: string }[];
     } = await req.json();
-
-    console.log({
-      name,
-      price,
-      categoryId,
-      sizeId,
-      colorId,
-      isFeatured,
-      isArchived,
-      types,
-    });
 
     if (!name) {
       return NextResponse.json('Name is Required', { status: 400 });
     }
 
-    if (!types) {
+    if (newImages.length == 0) {
       return NextResponse.json('Atleast One Image is Required', {
         status: 400,
       });
@@ -128,9 +117,10 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     }
 
     /* Create Random UUID for ImageURL (ensures storage on AWS) */
-    const imageUrls = types.map(
-      (type) => `${randomUUID()}.${type.split('/')[1]}`,
-    );
+    const newImageKeys = newImages.map((image) => ({
+      key: `${randomUUID()}.${image.type.split('/')[1]}`,
+      type: image.type,
+    }));
 
     const product = await prismadb.product.create({
       data: {
@@ -144,17 +134,21 @@ export const POST = async (req: Request, { params }: RequestProps) => {
         storeId: params.storeId,
         images: {
           createMany: {
-            data: imageUrls.map((imageUrl) => ({ url: imageUrl })),
+            data: newImageKeys.map((image) => ({
+              key: image.key,
+              url: `https://ecommerce-admin-kpirabaharan-products.s3.amazonaws.com/${image.key}`,
+            })),
           },
         },
       },
     });
 
-    const S3Params = imageUrls.map((imageUrl) => ({
+    /* Created New Image URLs */
+    const S3Params = newImageKeys.map((image) => ({
       Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
-      Key: imageUrl,
+      Key: image.key,
       Expires: 60,
-      ContentType: `image/${imageUrl.split('.')[1]}`,
+      ContentType: image.type,
     }));
 
     const uploadUrls = S3Params.map((S3Param) =>

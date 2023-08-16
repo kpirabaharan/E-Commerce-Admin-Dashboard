@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { differenceBy, intersectionBy, map } from 'lodash';
 import axios from 'axios';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
@@ -10,6 +11,7 @@ import { ScaleLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
 import { Trash } from 'lucide-react';
 
+import { ImageFile } from '@/types';
 import { Product, Image, Category, Size, Color } from '@prisma/client';
 import { useAlertModal } from '@/hooks/useAlertModal';
 
@@ -50,8 +52,9 @@ const formSchema = z.object({
   name: z.string().min(1),
   images: z
     .object({
+      key: z.string(),
       file: z.any(),
-      path: z.string().min(1),
+      url: z.string().min(1),
     })
     .array()
     .refine((images) => images.length != 0, {
@@ -62,9 +65,9 @@ const formSchema = z.object({
     })
     .refine(
       (images) =>
-        images
-          .map((image) => image?.file?.size <= MAX_FILE_SIZE)
-          .includes(true),
+        images.map(
+          (image) => !image.file.size || image.file.size <= MAX_FILE_SIZE,
+        ),
       {
         message: 'Max image size is 10MB',
       },
@@ -104,7 +107,8 @@ const ProductForm = ({
           ...initialData,
           price: parseFloat(String(initialData?.price)),
           images: initialData.images.map((image) => ({
-            path: `https://ecommerce-admin-kpirabaharan-products.s3.amazonaws.com/${image.url}`,
+            key: image.key,
+            url: image.url,
             file: {},
           })),
         }
@@ -120,24 +124,17 @@ const ProductForm = ({
     try {
       setIsLoading(true);
 
-      console.log({ images: values.images });
+      var oldImages: ImageFile[] = [];
+      var deletedImages: ImageFile[] = [];
+      var newImages: ImageFile[] = [];
 
-      const newImages = values.images.filter(
-        (imageUrl) => !imageUrl.path.includes('s3.amazonaws.com/'),
-      );
-
-      console.log({ newImages });
-
-      values.images.map((imageName, index) => {
-        if (imageName.path.includes('s3.amazonaws.com/')) {
-          values.images[index].path =
-            imageName.path.split('s3.amazonaws.com/')[1];
-        } else {
-          values.images[index].path = values.images[index].file.path;
-        }
-      });
-
-      console.log({ images: values.images });
+      if (initialData) {
+        oldImages = intersectionBy(values.images, initialData.images, 'key');
+        deletedImages = differenceBy(initialData.images, values.images, 'key');
+        newImages = differenceBy(values.images, initialData.images, 'key');
+      } else {
+        newImages = values.images;
+      }
 
       /* Patch or Post Product */
       if (initialData) {
@@ -149,13 +146,13 @@ const ProductForm = ({
           `/api/${params.storeId}/products/${params.productId}`,
           {
             ...values,
-            imageNames: values.images.map((image) => image.path),
-            initialImageUrls: initialData.images.map((image) => image.url),
+            oldImages: oldImages.map(({ key }) => ({ key })),
+            deletedImages: deletedImages.map(({ key }) => ({ key })),
+            newImages: newImages.map((image) => ({
+              type: image.file?.type,
+            })),
           },
         );
-
-        console.log({ patchStatus });
-        console.log({ uploadUrls });
 
         /* Upload Image to S3 with URL Created by AWS-SDK */
         if (patchStatus === 201) {
@@ -187,14 +184,16 @@ const ProductForm = ({
           status: postStatus,
         } = await axios.post(`/api/${params.storeId}/products`, {
           ...values,
-          types: values.images.map((image) => image.file.type),
+          newImages: newImages.map((image) => ({
+            type: image.file?.type,
+          })),
         });
 
         /* Upload Image to S3 with URL Created by AWS-SDK */
         if (postStatus === 201) {
           const responses = uploadUrls.map(
             async (uploadUrl: string, index: number) =>
-              await axios.put(uploadUrl, values.images[index].file),
+              await axios.put(uploadUrl, newImages[index].file),
           );
 
           console.log({ responses });
@@ -446,8 +445,9 @@ const ProductForm = ({
                         field.onChange(
                           field.value.concat(
                             files.map((file) => ({
+                              key: file.path,
+                              url: URL.createObjectURL(file),
                               file,
-                              path: URL.createObjectURL(file),
                             })),
                           ),
                         )

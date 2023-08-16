@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { Skeleton } from './ui/skeleton';
 
 interface MultiImageUploadProps {
-  images: { file?: any; path: string }[];
+  images: { file?: any; url: string }[];
   onChange: (files: any[]) => void;
   onRemove: (file: any) => void;
 }
@@ -52,11 +52,11 @@ const MultiImageUpload = ({
         <div className='flex flex-row flex-wrap h-full w-full p-4 items-center gap-4'>
           {images.map((image) => (
             <div
-              key={image.path}
+              key={image.url}
               className='h-[197px] w-[350px] rounded-lg relative'
             >
               <Image
-                src={image.path}
+                src={image.url}
                 alt='Image'
                 fill
                 className='object-cover rounded-lg'

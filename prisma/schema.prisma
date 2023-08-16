@@ -75,12 +75,12 @@ model Product {
   name       String
   price      Decimal
   isFeatured Boolean  @default(false)
-  isArchived  Boolean  @default(false)
+  isArchived Boolean  @default(false)
   store      Store    @relation("StoreToProduct", fields: [storeId], references: [id])
   category   Category @relation("CategoryToProduct", fields: [categoryId], references: [id])
   size       Size     @relation(fields: [sizeId], references: [id])
   color      Color    @relation(fields: [colorId], references: [id])
-  images      Image[]
+  images     Image[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -89,6 +89,7 @@ model Image {
   id        String   @id @default(uuid())
   productId String
   url       String
+  key       String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
