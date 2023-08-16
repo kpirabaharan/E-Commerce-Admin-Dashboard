@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { differenceBy, intersectionBy, map } from 'lodash';
+import { differenceBy, intersectionBy, map, pull } from 'lodash';
 import axios from 'axios';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
@@ -156,20 +156,28 @@ const ProductForm = ({
 
         /* Upload Image to S3 with URL Created by AWS-SDK */
         if (patchStatus === 201) {
-          const responses = uploadUrls.map(
-            async (uploadUrl: string, index: number) =>
-              await axios.put(uploadUrl, newImages[index].file),
+          const uploadFunctions: Function[] = uploadUrls.map(
+            (uploadUrl: string, index: number) => {
+              return async () => {
+                return await axios.put(uploadUrl, newImages[index].file);
+              };
+            },
           );
 
-          console.log({ responses });
+          const uploadStatuses: number[] = map(
+            await Promise.all(uploadFunctions.map((fn) => fn())),
+            'status',
+          );
 
-          // if (putStatus === 200) {
-          toast.success(message);
-          router.refresh();
-          router.push(`/${params.storeId}/products`);
-          // } else {
-          //   toast.error('Failed to Upload Images to S3');
-          // }
+          const failedStatuses = uploadStatuses.filter((st) => st != 200);
+
+          if (failedStatuses.length == 0) {
+            toast.success(message);
+            router.refresh();
+            router.push(`/${params.storeId}/products`);
+          } else {
+            toast.error('Failed to Upload Images to S3');
+          }
         } else if (patchStatus === 200) {
           toast.success(message);
           router.refresh();
@@ -191,20 +199,28 @@ const ProductForm = ({
 
         /* Upload Image to S3 with URL Created by AWS-SDK */
         if (postStatus === 201) {
-          const responses = uploadUrls.map(
-            async (uploadUrl: string, index: number) =>
-              await axios.put(uploadUrl, newImages[index].file),
+          const uploadFunctions: Function[] = uploadUrls.map(
+            (uploadUrl: string, index: number) => {
+              return async () => {
+                return await axios.put(uploadUrl, newImages[index].file);
+              };
+            },
           );
 
-          console.log({ responses });
+          const uploadStatuses: number[] = map(
+            await Promise.all(uploadFunctions.map((fn) => fn())),
+            'status',
+          );
 
-          // if (putStatus === 200) {
-          toast.success(message);
-          router.refresh();
-          router.push(`/${params.storeId}/products`);
-          // } else {
-          //   toast.error('Failed to Upload Images to S3');
-          // }
+          const failedStatuses = uploadStatuses.filter((st) => st != 200);
+
+          if (failedStatuses.length == 0) {
+            toast.success(message);
+            router.refresh();
+            router.push(`/${params.storeId}/products`);
+          } else {
+            toast.error('Failed to Upload Images to S3');
+          }
         }
       }
     } catch (err: any) {

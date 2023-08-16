@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs';
 import { randomUUID } from 'crypto';
 
-import { ImageFile } from '@/types';
-import { map } from 'lodash';
 import prismadb from '@/lib/prismadb';
 import s3 from '@/lib/aws-client';
 
