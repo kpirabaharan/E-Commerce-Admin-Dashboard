@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ChevronsUpDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import useMediaQuery from '@/hooks/useMediaQuery';
@@ -15,11 +16,9 @@ import {
 import {
   Command,
   CommandList,
-  CommandInput,
   CommandEmpty,
   CommandGroup,
   CommandItem,
-  CommandSeparator,
 } from '@/components/ui/command';
 
 import { Button } from '@/components/ui/button';
@@ -102,14 +101,15 @@ const NavRoutes = ({
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
             <Button
-              className={cn(className)}
+              className={cn('flex gap-x-2', className)}
               variant={'link'}
               size={'sm'}
               aria-expanded={isOpen}
               aria-label='Select a Store'
               role='combobox'
             >
-              {currentRoute?.label}
+              <p>{currentRoute?.label}</p>
+              <ChevronsUpDown size={16} className='shrink-0 opacity-50' />
             </Button>
           </PopoverTrigger>
           <PopoverContent className='w-[200px] p-0'>
