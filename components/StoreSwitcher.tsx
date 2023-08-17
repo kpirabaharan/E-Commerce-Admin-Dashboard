@@ -2,7 +2,7 @@
 
 import { ComponentPropsWithoutRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { PlusCircle, StoreIcon, Check, ChevronsUpDown } from 'lucide-react';
+import { PlusCircle, Check, ChevronsUpDown } from 'lucide-react';
 
 import { Store } from '@prisma/client';
 import { cn } from '@/lib/utils';
@@ -59,7 +59,10 @@ const StoreSwitcher = ({ className, items = [] }: StoreSwitcherProps) => {
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button
-          className={cn('w-[200px] gap-x-4 justify-between', className)}
+          className={cn(
+            'w-[75px] md:w-[200px] gap-x-4 justify-between',
+            className,
+          )}
           variant={'outline'}
           size={'sm'}
           aria-expanded={isOpen}
@@ -71,7 +74,7 @@ const StoreSwitcher = ({ className, items = [] }: StoreSwitcherProps) => {
           ) : (
             <Skeleton className='h-4 w-4 rounded-md' />
           )}
-          <p>{currentStore?.label}</p>
+          <p className='hidden md:flex'>{currentStore?.label}</p>
           <ChevronsUpDown className='ml-auto h-4 w-4 shrink-0 opacity-50' />
         </Button>
       </PopoverTrigger>

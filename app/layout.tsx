@@ -6,7 +6,7 @@ import './globals.css';
 import ModalProvider from '@/providers/ModalProvider';
 import ToastProvider from '@/providers/ToastProvider';
 
-const inter = Inter({ subsets: ['latin'] });
+const font = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: 'Admin Dashboard',
@@ -19,7 +19,7 @@ const RootLayout = ({ children }: RootLayoutprops) => {
   return (
     <ClerkProvider>
       <html lang='en'>
-        <body className={inter.className}>
+        <body className={font.className}>
           <ToastProvider />
           <ModalProvider />
           {children}

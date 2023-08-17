@@ -1,16 +1,38 @@
 'use client';
 
-import { useParams, usePathname } from 'next/navigation';
+import { useState } from 'react';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
+import useMediaQuery from '@/hooks/useMediaQuery';
+
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/components/ui/popover';
+import {
+  Command,
+  CommandList,
+  CommandInput,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandSeparator,
+} from '@/components/ui/command';
+
+import { Button } from '@/components/ui/button';
 
 const NavRoutes = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
+  const isSmallScreens = useMediaQuery('(max-width: 767px)');
 
   const routes = [
     {
@@ -55,24 +77,70 @@ const NavRoutes = ({
     },
   ];
 
+  const currentRoute = routes.find((route) => route.active);
+
   return (
     <nav
       className={cn('flex flex-row items-center gap-x-4 lg:gap-x-6', className)}
     >
-      {routes.map((route) => (
-        <Link
-          className={cn(
-            'text-sm font-medium transition-colors hover:text-primary',
-            route.active
-              ? 'text-black dark:text-white'
-              : 'text-muted-foreground',
-          )}
-          key={route.href}
-          href={route.href}
-        >
-          {route.label}
-        </Link>
-      ))}
+      {!isSmallScreens ? (
+        routes.map((route) => (
+          <Link
+            className={cn(
+              'text-sm font-medium transition-colors hover:text-primary',
+              route.active
+                ? 'text-black dark:text-white'
+                : 'text-muted-foreground',
+            )}
+            key={route.href}
+            href={route.href}
+          >
+            {route.label}
+          </Link>
+        ))
+      ) : (
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              className={cn(className)}
+              variant={'link'}
+              size={'sm'}
+              aria-expanded={isOpen}
+              aria-label='Select a Store'
+              role='combobox'
+            >
+              {currentRoute?.label}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className='w-[200px] p-0'>
+            <Command>
+              <CommandList>
+                <CommandEmpty>No Store Found</CommandEmpty>
+                <CommandGroup>
+                  {routes.map((route) => (
+                    <CommandItem
+                      key={route.label}
+                      className='text-sm'
+                      onSelect={() => {
+                        router.push(route.href);
+                        setIsOpen(false);
+                      }}
+                    >
+                      <p
+                        className={`items-center text-center w-full ${
+                          currentRoute?.label === route.label && 'font-bold'
+                        }`}
+                      >
+                        {route.label}
+                      </p>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+      )}
     </nav>
   );
 };

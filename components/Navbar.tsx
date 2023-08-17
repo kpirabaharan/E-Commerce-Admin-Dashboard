@@ -17,10 +17,10 @@ const Navbar = async () => {
   const stores = await prismadb.store.findMany({ where: { userId } });
 
   return (
-    <div className='flex flex-row items-center h-16 px-4 gap-x-4 border-b'>
+    <div className='flex flex-row justify-between items-center h-16 px-4 gap-x-4 border-b'>
       <StoreSwitcher items={stores} />
       <NavRoutes />
-      <div className='ml-auto'>
+      <div className='md:ml-auto'>
         <ClerkButton />
       </div>
     </div>
