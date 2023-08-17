@@ -48,6 +48,10 @@ interface ProductFormProps {
   colors: Color[];
 }
 
+interface ProductAPIResponse {
+  data: { uploadUrls: string[]; message: string };
+  status: number;
+}
 const formSchema = z.object({
   name: z.string().min(1),
   images: z
@@ -142,7 +146,7 @@ const ProductForm = ({
         const {
           data: { uploadUrls, message },
           status: patchStatus,
-        } = await axios.patch(
+        }: ProductAPIResponse = await axios.patch(
           `/api/${params.storeId}/products/${params.productId}`,
           {
             ...values,
@@ -156,13 +160,14 @@ const ProductForm = ({
 
         /* Upload Image to S3 with URL Created by AWS-SDK */
         if (patchStatus === 201) {
-          const uploadFunctions: Function[] = uploadUrls.map(
-            (uploadUrl: string, index: number) => {
-              return async () => {
-                return await axios.put(uploadUrl, newImages[index].file);
-              };
-            },
-          );
+          const uploadFunctions: Function[] = newImages.map((image, index) => {
+            return async () => {
+              return await axios.put(
+                uploadUrls.at(index) as string,
+                image.file,
+              );
+            };
+          });
 
           const uploadStatuses: number[] = map(
             await Promise.all(uploadFunctions.map((fn) => fn())),
@@ -190,12 +195,15 @@ const ProductForm = ({
         const {
           data: { uploadUrls, message },
           status: postStatus,
-        } = await axios.post(`/api/${params.storeId}/products`, {
-          ...values,
-          newImages: newImages.map((image) => ({
-            type: image.file?.type,
-          })),
-        });
+        }: ProductAPIResponse = await axios.post(
+          `/api/${params.storeId}/products`,
+          {
+            ...values,
+            newImages: newImages.map((image) => ({
+              type: image.file?.type,
+            })),
+          },
+        );
 
         /* Upload Image to S3 with URL Created by AWS-SDK */
         if (postStatus === 201) {

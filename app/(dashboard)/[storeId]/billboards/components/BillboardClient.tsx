@@ -34,7 +34,7 @@ export const BillboardClient = ({ billboards }: BillboardClientProps) => {
       </div>
       <Separator />
       <DataTable filterKey='label' columns={columns} data={billboards} />
-      <Heading title='APIs' description='API calls for Billboards' />
+      <Heading title='APIs' description='API calls for billboards' />
       <Separator />
       <ApiList entityName='billboards' enttityIdName='billboardId'/>
     </>

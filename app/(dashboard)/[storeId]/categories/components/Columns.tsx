@@ -9,7 +9,7 @@ export type CategoryColumn = {
   id: string;
   name: string;
   billboardLabel: string;
-  updatedAt: string;
+  createdAt: string;
 };
 
 export const columns: ColumnDef<CategoryColumn>[] = [
@@ -43,7 +43,7 @@ export const columns: ColumnDef<CategoryColumn>[] = [
     cell: ({ row }) => row.original.billboardLabel,
   },
   {
-    accessorKey: 'updatedAt',
+    accessorKey: 'createdAt',
     header: ({ column }) => {
       return (
         <div

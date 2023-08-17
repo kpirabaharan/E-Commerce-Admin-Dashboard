@@ -3,46 +3,33 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown } from 'lucide-react';
 
-import CellAction from './CellAction';
-
-export type SizeColumn = {
+export type OrderColumn = {
   id: string;
-  name: string;
-  value: string;
+  phone: string;
+  address: string;
+  isPaid: boolean;
+  totalPrice: string;
+  products: string;
   createdAt: string;
 };
 
-export const columns: ColumnDef<SizeColumn>[] = [
+export const columns: ColumnDef<OrderColumn>[] = [
   {
-    accessorKey: 'name',
+    accessorKey: 'products',
     header: ({ column }) => {
       return (
         <div
           className='flex flex-row items-center cursor-pointer hover:text-black w-fit'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Name
+          Products
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </div>
       );
     },
   },
   {
-    accessorKey: 'value',
-    header: ({ column }) => {
-      return (
-        <div
-          className='flex flex-row items-center cursor-pointer hover:text-black w-fit'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Value
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: 'createdAt',
+    accessorKey: 'phone',
     header: ({ column }) => {
       return (
         <div
@@ -56,11 +43,45 @@ export const columns: ColumnDef<SizeColumn>[] = [
     },
   },
   {
-    id: 'actions',
-    cell: ({ row }) => (
-      <div className='absolute top-[50%] -translate-y-[50%] left-[50%] -translate-x-[50%]'>
-        <CellAction data={row.original} />
-      </div>
-    ),
+    accessorKey: 'address',
+    header: ({ column }) => {
+      return (
+        <div
+          className='flex flex-row items-center cursor-pointer hover:text-black w-fit'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Address
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: 'totalPrice',
+    header: ({ column }) => {
+      return (
+        <div
+          className='flex flex-row items-center cursor-pointer hover:text-black w-fit'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Total Price
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: 'isPaid',
+    header: ({ column }) => {
+      return (
+        <div
+          className='flex flex-row items-center cursor-pointer hover:text-black w-fit'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Paid
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </div>
+      );
+    },
   },
 ];

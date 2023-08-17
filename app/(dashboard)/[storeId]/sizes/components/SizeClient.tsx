@@ -35,7 +35,7 @@ export const SizeClient = ({ sizes }: SizeClientProps) => {
       </div>
       <Separator />
       <DataTable filterKey='name' columns={columns} data={sizes}  />
-      <Heading title='APIs' description='API calls for Sizes' />
+      <Heading title='APIs' description='API calls for sizes' />
       <Separator />
       <ApiList entityName='sizes' enttityIdName='sizeId' />
     </>

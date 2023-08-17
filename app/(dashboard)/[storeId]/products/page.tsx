@@ -16,7 +16,7 @@ const ProductsPage = async ({ params }: ProductsPageProps) => {
   const products = await prismadb.product.findMany({
     where: { storeId: params.storeId },
     include: { category: true, size: true, color: true },
-    orderBy: { updatedAt: 'desc' },
+    orderBy: { createdAt: 'desc' },
   });
 
   const formattedProducts: ProductColumn[] = products.map((item) => ({
@@ -28,7 +28,7 @@ const ProductsPage = async ({ params }: ProductsPageProps) => {
     category: item.category.name,
     size: item.size.name,
     color: item.color.value,
-    updatedAt: format(item.updatedAt, 'MMMM do, yyyy'),
+    createdAt: format(item.createdAt, 'MMMM do, yyyy'),
   }));
 
   return (

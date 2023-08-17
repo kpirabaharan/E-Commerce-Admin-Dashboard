@@ -24,7 +24,7 @@ export const ColorClient = ({ colors }: ColorClientProps) => {
       <div className='flex flex-row items-center justify-between'>
         <Heading
           title={`Colors (${colors.length})`}
-          description={'Manage Colors for your store'}
+          description={'Manage colors for your store'}
         />
         <Button
           onClick={() => router.push(`/${params.storeId}/colors/new`)}
@@ -35,7 +35,7 @@ export const ColorClient = ({ colors }: ColorClientProps) => {
       </div>
       <Separator />
       <DataTable filterKey='name' columns={columns} data={colors}  />
-      <Heading title='APIs' description='API calls for Colors' />
+      <Heading title='APIs' description='API calls for colors' />
       <Separator />
       <ApiList entityName='colors' enttityIdName='colorId' />
     </>
