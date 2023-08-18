@@ -6,6 +6,7 @@ import prismadb from '@/lib/prismadb';
 import NavRoutes from '@/components/NavRoutes';
 import StoreSwitcher from '@/components/StoreSwitcher';
 import ClerkButton from '@/components/ClerkButton';
+import ThemeButton from '@/components/ThemeButton';
 
 const Navbar = async () => {
   const { userId } = auth();
@@ -20,7 +21,8 @@ const Navbar = async () => {
     <div className='flex flex-row justify-between items-center h-16 px-4 gap-x-4 border-b'>
       <StoreSwitcher items={stores} />
       <NavRoutes />
-      <div className='md:ml-auto'>
+      <div className='flex flex-row gap-x-4 items-center md:ml-auto'>
+        <ThemeButton />
         <ClerkButton />
       </div>
     </div>
