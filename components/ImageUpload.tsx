@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface ImageUploadProps {
-  image: { file?: any; path: string };
+  image: { file?: any; url: string };
   onChange: (file: any) => void;
   onRemove: () => void;
 }
@@ -38,16 +38,16 @@ const ImageUpload = ({ image, onChange, onRemove }: ImageUploadProps) => {
         >
           <input {...getInputProps()} />
           {!isMounted && <Skeleton className='bg-gray-300 w-full h-full' />}
-          {isMounted && !image.path && <p>Add Image Here</p>}
-          {image.path && (
+          {isMounted && !image.url && <p>Add Image Here</p>}
+          {image.url && (
             <Image
-              src={image.path}
+              src={image.url}
               alt='Image'
               fill
               className='object-cover rounded-md'
             />
           )}
-          {image.path && (
+          {image.url && (
             <Button
               className='absolute top-2 right-2'
               variant={'destructive'}

@@ -21,6 +21,8 @@ export const GET = async (req: Request, { params }: RequestProps) => {
       },
     });
 
+    console.log(billboard);
+
     return NextResponse.json(billboard, { status: 200 });
   } catch (err) {
     console.log('[BILLBOARD_GET]:', err);
@@ -36,13 +38,13 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       return new NextResponse('Unauthenticated', { status: 401 });
     }
 
-    const { label, imageName, initialImageUrl } = await req.json();
+    const { label, oldImage, deletedImage, newImage } = await req.json();
 
     if (!label) {
       return NextResponse.json('Label is Required', { status: 400 });
     }
 
-    if (!imageName) {
+    if (!oldImage && !newImage) {
       return NextResponse.json('Image is Required', { status: 400 });
     }
 
@@ -58,48 +60,49 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       return NextResponse.json('Unauthorized', { status: 403 });
     }
 
-    const key = randomUUID();
-    var ext = imageName.split('.')[1];
-    ext === 'jpg' ? (ext = 'jpeg') : (ext = ext);
-    const updatedImageUrl =
-      imageName === initialImageUrl ? imageName : `${key}.${ext}`;
+    const imageData = newImage
+      ? {
+          key: `${randomUUID()}.${newImage.type.split('/')[1]}`,
+          type: newImage.type,
+        }
+      : { key: oldImage.key };
 
     const billboard = await prismadb.billboard.update({
       where: { id: params.billboardId },
-      data: { label, imageUrl: updatedImageUrl },
+      data: {
+        label,
+        imageKey: imageData.key,
+        imageUrl: `https://ecommerce-admin-kpirabaharan-billboards.s3.amazonaws.com/${imageData.key}`,
+      },
     });
 
-    if (imageName !== initialImageUrl) {
-      const s3DeleteParams = {
+    /* Deleted Old Image (Not Used Anymore) */
+    if (newImage) {
+      const S3DeleteParam = {
         Bucket: process.env.S3_BILLBOARD_BUCKET ?? '',
-        Key: initialImageUrl,
+        Key: deletedImage.key,
       };
 
-      await s3.deleteObject(s3DeleteParams).promise();
-
-      const s3PutParams = {
-        Bucket: process.env.S3_BILLBOARD_BUCKET ?? '',
-        Key: updatedImageUrl,
-        Expires: 60,
-        ContentType: `image/${ext}`,
-      };
-
-      const uploadUrl = s3.getSignedUrl('putObject', s3PutParams);
-
-      return NextResponse.json(
-        { billboard, uploadUrl, message: 'Billboard Updated' },
-        {
-          status: 201,
-        },
-      );
-    } else {
-      return NextResponse.json(
-        { billboard, message: 'Billboard Updated' },
-        {
-          status: 200,
-        },
-      );
+      await s3.deleteObject(S3DeleteParam).promise();
     }
+
+    /* Replace with New Image */
+    const S3Param = {
+      Bucket: process.env.S3_BILLBOARD_BUCKET ?? '',
+      Key: imageData.key,
+      Expires: 60,
+      ContentType: imageData.type,
+    };
+
+    const uploadUrl = s3.getSignedUrl('putObject', S3Param);
+    return NextResponse.json(
+      { billboard, uploadUrl, message: 'Billboard Updated' },
+      newImage
+        ? {
+            status: 201,
+          }
+        : { status: 200 },
+    );
   } catch (err) {
     console.log('[BILLBOARD_PATCH]:', err);
     return new NextResponse('Internal Error', { status: 500 });
@@ -134,7 +137,7 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
 
     const S3DeleteParams = {
       Bucket: process.env.S3_BILLBOARD_BUCKET ?? '',
-      Key: billboard.imageUrl,
+      Key: billboard.imageKey,
     };
 
     await s3.deleteObject(S3DeleteParams).promise();

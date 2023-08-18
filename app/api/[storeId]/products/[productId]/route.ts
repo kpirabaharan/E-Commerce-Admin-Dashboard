@@ -140,12 +140,12 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
 
     /* Deleted Old Images (Not Used Anymore) */
     deletedImages.forEach(async (image) => {
-      const s3DeleteParams = {
+      const S3DeleteParams = {
         Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
         Key: image.key,
       };
 
-      await s3.deleteObject(s3DeleteParams).promise();
+      await s3.deleteObject(S3DeleteParams).promise();
     });
 
     /* Created New Image URLs */

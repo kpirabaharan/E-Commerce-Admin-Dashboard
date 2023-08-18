@@ -12,6 +12,7 @@ import { Trash } from 'lucide-react';
 
 import { Billboard } from '@prisma/client';
 import { useAlertModal } from '@/hooks/useAlertModal';
+import { ImageFile } from '@/types';
 
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
@@ -38,10 +39,11 @@ const formSchema = z.object({
   label: z.string().min(1),
   image: z
     .object({
+      key: z.string(),
       file: z.any(),
-      path: z.string().min(1),
+      url: z.string().min(1),
     })
-    .refine((image) => image.path, {
+    .refine((image) => image.url, {
       message: 'Drag and drop an image above.',
     })
     .refine((image) => !image?.file || image?.file?.size <= MAX_FILE_SIZE, {
@@ -70,12 +72,14 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
       ? {
           ...initialData,
           image: {
-            path: `https://ecommerce-admin-kpirabaharan-billboards.s3.amazonaws.com/${initialData.imageUrl}`,
+            key: initialData.imageKey,
+            url: initialData.imageUrl,
+            file: {},
           },
         }
       : {
           label: '',
-          image: { file: {}, path: '' },
+          image: { key: '', file: {}, url: '' },
         },
   });
 
@@ -83,8 +87,25 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
     try {
       setIsLoading(true);
 
-      if (values.image.path.includes('s3.amazonaws.com/')) {
-        values.image.path = values.image.path.split('s3.amazonaws.com/')[1];
+      var oldImage: { key: string } | undefined;
+      var deletedImage: { key: string } | undefined;
+      var newImage: { type: string } | undefined;
+
+      if (initialData) {
+        oldImage =
+          values.image.key === initialData.imageKey
+            ? { key: initialData.imageKey }
+            : undefined;
+        deletedImage =
+          values.image.key !== initialData.imageKey
+            ? { key: initialData.imageKey }
+            : undefined;
+        newImage =
+          values.image.key !== initialData.imageKey
+            ? { type: values.image.file.type }
+            : undefined;
+      } else {
+        newImage = { type: values.image.file.type };
       }
 
       /* Patch or Post Billboard */
@@ -97,8 +118,9 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
           `/api/${params.storeId}/billboards/${params.billboardId}`,
           {
             label: values.label,
-            imageName: values.image.path,
-            initialImageUrl: initialData.imageUrl,
+            oldImage,
+            deletedImage,
+            newImage,
           },
         );
 
@@ -128,7 +150,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
           status: postStatus,
         } = await axios.post(`/api/${params.storeId}/billboards`, {
           label: values.label,
-          type: values.image.file.type,
+          newImage,
         });
 
         /* Upload Image to S3 with URL Created by AWS-SDK */
@@ -216,11 +238,12 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
                       image={field.value}
                       onChange={(file) =>
                         field.onChange({
+                          key: file.path,
+                          url: URL.createObjectURL(file),
                           file,
-                          path: URL.createObjectURL(file),
                         })
                       }
-                      onRemove={() => field.onChange({ file: null, path: '' })}
+                      onRemove={() => field.onChange({ file: null, url: '' })}
                     />
                   </FormControl>
                   <FormMessage />

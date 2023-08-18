@@ -34,13 +34,13 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       return new NextResponse('Unauthenticated', { status: 401 });
     }
 
-    const { label, type } = await req.json();
+    const { label, newImage } = await req.json();
 
     if (!label) {
       return NextResponse.json('Label is Required', { status: 400 });
     }
 
-    if (!type) {
+    if (!newImage) {
       return NextResponse.json('Image is Required', { status: 400 });
     }
 
@@ -67,19 +67,25 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     }
 
     /* Create Random UUID for ImageURL (ensures storage on AWS) */
-    const key = randomUUID();
-    const ext = type.split('/')[1];
-    const imageUrl = `${key}.${ext}`;
+    const newImageData = {
+      key: `${randomUUID()}.${newImage.type.split('/')[1]}`,
+      type: newImage.type,
+    };
 
     const billboard = await prismadb.billboard.create({
-      data: { label, imageUrl, storeId: params.storeId },
+      data: {
+        label,
+        imageKey: newImageData.key,
+        imageUrl: `https://ecommerce-admin-kpirabaharan-billboards.s3.amazonaws.com/${newImageData.key}`,
+        storeId: params.storeId,
+      },
     });
 
     const s3Params = {
       Bucket: process.env.S3_BILLBOARD_BUCKET ?? '',
-      Key: imageUrl,
+      Key: newImageData.key,
       Expires: 60,
-      ContentType: type,
+      ContentType: newImageData.type,
     };
 
     const uploadUrl = s3.getSignedUrl('putObject', s3Params);
