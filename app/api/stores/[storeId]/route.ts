@@ -7,6 +7,27 @@ interface RequestProps {
   params: { storeId: string };
 }
 
+export const GET = async (req: Request, { params }: RequestProps) => {
+  try {
+    if (!params.storeId) {
+      return NextResponse.json('Store Id is Required', { status: 400 });
+    }
+
+    const store = await prismadb.store.findUnique({
+      where: {
+        id: params.storeId,
+      },
+    });
+
+    return NextResponse.json(store, {
+      status: 200,
+    });
+  } catch (err) {
+    console.log('[STORE_GET]:', err);
+    return new NextResponse('Internal Error', { status: 500 });
+  }
+};
+
 export const PATCH = async (req: Request, { params }: RequestProps) => {
   try {
     const { userId } = auth();
