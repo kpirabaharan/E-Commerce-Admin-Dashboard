@@ -31,7 +31,7 @@ const NavRoutes = ({
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
-  const isSmallScreens = useMediaQuery('(max-width: 767px)');
+  const isLargeScreens = useMediaQuery('(max-width: 1024px)');
 
   const routes = [
     {
@@ -82,7 +82,7 @@ const NavRoutes = ({
     <nav
       className={cn('flex flex-row items-center gap-x-4 lg:gap-x-6', className)}
     >
-      {!isSmallScreens ? (
+      {!isLargeScreens ? (
         routes.map((route) => (
           <Link
             className={cn(

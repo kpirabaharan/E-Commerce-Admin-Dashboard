@@ -21,7 +21,7 @@ const Navbar = async () => {
     <div className='flex flex-row justify-between items-center h-16 px-4 gap-x-4 border-b'>
       <StoreSwitcher items={stores} />
       <NavRoutes />
-      <div className='flex flex-row gap-x-4 items-center md:ml-auto'>
+      <div className='flex flex-row gap-x-4 items-center lg:ml-auto'>
         <ThemeButton />
         <ClerkButton />
       </div>
