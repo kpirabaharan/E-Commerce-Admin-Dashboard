@@ -192,7 +192,7 @@ const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
             </div>
           </div>
           <div className='flex flex-row gap-x-2'>
-            {initialData && (
+            {
               <Button
                 disabled={isLoading}
                 variant={'outline'}
@@ -205,7 +205,7 @@ const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
                   <p>Cancel</p>
                 )}
               </Button>
-            )}
+            }
             <Button disabled={isLoading} type='submit'>
               {isLoading ? (
                 <ScaleLoader color='white' height={15} />

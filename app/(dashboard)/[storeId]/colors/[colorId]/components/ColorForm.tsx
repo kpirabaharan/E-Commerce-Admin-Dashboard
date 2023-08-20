@@ -173,7 +173,7 @@ const ColorForm = ({ initialData }: ColorFormProps) => {
             />
           </div>
           <div className='flex flex-row gap-x-2'>
-            {initialData && (
+            {
               <Button
                 disabled={isLoading}
                 variant={'outline'}
@@ -186,7 +186,7 @@ const ColorForm = ({ initialData }: ColorFormProps) => {
                   <p>Cancel</p>
                 )}
               </Button>
-            )}
+            }
             <Button disabled={isLoading} type='submit'>
               {isLoading ? (
                 <ScaleLoader color='white' height={15} />

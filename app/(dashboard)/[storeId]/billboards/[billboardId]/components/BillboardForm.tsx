@@ -46,9 +46,12 @@ const formSchema = z.object({
     .refine((image) => image.url, {
       message: 'Drag and drop an image above.',
     })
-    .refine((image) => !image?.file || image?.file?.size <= MAX_FILE_SIZE, {
-      message: 'Max image size is 10MB.',
-    }),
+    .refine(
+      (image) => !image?.file?.size || image?.file?.size <= MAX_FILE_SIZE,
+      {
+        message: 'Max image size is 10MB.',
+      },
+    ),
 });
 
 type BillboardFormValues = z.infer<typeof formSchema>;
@@ -252,7 +255,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
             />
           </div>
           <div className='flex flex-row gap-x-2'>
-            {initialData && (
+            {
               <Button
                 disabled={isLoading}
                 variant={'outline'}
@@ -265,7 +268,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
                   <p>Cancel</p>
                 )}
               </Button>
-            )}
+            }
             <Button disabled={isLoading} type='submit'>
               {isLoading ? (
                 <ScaleLoader color='white' height={15} />

@@ -41,37 +41,37 @@ const NavRoutes = ({
     },
     {
       label: 'Billboards',
-      active: pathname === `/${params.storeId}/billboards`,
+      active: pathname.includes(`/${params.storeId}/billboards`),
       href: `/${params.storeId}/billboards`,
     },
     {
       label: 'Categories',
-      active: pathname === `/${params.storeId}/categories`,
+      active: pathname.includes(`/${params.storeId}/categories`),
       href: `/${params.storeId}/categories`,
     },
     {
       label: 'Sizes',
-      active: pathname === `/${params.storeId}/sizes`,
+      active: pathname.includes(`/${params.storeId}/sizes`),
       href: `/${params.storeId}/sizes`,
     },
     {
       label: 'Colors',
-      active: pathname === `/${params.storeId}/colors`,
+      active: pathname.includes(`/${params.storeId}/colors`),
       href: `/${params.storeId}/colors`,
     },
     {
       label: 'Products',
-      active: pathname === `/${params.storeId}/products`,
+      active: pathname.includes(`/${params.storeId}/products`),
       href: `/${params.storeId}/products`,
     },
     {
       label: 'Orders',
-      active: pathname === `/${params.storeId}/orders`,
+      active: pathname.includes(`/${params.storeId}/orders`),
       href: `/${params.storeId}/orders`,
     },
     {
       label: 'Settings',
-      active: pathname === `/${params.storeId}/settings`,
+      active: pathname.includes(`/${params.storeId}/settings`),
       href: `/${params.storeId}/settings`,
     },
   ];
@@ -80,7 +80,11 @@ const NavRoutes = ({
 
   return (
     <nav
-      className={cn('flex flex-row items-center gap-x-4 lg:gap-x-6', className)}
+      className={cn(
+        `flex flex-row items-center lg:ml-2 gap-x-6 absolute left-[50%] -translate-x-[50%] 
+        lg:left-0 lg:translate-x-0 lg:relative`,
+        className,
+      )}
     >
       {!isLargeScreens ? (
         routes.map((route) => (

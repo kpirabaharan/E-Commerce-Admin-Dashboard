@@ -60,7 +60,7 @@ const StoreSwitcher = ({ className, items = [] }: StoreSwitcherProps) => {
       <PopoverTrigger asChild>
         <Button
           className={cn(
-            'w-[75px] lg:w-[200px] gap-x-4 justify-between',
+            'min-w-[75px] sm:min-w-[200px] gap-x-4 justify-between',
             className,
           )}
           variant={'outline'}
@@ -74,7 +74,7 @@ const StoreSwitcher = ({ className, items = [] }: StoreSwitcherProps) => {
           ) : (
             <Skeleton className='h-4 w-4 rounded-md' />
           )}
-          <p className='hidden lg:flex'>{currentStore?.label}</p>
+          <p className='hidden sm:flex'>{currentStore?.label}</p>
           <ChevronsUpDown className='ml-auto h-4 w-4 shrink-0 opacity-50' />
         </Button>
       </PopoverTrigger>
