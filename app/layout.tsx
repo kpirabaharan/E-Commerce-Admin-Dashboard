@@ -5,7 +5,7 @@ import './globals.css';
 
 import ModalProvider from '@/providers/ModalProvider';
 import ToastProvider from '@/providers/ToastProvider';
-import { ThemeProvider } from '@/components/ThemeProvider';
+import ThemeProvider from '@/providers/ThemeProvider';
 
 const font = Inter({ subsets: ['latin'] });
 
