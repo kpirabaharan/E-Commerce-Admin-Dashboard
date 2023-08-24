@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs';
+import { Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
 
 import prismadb from '@/lib/prismadb';
@@ -125,7 +126,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     const product = await prismadb.product.create({
       data: {
         name,
-        price,
+        price: new Prisma.Decimal(price),
         categoryId,
         sizeId,
         colorId,

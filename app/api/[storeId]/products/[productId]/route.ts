@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs';
+import { Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
 
 import prismadb from '@/lib/prismadb';
@@ -108,7 +109,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       where: { id: params.productId },
       data: {
         name,
-        price,
+        price: new Prisma.Decimal(price),
         categoryId,
         sizeId,
         colorId,
