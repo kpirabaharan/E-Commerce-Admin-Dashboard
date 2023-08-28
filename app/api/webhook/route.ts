@@ -7,7 +7,7 @@ import prismadb from '@/lib/prismadb';
 
 export const POST = async (req: Request) => {
   const body = await req.text();
-  const sig = headers().get('Stripe-Signature') as string;
+  const sig = headers().get('Stripe-Signature');
 
   const webhookSecret =
     process.env.STRIPE_WEBHOOK_SECRET_LIVE ?? process.env.STRIPE_WEBHOOK_SECRET;
@@ -18,7 +18,7 @@ export const POST = async (req: Request) => {
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
   } catch (err: any) {
     console.log(`❌ Error message: ${err.message}`);
-    return NextResponse.json(`Webhook Error: ${err.message}`, { status: 400 });
+    return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
   const session = event.data.object as Stripe.Checkout.Session;
@@ -41,7 +41,7 @@ export const POST = async (req: Request) => {
       data: {
         isPaid: true,
         address: addressString,
-        phone: session.customer_details?.phone || '',
+        phone: session?.customer_details?.phone || '',
       },
       include: { orderItems: true },
     });
@@ -52,7 +52,7 @@ export const POST = async (req: Request) => {
       where: { id: { in: productIds } },
       data: { isArchived: true },
     });
-
-    return NextResponse.json(null, { status: 200 });
   }
+
+  return new NextResponse(null, { status: 200 });
 };
