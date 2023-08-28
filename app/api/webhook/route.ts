@@ -5,11 +5,9 @@ import { headers } from 'next/headers';
 import stripe from '@/lib/stripe';
 import prismadb from '@/lib/prismadb';
 
-const relevantEvents = new Set(['checkout.session.completed']);
-
-export const POST = async (request: Request) => {
-  const body = await request.text();
-  const sig = headers().get('Stripe-Signature');
+export const POST = async (req: Request) => {
+  const body = await req.text();
+  const sig = headers().get('Stripe-Signature') as string;
 
   const webhookSecret =
     process.env.STRIPE_WEBHOOK_SECRET_LIVE ?? process.env.STRIPE_WEBHOOK_SECRET;
@@ -20,7 +18,7 @@ export const POST = async (request: Request) => {
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
   } catch (err: any) {
     console.log(`❌ Error message: ${err.message}`);
-    return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
+    return NextResponse.json(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
   const session = event.data.object as Stripe.Checkout.Session;
@@ -37,7 +35,24 @@ export const POST = async (request: Request) => {
 
   const addressString = addressComponents.filter((c) => c !== null).join(', ');
 
-  if(event.type === 'checkout.session.completed'){
-    
+  if (event.type === 'checkout.session.completed') {
+    const order = await prismadb.order.update({
+      where: { id: session?.metadata?.orderId },
+      data: {
+        isPaid: true,
+        address: addressString,
+        phone: session.customer_details?.phone || '',
+      },
+      include: { orderItems: true },
+    });
+
+    const productIds = order.orderItems.map((orderItem) => orderItem.productId);
+
+    await prismadb.product.updateMany({
+      where: { id: { in: productIds } },
+      data: { isArchived: true },
+    });
+
+    return NextResponse.json(null, { status: 200 });
   }
 };
