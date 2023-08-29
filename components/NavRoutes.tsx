@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { ChevronsUpDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import useMediaQuery from '@/hooks/useMediaQuery';
 
 import {
   Popover,
@@ -31,7 +30,6 @@ const NavRoutes = ({
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
-  const isLargeScreens = useMediaQuery('(max-width: 1024px)');
 
   const routes = [
     {
@@ -81,13 +79,12 @@ const NavRoutes = ({
   return (
     <nav
       className={cn(
-        `flex flex-row items-center lg:ml-2 gap-x-6 absolute left-[50%] -translate-x-[50%] 
-        lg:left-0 lg:translate-x-0 lg:relative`,
+        `absolute left-[50%] -translate-x-[50%] lg:left-0 lg:translate-x-0 lg:relative`,
         className,
       )}
     >
-      {!isLargeScreens ? (
-        routes.map((route) => (
+      <div className='hidden lg:flex flex-row items-center lg:ml-2 gap-x-6'>
+        {routes.map((route) => (
           <Link
             className={cn(
               'text-sm font-medium transition-colors hover:text-primary',
@@ -100,8 +97,9 @@ const NavRoutes = ({
           >
             {route.label}
           </Link>
-        ))
-      ) : (
+        ))}
+      </div>
+      <div className='flex lg:hidden'>
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -144,7 +142,7 @@ const NavRoutes = ({
             </Command>
           </PopoverContent>
         </Popover>
-      )}
+      </div>
     </nav>
   );
 };
