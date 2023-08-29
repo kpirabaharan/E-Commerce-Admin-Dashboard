@@ -2,6 +2,9 @@ import { DollarSignIcon, CreditCardIcon, PackageIcon } from 'lucide-react';
 
 import prismadb from '@/lib/prismadb';
 import { currencyFormatter } from '@/lib/utils';
+import { getTotalRevenue } from '@/actions/getTotalRevenue';
+import { getSalesCount } from '@/actions/getSalesCount';
+import { getStockCount } from '@/actions/getStockCount';
 
 import { Heading } from '@/components/Heading';
 import { Separator } from '@/components/ui/separator';
@@ -11,7 +14,11 @@ interface DashboardPageProps {
   params: { storeId: string };
 }
 
-const DashboardPage = ({ params }: DashboardPageProps) => {
+const DashboardPage = async ({ params }: DashboardPageProps) => {
+  const totalRevenue = await getTotalRevenue(params.storeId);
+  const salesCount = await getSalesCount(params.storeId);
+  const stockCount = await getStockCount(params.storeId);
+
   return (
     <div className='flex-col'>
       <div className='flex-1 space-y-4 p-8 pt-6'>
@@ -27,7 +34,7 @@ const DashboardPage = ({ params }: DashboardPageProps) => {
             </CardHeader>
             <CardContent>
               <div className='text-2xl font-bold'>
-                {currencyFormatter.format(100)}
+                {currencyFormatter.format(totalRevenue)}
               </div>
             </CardContent>
           </Card>
@@ -37,7 +44,7 @@ const DashboardPage = ({ params }: DashboardPageProps) => {
               <CreditCardIcon className='text-muted-foreground' size={16} />
             </CardHeader>
             <CardContent>
-              <div className='text-2xl font-bold'>+25</div>
+              <div className='text-2xl font-bold'>+{salesCount}</div>
             </CardContent>
           </Card>
           <Card>
@@ -46,7 +53,7 @@ const DashboardPage = ({ params }: DashboardPageProps) => {
               <PackageIcon className='text-muted-foreground' size={16} />
             </CardHeader>
             <CardContent>
-              <div className='text-2xl font-bold'>5</div>
+              <div className='text-2xl font-bold'>{stockCount}</div>
             </CardContent>
           </Card>
         </div>
