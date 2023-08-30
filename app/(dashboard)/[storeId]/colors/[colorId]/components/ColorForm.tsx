@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { Heading } from '@/components/Heading';
+import Heading from '@/components/Heading';
 
 interface ColorFormProps {
   initialData: Color | null;

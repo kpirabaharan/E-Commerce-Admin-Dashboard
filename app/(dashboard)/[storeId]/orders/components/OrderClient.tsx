@@ -1,6 +1,6 @@
 'use client';
 
-import { Heading } from '@/components/Heading';
+import Heading from '@/components/Heading';
 
 import { Separator } from '@/components/ui/separator';
 import { OrderColumn, columns } from './Columns';

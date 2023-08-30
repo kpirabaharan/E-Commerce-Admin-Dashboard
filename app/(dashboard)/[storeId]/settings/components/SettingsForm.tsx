@@ -27,7 +27,7 @@ import {
 import { Input } from '@/components/ui/input';
 
 import { CategoryIcons } from '@/components/CategoryIcons';
-import { Heading } from '@/components/Heading';
+import Heading from '@/components/Heading';
 import { ApiAlert } from '@/components/ApiAlert';
 
 interface SettingsFormProps {

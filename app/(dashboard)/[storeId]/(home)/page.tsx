@@ -1,14 +1,15 @@
 import { DollarSignIcon, CreditCardIcon, PackageIcon } from 'lucide-react';
 
-import prismadb from '@/lib/prismadb';
 import { currencyFormatter } from '@/lib/utils';
 import { getTotalRevenue } from '@/actions/getTotalRevenue';
 import { getSalesCount } from '@/actions/getSalesCount';
 import { getStockCount } from '@/actions/getStockCount';
 
-import { Heading } from '@/components/Heading';
+import Heading from '@/components/Heading';
+import Overview from '@/components/Overview';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getRevenueGraph } from '@/actions/getRevenueGraph';
 
 interface DashboardPageProps {
   params: { storeId: string };
@@ -18,6 +19,8 @@ const DashboardPage = async ({ params }: DashboardPageProps) => {
   const totalRevenue = await getTotalRevenue(params.storeId);
   const salesCount = await getSalesCount(params.storeId);
   const stockCount = await getStockCount(params.storeId);
+
+  const graphRevenue = await getRevenueGraph(params.storeId);
 
   return (
     <div className='flex-col'>
@@ -57,6 +60,14 @@ const DashboardPage = async ({ params }: DashboardPageProps) => {
             </CardContent>
           </Card>
         </div>
+        <Card className='col-span-3'>
+          <CardHeader>
+            <CardTitle>Overview</CardTitle>
+            <CardContent className='p-0 pt-4'>
+              <Overview data={graphRevenue} />
+            </CardContent>
+          </CardHeader>
+        </Card>
       </div>
     </div>
   );

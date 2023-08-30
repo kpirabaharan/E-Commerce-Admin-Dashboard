@@ -3,7 +3,7 @@
 import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
-import { Heading } from '@/components/Heading';
+import Heading from '@/components/Heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 
@@ -26,15 +26,13 @@ export const ColorClient = ({ colors }: ColorClientProps) => {
           title={`Colors (${colors.length})`}
           description={'Manage colors for your store'}
         />
-        <Button
-          onClick={() => router.push(`/${params.storeId}/colors/new`)}
-        >
+        <Button onClick={() => router.push(`/${params.storeId}/colors/new`)}>
           <Plus className='mr-2' size={16} />
           <p>Create Color</p>
         </Button>
       </div>
       <Separator />
-      <DataTable filterKey='name' columns={columns} data={colors}  />
+      <DataTable filterKey='name' columns={columns} data={colors} />
       <Heading title='APIs' description='API calls for colors' />
       <Separator />
       <ApiList entityName='colors' enttityIdName='colorId' />

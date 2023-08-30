@@ -3,7 +3,7 @@
 import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
-import { Heading } from '@/components/Heading';
+import Heading from '@/components/Heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { DataTable } from '@/components/DataTable';
@@ -25,9 +25,7 @@ export const ProductClient = ({ products }: ProductClientProps) => {
           title={`Products (${products.length})`}
           description={'Manage products for your store'}
         />
-        <Button
-          onClick={() => router.push(`/${params.storeId}/products/new`)}
-        >
+        <Button onClick={() => router.push(`/${params.storeId}/products/new`)}>
           <Plus className='mr-2' size={16} />
           <p>Create Product</p>
         </Button>
@@ -36,7 +34,7 @@ export const ProductClient = ({ products }: ProductClientProps) => {
       <DataTable filterKey='name' columns={columns} data={products} />
       <Heading title='APIs' description='API calls for products' />
       <Separator />
-      <ApiList entityName='products' enttityIdName='productId'/>
+      <ApiList entityName='products' enttityIdName='productId' />
     </>
   );
 };

@@ -32,7 +32,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { Heading } from '@/components/Heading';
+import Heading from '@/components/Heading';
 
 interface CategoryFormProps {
   initialData: Category | null;
