@@ -64,10 +64,10 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     mode: 'payment',
     allow_promotion_codes: true,
     success_url: `${
-      process.env.NEXT_PUBLIC_SITE_URL ?? process.env.STORE_URL
+      process.env.NEXT_PUBLIC_STORE_URL ?? process.env.STORE_URL
     }/cart?success=1`,
     cancel_url: `${
-      process.env.NEXT_PUBLIC_SITE_URL ?? process.env.STORE_URL
+      process.env.NEXT_PUBLIC_STORE_URL ?? process.env.STORE_URL
     }/cart?canceled=1`,
     metadata: { orderId: order.id },
   });
