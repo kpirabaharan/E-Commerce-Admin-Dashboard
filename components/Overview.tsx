@@ -1,7 +1,14 @@
 'use client';
 
 import { useTheme } from 'next-themes';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 interface OverviewProps {
   data: any[];
@@ -12,27 +19,29 @@ const Overview = ({ data }: OverviewProps) => {
 
   return (
     <ResponsiveContainer width={'100%'} height={350}>
-      <BarChart data={data}>
+      <LineChart width={500} height={300} data={data}>
         <XAxis
           dataKey={'name'}
-          stroke='#888888'
+          stroke={theme === 'dark' ? '#bbbbbb' : '#666666'}
           fontSize={12}
           tickLine={false}
           axisLine={false}
         />
         <YAxis
-          stroke='#888888'
+          stroke={theme === 'dark' ? '#bbbbbb' : '#666666'}
           fontSize={12}
-          tickLine={true}
+          tickLine={false}
           tickFormatter={(value) => `$${value}`}
           axisLine={false}
         />
-        <Bar
-          dataKey={'total'}
-          fill={theme === 'dark' ? '#ffffff' : '#18181b'}
-          radius={[4, 4, 0, 0]}
+        <Tooltip formatter={(value) => `$${value}`} />
+        <Line
+          type='monotone'
+          dataKey='Total'
+          stroke={theme === 'dark' ? '#ffffff' : '#18181b'}
+          activeDot={{ r: 8 }}
         />
-      </BarChart>
+      </LineChart>
     </ResponsiveContainer>
   );
 };
