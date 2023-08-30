@@ -34,7 +34,14 @@ const Overview = ({ data }: OverviewProps) => {
           tickFormatter={(value) => `$${value}`}
           axisLine={false}
         />
-        <Tooltip formatter={(value) => `$${value}`} />
+        <Tooltip
+          contentStyle={{
+            borderWidth: theme === 'dark' ? '0px' : '1px',
+            borderRadius: '10px 10px 10px 10px',
+            backgroundColor: theme === 'dark' ? '#18181b' : '#ffffff',
+          }}
+          formatter={(value) => `$${value}`}
+        />
         <Line
           type='monotone'
           dataKey='Total'
