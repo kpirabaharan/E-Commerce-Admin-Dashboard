@@ -27,6 +27,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
 
   const products = await prismadb.product.findMany({
     where: { id: { in: productIds } },
+    include: { images: true },
   });
 
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
@@ -36,7 +37,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       quantity: 1,
       price_data: {
         currency: 'USD',
-        product_data: { name: product.name },
+        product_data: { name: product.name, images: [product.images[0].url] },
         unit_amount: Math.round(Number(product.price) * 100),
       },
     });
