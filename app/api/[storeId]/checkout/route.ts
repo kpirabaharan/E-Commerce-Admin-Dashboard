@@ -70,6 +70,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       process.env.NEXT_PUBLIC_STORE_URL ?? process.env.STORE_URL
     }/cart?canceled=1`,
     metadata: { orderId: order.id },
+    expires_at: Math.ceil(new Date().getTime() / 1000) + 1800,
   });
 
   return NextResponse.json({ url: session.url }, { headers: corsHeaders });
