@@ -36,7 +36,7 @@ export const columns: ColumnDef<OrderColumn>[] = [
           className='flex flex-row items-center cursor-pointer hover:text-black w-fit'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Date
+          Phone
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </div>
       );
@@ -79,6 +79,20 @@ export const columns: ColumnDef<OrderColumn>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Paid
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: 'createdAt',
+    header: ({ column }) => {
+      return (
+        <div
+          className='flex flex-row items-center cursor-pointer hover:text-black w-fit'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Date
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </div>
       );
