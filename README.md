@@ -6,7 +6,7 @@ Welcome to the E-commerce Admin Dashboard, your centralized hub for managing mul
 
 - **Multi-Store Management:**
 
-  - Seamlessly manage multiple stores, including clothes, shoe, and other stores, all from one centralized dashboard.
+  - Seamlessly manage multiple stores, such as clothes, food, computers etc., all from one centralized dashboard.
   - Create, update, or delete billboards, categories, sizes, colors, and products across different stores.
 
 - **Efficient Data Handling:**
@@ -23,30 +23,49 @@ Welcome to the E-commerce Admin Dashboard, your centralized hub for managing mul
   - Securely authenticate administrators using Clerk, allowing them to sign in with either their Google accounts using OAuth2 or Email and Password.
 
 - **Payment Management with Stripe:**
+
   - Manage payments effortlessly with Stripe integration, providing a seamless transaction experience.
+
+- **Theme Modes:**
+  - Enjoy a personalized user experience with support for both light and dark theme modes, enhancing readability and aesthetics.
 
 ## Demo
 
 Explore the [E-commerce Admin Dashboard Demo](https://e-commerce-admin-dashboard-kpirabaharan.vercel.app/) to experience these features in action.
 
-## Usage
+## Technologies Used
 
-- Log in to the Admin Dashboard using your Clerk credentials.
-- Efficiently manage multiple stores, products, and orders from the intuitive interface.
-- Gain valuable insights into your e-commerce business with the integrated data visualization tools.
-- Ensure smooth payment processing with the Stripe payment management system.
+- Next.js: React framework for server-side rendering and building web applications
+- Shadcn UI: A popular component library for building accessible and highly customizable user interfaces
+- Tailwind CSS: Utility-first CSS framework for styling
+- PostgreSQL: A powerful open-source relational database management system
+- AWS RDS: Amazon Web Services Relational Database Service for managing PostgreSQL databases
+- AWS S3: Amazon Web Services Simple Storage Service for storing images and other assets
+- Clerk: Authentication service for securely managing user sign-ins
+- Stripe: Payment processing platform for handling recurring payments
+- Recharts: A composable charting library for building interactive data visualizations
 
-## Technologies
+## Screenshots
 
-- **Frontend:** Next.js, Chakra UI, Tailwind CSS
-- **Backend:** PostgreSQL with AWS RDS, AWS S3
-- **Authentication:** Clerk
-- **Payment Processing:** Stripe
-- **Data Visualization:** Recharts
+### Overview Page (Light)
 
-## Screenshot
+![Overview Page Light](./screenshots/OverviewPageLight.png)
 
-![Admin Dashboard](./screenshots/admin-dashboard.png)
+### Overview Page (Dark)
+
+![Overview Page](./screenshots/OverviewPage.png)
+
+### Products Page
+
+![Products Page](./screenshots/ProductsPage.png)
+
+### Edit Product Page
+
+![Edit Product Page](./screenshots/EditProductPage.png)
+
+### Clerk Login Page
+
+![Clerk Login Page](./screenshots/ClerkLogin.png)
 
 ## License
 
