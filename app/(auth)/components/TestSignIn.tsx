@@ -32,7 +32,8 @@ const TestSignIn = () => {
     });
 
     if (attemptResponse?.status == 'complete') {
-      redirect('/');
+      window.location.assign('/');
+      // redirect('/');
     } else {
       console.log('Login failed. Please try again later.');
     }
@@ -40,6 +41,7 @@ const TestSignIn = () => {
 
   return (
     <Button
+      variant={'default'}
       onClick={async (e: MouseEvent) => {
         e.preventDefault();
         await testSignInWithEmailCode();
