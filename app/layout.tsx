@@ -25,7 +25,7 @@ const RootLayout = ({ children }: RootLayoutprops) => {
           shimmer: true,
         },
         variables: {
-          colorPrimary: '#111827',
+          colorPrimary: '#000000',
         },
       }}
     >

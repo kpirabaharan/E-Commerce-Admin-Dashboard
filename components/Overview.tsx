@@ -40,7 +40,7 @@ const Overview = ({ data }: OverviewProps) => {
             borderRadius: '10px 10px 10px 10px',
             backgroundColor: theme === 'dark' ? '#18181b' : '#ffffff',
           }}
-          formatter={(value) => `$${value}`}
+          formatter={(value: number) => `$${value.toFixed(2)}`}
         />
         <Line
           type='monotone'

@@ -1,16 +1,21 @@
 'use client';
 
-import { MouseEvent } from 'react';
-import { redirect } from 'next/navigation';
+import { useState, useEffect, MouseEvent } from 'react';
 import { useSignIn } from '@clerk/nextjs';
 
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const TestSignIn = () => {
   const { isLoaded, signIn } = useSignIn();
+  const [isMounted, setIsMounted] = useState(false);
 
-  if (!isLoaded) {
-    return null;
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted || !isLoaded) {
+    return <Skeleton className='h-[40px] w-[345px] rounded-md' />;
   }
 
   const testSignInWithEmailCode = async () => {
@@ -40,7 +45,7 @@ const TestSignIn = () => {
 
   return (
     <Button
-      variant={'default'}
+      variant={'dark'}
       onClick={async (e: MouseEvent) => {
         e.preventDefault();
         await testSignInWithEmailCode();
