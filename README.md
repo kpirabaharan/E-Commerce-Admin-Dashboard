@@ -33,6 +33,16 @@ Welcome to the E-commerce Admin Dashboard, your centralized hub for managing mul
 
 Explore the [E-commerce Admin Dashboard Demo](https://e-commerce-admin-dashboard-kpirabaharan.vercel.app/) to experience these features in action.
 
+## Accompanied Store
+
+### Github Page
+
+**E-commerce Store Website GitHub:** [GitHub Repository](https://github.com/kpirabaharan/E-Commerce-Store)
+
+### Website
+
+Explore the live store website: [E-commerce Store Website](https://e-commerce-store-kpirabaharan.vercel.app/)
+
 ## Technologies Used
 
 - Next.js: React framework for server-side rendering and building web applications
