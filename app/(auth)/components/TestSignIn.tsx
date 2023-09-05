@@ -33,7 +33,6 @@ const TestSignIn = () => {
 
     if (attemptResponse?.status == 'complete') {
       window.location.assign('/');
-      // redirect('/');
     } else {
       console.log('Login failed. Please try again later.');
     }

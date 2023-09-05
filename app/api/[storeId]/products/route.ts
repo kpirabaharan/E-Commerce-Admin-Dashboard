@@ -108,15 +108,6 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       return NextResponse.json('Unauthorized', { status: 403 });
     }
 
-    const existingProduct = await prismadb.product.findFirst({
-      where: { name, storeId: params.storeId },
-    });
-    if (existingProduct) {
-      return NextResponse.json('A product with that name exists!', {
-        status: 400,
-      });
-    }
-
     /* Create Random UUID for ImageURL (ensures storage on AWS) */
     const newImageKeys = newImages.map((image) => ({
       key: `${randomUUID()}.${image.type.split('/')[1]}`,

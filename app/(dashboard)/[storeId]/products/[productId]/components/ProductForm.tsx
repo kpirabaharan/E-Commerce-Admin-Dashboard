@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { differenceBy, intersectionBy, map, pull } from 'lodash';
+import { differenceBy, intersectionBy, map } from 'lodash';
 import axios from 'axios';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
