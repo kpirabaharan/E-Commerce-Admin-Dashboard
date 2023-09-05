@@ -2,6 +2,7 @@
 
 import { useState, useEffect, MouseEvent } from 'react';
 import { useSignIn } from '@clerk/nextjs';
+import { ClipLoader } from 'react-spinners';
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -9,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 const TestSignIn = () => {
   const { isLoaded, signIn } = useSignIn();
   const [isMounted, setIsMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -19,6 +21,7 @@ const TestSignIn = () => {
   }
 
   const testSignInWithEmailCode = async () => {
+    setIsLoading(true);
     const emailAddress = 'john+clerk_test@example.com';
     const signInResp = await signIn.create({ identifier: emailAddress });
     const { emailAddressId } = signInResp.supportedFirstFactors.find(
@@ -37,13 +40,17 @@ const TestSignIn = () => {
     });
 
     if (attemptResponse?.status == 'complete') {
+      setIsLoading(false);
       window.location.assign('/');
     } else {
+      setIsLoading(false);
       console.log('Login failed. Please try again later.');
     }
   };
 
-  return (
+  return isLoading ? (
+    <ClipLoader size={75} />
+  ) : (
     <Button
       variant={'dark'}
       onClick={async (e: MouseEvent) => {
