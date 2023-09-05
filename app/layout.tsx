@@ -18,7 +18,17 @@ interface RootLayoutprops extends PropsWithChildren {}
 
 const RootLayout = ({ children }: RootLayoutprops) => {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        layout: {
+          termsPageUrl: 'https://clerk.dev/terms',
+          shimmer: true,
+        },
+        variables: {
+          colorPrimary: '#111827',
+        },
+      }}
+    >
       <html lang='en'>
         <body className={font.className}>
           <ThemeProvider attribute='class' defaultTheme='system' enableSystem>

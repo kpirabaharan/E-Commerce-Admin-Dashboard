@@ -21,8 +21,6 @@ export const GET = async (req: Request, { params }: RequestProps) => {
       },
     });
 
-    console.log(billboard);
-
     return NextResponse.json(billboard, { status: 200 });
   } catch (err) {
     console.log('[BILLBOARD_GET]:', err);

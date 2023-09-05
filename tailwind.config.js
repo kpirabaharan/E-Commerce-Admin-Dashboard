@@ -16,6 +16,9 @@ module.exports = {
       },
     },
     extend: {
+      backgroundImage: {
+        login: "url('/login-background-image.jpg')",
+      },
       colors: {
         destructive: '#ef4444',
         border: 'hsl(var(--border))',

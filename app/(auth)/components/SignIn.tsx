@@ -18,5 +18,4 @@ const SignIn = () => {
 
   return <SignInModal redirectUrl={'/'} />;
 };
-
 export default SignIn;
