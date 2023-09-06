@@ -19,10 +19,15 @@ interface RequestProps {
 }
 
 export const POST = async (req: Request, { params }: RequestProps) => {
-  const { productIds }: { productIds: string[] } = await req.json();
+  const { productIds, storeUrl }: { productIds: string[]; storeUrl: string } =
+    await req.json();
 
   if (!productIds || productIds.length === 0) {
     return new NextResponse('Product ids are required', { status: 400 });
+  }
+
+  if (!storeUrl) {
+    return new NextResponse('Store Url is required', { status: 400 });
   }
 
   const products = await prismadb.product.findMany({
@@ -64,12 +69,8 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     line_items,
     mode: 'payment',
     allow_promotion_codes: true,
-    success_url: `${
-      process.env.NEXT_PUBLIC_STORE_URL ?? process.env.STORE_URL
-    }/cart?success=1`,
-    cancel_url: `${
-      process.env.NEXT_PUBLIC_STORE_URL ?? process.env.STORE_URL
-    }/cart?canceled=1`,
+    success_url: `${storeUrl}/cart?success=1`,
+    cancel_url: `${storeUrl}/cart?canceled=1`,
     metadata: { orderId: order.id },
   });
 
