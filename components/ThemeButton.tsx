@@ -6,6 +6,12 @@ import { SunIcon, MoonIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const ThemeButton = () => {
   const { theme, setTheme } = useTheme();
@@ -20,15 +26,26 @@ const ThemeButton = () => {
   }
 
   return (
-    <Button
-      variant={'outline'}
-      size={'sm'}
-      onClick={
-        theme === 'light' ? () => setTheme('dark') : () => setTheme('light')
-      }
-    >
-      {theme === 'light' ? <SunIcon size={16} /> : <MoonIcon size={16} />}
-    </Button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <Button
+            variant={'outline'}
+            size={'sm'}
+            onClick={
+              theme === 'light'
+                ? () => setTheme('dark')
+                : () => setTheme('light')
+            }
+          >
+            {theme === 'light' ? <SunIcon size={16} /> : <MoonIcon size={16} />}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Change Theme</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 

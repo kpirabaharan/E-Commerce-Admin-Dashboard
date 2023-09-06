@@ -1,11 +1,17 @@
 'use client';
 
 import { Copy, ServerIcon } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge, BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { toast } from 'react-hot-toast';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface ApiAlertProps {
   title: string;
@@ -46,10 +52,19 @@ export const ApiAlert = ({
           font-mono text-sm font-semibold'
         >
           {description}
-        </code>
-        <Button variant={'outline'} size={'icon'} onClick={onCopy}>
-          <Copy size={16} />
-        </Button>
+        </code>{' '}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Button variant={'outline'} size={'icon'} onClick={onCopy}>
+                <Copy size={16} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side='bottom'>
+              <p>Copy</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </AlertDescription>
     </Alert>
   );
