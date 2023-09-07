@@ -43,6 +43,8 @@ const AlertModal = () => {
         } else if (deleteType === 'color') {
           router.push(`/${params.storeId}/colors`);
         }
+      } else {
+        toast.error(message);
       }
     } catch (err: any) {
       if (err.response.data) {
