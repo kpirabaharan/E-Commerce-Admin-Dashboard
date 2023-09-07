@@ -114,6 +114,6 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
     );
   } catch (err) {
     console.log('[CATEGORY_DELETE]:', err);
-    return new NextResponse('Internal Error', { status: 500 });
+    return new NextResponse('Please delete all products using this category first', { status: 400 });
   }
 };

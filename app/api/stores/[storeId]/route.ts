@@ -95,6 +95,8 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
     return NextResponse.json({ message: 'Deleted Store' }, { status: 200 });
   } catch (err) {
     console.log('[STORE_DELETE]:', err);
-    return new NextResponse('Internal Error', { status: 500 });
+    return new NextResponse('Please delete all products and categories first', {
+      status: 400,
+    });
   }
 };

@@ -113,6 +113,9 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
     );
   } catch (err) {
     console.log('[SIZE_DELETE]:', err);
-    return new NextResponse('Internal Error', { status: 500 });
+    return new NextResponse(
+      'Please delete all products using this size first',
+      { status: 400 },
+    );
   }
 };

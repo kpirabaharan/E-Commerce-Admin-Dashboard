@@ -116,7 +116,7 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
     if (process.env.NODE_ENV === 'production') {
       return new NextResponse('Blocked Admin Routes for Demo', { status: 401 });
     }
-    
+
     const { userId } = auth();
 
     if (!userId) {
@@ -154,6 +154,9 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
     );
   } catch (err) {
     console.log('[BILLBOARD_DELETE]:', err);
-    return new NextResponse('Internal Error', { status: 500 });
+    return new NextResponse(
+      'Please delete all categories using this billboard first',
+      { status: 400 },
+    );
   }
 };
