@@ -29,10 +29,6 @@ export const GET = async (req: Request, { params }: RequestProps) => {
 
 export const PATCH = async (req: Request, { params }: RequestProps) => {
   try {
-    if (process.env.NODE_ENV === 'production') {
-      return new NextResponse('Blocked Admin Routes for Demo', { status: 401 });
-    }
-
     const { userId } = auth();
 
     if (!userId) {
@@ -80,10 +76,6 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
 
 export const DELETE = async (req: Request, { params }: RequestProps) => {
   try {
-    if (process.env.NODE_ENV === 'production') {
-      return new NextResponse('Blocked Admin Routes for Demo', { status: 401 });
-    }
-    
     const { userId } = auth();
 
     if (!userId) {
@@ -114,6 +106,9 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
     );
   } catch (err) {
     console.log('[CATEGORY_DELETE]:', err);
-    return new NextResponse('Please delete all products using this category first', { status: 400 });
+    return new NextResponse(
+      'Please delete all products using this category first',
+      { status: 400 },
+    );
   }
 };

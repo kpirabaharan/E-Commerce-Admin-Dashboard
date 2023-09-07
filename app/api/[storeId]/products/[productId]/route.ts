@@ -32,10 +32,6 @@ export const GET = async (req: Request, { params }: RequestProps) => {
 
 export const PATCH = async (req: Request, { params }: RequestProps) => {
   try {
-    if (process.env.NODE_ENV === 'production') {
-      return new NextResponse('Blocked Admin Routes for Demo', { status: 401 });
-    }
-
     const { userId } = auth();
 
     if (!userId) {
@@ -183,10 +179,6 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
 
 export const DELETE = async (req: Request, { params }: RequestProps) => {
   try {
-    if (process.env.NODE_ENV === 'production') {
-      return new NextResponse('Blocked Admin Routes for Demo', { status: 401 });
-    }
-
     const { userId } = auth();
 
     if (!userId) {

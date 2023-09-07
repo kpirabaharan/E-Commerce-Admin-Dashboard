@@ -5,10 +5,6 @@ import prismadb from '@/lib/prismadb';
 
 export const POST = async (req: Request) => {
   try {
-    if (process.env.NODE_ENV === 'production') {
-      return new NextResponse('Blocked Admin Routes for Demo', { status: 401 });
-    }
-
     const { userId } = auth();
 
     if (!userId) {
