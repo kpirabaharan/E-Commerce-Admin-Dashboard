@@ -45,16 +45,22 @@ const AlertModal = () => {
         }
       }
     } catch (err: any) {
-      if (deleteType === 'store') {
-        toast.error('Please delete all products and categories first');
-      } else if (deleteType === 'billboard') {
-        toast.error('Please delete all categories using this billboard first');
-      } else if (deleteType === 'category') {
-        toast.error('Please delete all products using this category first');
-      } else if (deleteType === 'size') {
-        toast.error('Please delete all products using this size first');
-      } else if (deleteType === 'color') {
-        toast.error('Please delete all products using this color first');
+      if (err.response.data) {
+        toast.error(err.response.data);
+      } else {
+        if (deleteType === 'store') {
+          toast.error('Please delete all products and categories first');
+        } else if (deleteType === 'billboard') {
+          toast.error(
+            'Please delete all categories using this billboard first',
+          );
+        } else if (deleteType === 'category') {
+          toast.error('Please delete all products using this category first');
+        } else if (deleteType === 'size') {
+          toast.error('Please delete all products using this size first');
+        } else if (deleteType === 'color') {
+          toast.error('Please delete all products using this color first');
+        }
       }
     } finally {
       setIsLoading(false);
