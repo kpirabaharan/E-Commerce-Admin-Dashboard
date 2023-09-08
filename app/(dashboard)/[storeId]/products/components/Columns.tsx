@@ -8,6 +8,7 @@ import CellAction from './CellAction';
 export type ProductColumn = {
   id: string;
   name: string;
+  amount: number;
   price: string;
   size: string;
   category: string;
@@ -32,6 +33,7 @@ export const columns: ColumnDef<ProductColumn>[] = [
       );
     },
   },
+
   {
     accessorKey: 'isArchived',
     header: ({ column }) => {
@@ -55,6 +57,20 @@ export const columns: ColumnDef<ProductColumn>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Featured
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: 'amount',
+    header: ({ column }) => {
+      return (
+        <div
+          className='flex flex-row items-center cursor-pointer hover:text-black w-fit'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Amount
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </div>
       );

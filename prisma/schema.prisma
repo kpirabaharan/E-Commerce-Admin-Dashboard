@@ -75,6 +75,7 @@ model Product {
   sizeId     String
   colorId    String
   name       String
+  amount     Int         @default(1)
   price      Decimal
   isFeatured Boolean     @default(false)
   isArchived Boolean     @default(false)
@@ -113,6 +114,7 @@ model Order {
 model OrderItem {
   id        String  @id @default(uuid())
   productId String
+  amount    Int     @default(1)
   orderId   String
   product   Product @relation(fields: [productId], references: [id])
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)

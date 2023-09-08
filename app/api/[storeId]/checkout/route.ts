@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
+import { map } from 'lodash';
 
 import stripe from '@/lib/stripe';
 import prismadb from '@/lib/prismadb';
@@ -18,12 +19,21 @@ interface RequestProps {
   params: { storeId: string };
 }
 
-export const POST = async (req: Request, { params }: RequestProps) => {
-  const { productIds, storeUrl }: { productIds: string[]; storeUrl: string } =
-    await req.json();
+interface orderedProduct {
+  productId: string;
+  amount: number;
+}
 
-  if (!productIds || productIds.length === 0) {
-    return new NextResponse('Product ids are required', { status: 400 });
+export const POST = async (req: Request, { params }: RequestProps) => {
+  const {
+    orderedProducts,
+    storeUrl,
+  }: { orderedProducts: orderedProduct[]; storeUrl: string } = await req.json();
+
+  console.log({ orderedProducts });
+
+  if (!orderedProducts || orderedProducts.length === 0) {
+    return new NextResponse('Products are required', { status: 400 });
   }
 
   if (!storeUrl) {
@@ -31,15 +41,21 @@ export const POST = async (req: Request, { params }: RequestProps) => {
   }
 
   const products = await prismadb.product.findMany({
-    where: { id: { in: productIds } },
+    where: { id: { in: map(orderedProducts, 'productId') } },
     include: { images: true },
   });
+
+  console.log({ products });
 
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
   products.forEach((product) => {
+    const selectedProduct = orderedProducts.find(
+      (orderedProduct) => orderedProduct.productId === product.id,
+    );
+
     line_items.push({
-      quantity: 1,
+      quantity: selectedProduct?.amount ?? 1,
       price_data: {
         currency: 'USD',
         product_data: { name: product.name, images: [product.images[0].url] },
@@ -48,14 +64,17 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     });
   });
 
+  console.log({ line_items });
+
   const order = await prismadb.order.create({
     data: {
       storeId: params.storeId,
       isPaid: false,
       orderItems: {
-        create: productIds.map((productId: string) => ({
+        create: orderedProducts.map((product) => ({
+          amount: product.amount,
           product: {
-            connect: { id: productId },
+            connect: { id: product.productId },
           },
         })),
       },

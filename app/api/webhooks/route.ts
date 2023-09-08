@@ -4,6 +4,7 @@ import { headers } from 'next/headers';
 
 import stripe from '@/lib/stripe';
 import prismadb from '@/lib/prismadb';
+import { map } from 'lodash';
 
 export const POST = async (req: Request) => {
   const body = await req.text();
@@ -49,13 +50,36 @@ export const POST = async (req: Request) => {
           include: { orderItems: true },
         });
 
-        const productIds = order.orderItems.map(
-          (orderItem) => orderItem.productId,
-        );
+        console.log({ order });
 
-        await prismadb.product.updateMany({
-          where: { id: { in: productIds } },
-          data: { isArchived: true },
+        const orderedProducts = order.orderItems.map((orderItem) => ({
+          productId: orderItem.productId,
+          amount: orderItem.amount,
+        }));
+
+        console.log({ orderedProducts });
+
+        const products = await prismadb.product.findMany({
+          where: { id: { in: map(orderedProducts, 'productId') } },
+        });
+
+        console.log({ products });
+
+        products.forEach(async (product) => {
+          const selectedProduct = orderedProducts.find(
+            (orderedProduct) => orderedProduct.productId === product.id,
+          );
+          const isArchived = product.amount === (selectedProduct?.amount ?? 1);
+          const amount = product.amount - (selectedProduct?.amount ?? 1);
+
+          console.log({ isArchived, amount });
+
+          const updatedProduct = await prismadb.product.update({
+            where: { id: product.id },
+            data: { amount, isArchived },
+          });
+          
+          console.log(updatedProduct);
         });
 
         break;

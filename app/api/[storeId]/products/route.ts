@@ -57,6 +57,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     const {
       name,
       price,
+      amount,
       categoryId,
       sizeId,
       colorId,
@@ -66,6 +67,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     }: {
       name: string;
       price: number;
+      amount: number;
       categoryId: string;
       sizeId: string;
       colorId: string;
@@ -122,6 +124,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       data: {
         name,
         price: new Prisma.Decimal(price),
+        amount,
         categoryId,
         sizeId,
         colorId,

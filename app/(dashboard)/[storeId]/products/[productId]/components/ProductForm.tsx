@@ -77,6 +77,7 @@ const formSchema = z.object({
       },
     ),
   price: z.coerce.number().min(1),
+  amount: z.coerce.number().int({message:'Please enter a valid whole number.'}).gte(1).lte(999),
   categoryId: z.string().min(1),
   colorId: z.string().min(1),
   sizeId: z.string().min(1),
@@ -299,6 +300,25 @@ const ProductForm = ({
                       <Input
                         type='number'
                         placeholder='ex. 9.99'
+                        disabled={isLoading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Amount */}
+              <FormField
+                control={form.control}
+                name='amount'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amount</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='number'
+                        placeholder='ex. 5'
                         disabled={isLoading}
                         {...field}
                       />
