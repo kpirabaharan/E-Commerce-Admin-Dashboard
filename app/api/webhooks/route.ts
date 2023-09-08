@@ -4,7 +4,6 @@ import { headers } from 'next/headers';
 
 import stripe from '@/lib/stripe';
 import prismadb from '@/lib/prismadb';
-import { map } from 'lodash';
 
 export const POST = async (req: Request) => {
   const body = await req.text();
@@ -47,39 +46,28 @@ export const POST = async (req: Request) => {
             address: addressString,
             phone: session?.customer_details?.phone || '',
           },
-          include: { orderItems: true },
+          include: { orderItems: { include: { product: true } } },
         });
-
-        console.log({ order });
 
         const orderedProducts = order.orderItems.map((orderItem) => ({
           productId: orderItem.productId,
           amount: orderItem.amount,
         }));
 
-        console.log({ orderedProducts });
-
-        const products = await prismadb.product.findMany({
-          where: { id: { in: map(orderedProducts, 'productId') } },
-        });
-
-        console.log({ products });
-
-        products.forEach(async (product) => {
+        order.orderItems.forEach(async (orderItem) => {
           const selectedProduct = orderedProducts.find(
-            (orderedProduct) => orderedProduct.productId === product.id,
+            (orderedProduct) =>
+              orderedProduct.productId === orderItem.productId,
           );
-          const isArchived = product.amount === (selectedProduct?.amount ?? 1);
-          const amount = product.amount - (selectedProduct?.amount ?? 1);
+          const isArchived =
+            orderItem.product.amount === (selectedProduct?.amount ?? 1);
+          const amount =
+            orderItem.product.amount - (selectedProduct?.amount ?? 1);
 
-          console.log({ isArchived, amount });
-
-          const updatedProduct = await prismadb.product.update({
-            where: { id: product.id },
+          await prismadb.product.update({
+            where: { id: orderItem.productId },
             data: { amount, isArchived },
           });
-          
-          console.log(updatedProduct);
         });
 
         break;

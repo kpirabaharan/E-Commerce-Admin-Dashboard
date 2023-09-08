@@ -28,7 +28,7 @@ const OrdersPage = async ({ params }: OrdersPageProps) => {
       .join(', '),
     totalPrice: currencyFormatter.format(
       item.orderItems.reduce(
-        (total, item) => total + item.product.price.toNumber(),
+        (total, item) => total + item.product.price.toNumber() * item.amount,
         0,
       ),
     ),

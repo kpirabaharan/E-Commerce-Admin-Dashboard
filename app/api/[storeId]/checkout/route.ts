@@ -30,8 +30,6 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     storeUrl,
   }: { orderedProducts: orderedProduct[]; storeUrl: string } = await req.json();
 
-  console.log({ orderedProducts });
-
   if (!orderedProducts || orderedProducts.length === 0) {
     return new NextResponse('Products are required', { status: 400 });
   }
@@ -44,8 +42,6 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     where: { id: { in: map(orderedProducts, 'productId') } },
     include: { images: true },
   });
-
-  console.log({ products });
 
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
@@ -63,8 +59,6 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       },
     });
   });
-
-  console.log({ line_items });
 
   const order = await prismadb.order.create({
     data: {
