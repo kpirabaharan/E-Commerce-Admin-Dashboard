@@ -25,7 +25,7 @@ export const CategoryIcons = ({ icon, setIcon }: CategoryIconsProps) => {
               key={btn.value}
               type={'button'}
               size={'icon'}
-              variant={icon === `${btn.value}` ? 'default' : 'outline'}
+              variant={icon === btn.value ? 'default' : 'outline'}
               onClick={() => setIcon(btn.value)}
             >
               {<btn.icon size={24} />}
