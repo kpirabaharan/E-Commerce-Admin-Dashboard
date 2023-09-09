@@ -51,7 +51,7 @@ export const POST = async (req: Request) => {
 
         const orderedProducts = order.orderItems.map((orderItem) => ({
           productId: orderItem.productId,
-          amount: orderItem.amount,
+          amount: orderItem.quantity,
         }));
 
         order.orderItems.forEach(async (orderItem) => {

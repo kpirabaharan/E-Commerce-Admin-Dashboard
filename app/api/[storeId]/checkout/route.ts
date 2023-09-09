@@ -21,7 +21,7 @@ interface RequestProps {
 
 interface orderedProduct {
   productId: string;
-  amount: number;
+  quantity: number;
 }
 
 export const POST = async (req: Request, { params }: RequestProps) => {
@@ -51,7 +51,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     );
 
     line_items.push({
-      quantity: selectedProduct?.amount ?? 1,
+      quantity: selectedProduct?.quantity,
       price_data: {
         currency: 'USD',
         product_data: { name: product.name, images: [product.images[0].url] },
@@ -66,7 +66,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       isPaid: false,
       orderItems: {
         create: orderedProducts.map((product) => ({
-          amount: product.amount,
+          quantity: product.quantity,
           product: {
             connect: { id: product.productId },
           },

@@ -25,14 +25,15 @@ const OrdersPage = async ({ params }: OrdersPageProps) => {
     address: item.address,
     products: item.orderItems
       .map((orderItem) =>
-        orderItem.amount === 1
+        orderItem.quantity === 1
           ? orderItem.product.name
-          : `${orderItem.product.name} (${orderItem.amount})`,
+          : `${orderItem.product.name} (${orderItem.quantity})`,
       )
       .join(', '),
     totalPrice: currencyFormatter.format(
       item.orderItems.reduce(
-        (total, item) => total + item.product.price.toNumber() * item.amount,
+        (total, orderItem) =>
+          total + orderItem.product.price.toNumber() * orderItem.quantity,
         0,
       ),
     ),
