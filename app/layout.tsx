@@ -16,6 +16,8 @@ export const metadata = {
 
 interface RootLayoutprops extends PropsWithChildren {}
 
+const themes = ['red', 'blue', 'light', 'dark'];
+
 const RootLayout = ({ children }: RootLayoutprops) => {
   return (
     <ClerkProvider
@@ -31,7 +33,12 @@ const RootLayout = ({ children }: RootLayoutprops) => {
     >
       <html lang='en'>
         <body className={font.className}>
-          <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+          <ThemeProvider
+            themes={themes}
+            attribute='class'
+            defaultTheme='red'
+            enableSystem
+          >
             <ToastProvider />
             <ModalProvider />
             {children}
