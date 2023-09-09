@@ -77,7 +77,7 @@ const formSchema = z.object({
       },
     ),
   price: z.coerce.number().min(1),
-  amount: z.coerce.number().int({message:'Please enter a valid whole number.'}).gte(1).lte(999),
+  amount: z.coerce.number().int({message:'Please enter a valid whole number.'}).gte(0).lte(1000000),
   categoryId: z.string().min(1),
   colorId: z.string().min(1),
   sizeId: z.string().min(1),
