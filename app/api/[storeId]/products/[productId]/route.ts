@@ -161,7 +161,8 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
       Key: image.key,
       Expires: 60,
-      ContentType: image.type,
+      ContentType: `${image.type}`,
+      ACL: 'public-read',
     }));
 
     const uploadUrls = S3Params.map((S3Param) =>

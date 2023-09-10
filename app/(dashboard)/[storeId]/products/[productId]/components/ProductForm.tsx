@@ -77,7 +77,11 @@ const formSchema = z.object({
       },
     ),
   price: z.coerce.number().min(1),
-  amount: z.coerce.number().int({message:'Please enter a valid whole number.'}).gte(0).lte(1000000),
+  amount: z.coerce
+    .number()
+    .int({ message: 'Please enter a valid whole number.' })
+    .gte(0)
+    .lte(1000000),
   categoryId: z.string().min(1),
   colorId: z.string().min(1),
   sizeId: z.string().min(1),
@@ -143,7 +147,7 @@ const ProductForm = ({
 
       /* Patch or Post Product */
       if (initialData) {
-        /* Create Database Entry of Product */
+        /* Update Database Entry of Product */
         const {
           data: { uploadUrls, message },
           status: patchStatus,
@@ -162,10 +166,12 @@ const ProductForm = ({
         /* Upload Image to S3 with URL Created by AWS-SDK */
         if (patchStatus === 201) {
           const uploadFunctions: Function[] = newImages.map((image, index) => {
+            const config = { headers: { 'Content-Type': image.file?.type } };
             return async () => {
               return await axios.put(
                 uploadUrls.at(index) as string,
                 image.file,
+                config,
               );
             };
           });
@@ -210,8 +216,15 @@ const ProductForm = ({
         if (postStatus === 201) {
           const uploadFunctions: Function[] = uploadUrls.map(
             (uploadUrl: string, index: number) => {
+              const config = {
+                headers: { 'Content-Type': newImages[index].file?.type },
+              };
               return async () => {
-                return await axios.put(uploadUrl, newImages[index].file);
+                return await axios.put(
+                  uploadUrl,
+                  newImages[index].file,
+                  config,
+                );
               };
             },
           );

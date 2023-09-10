@@ -148,6 +148,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       Key: image.key,
       Expires: 60,
       ContentType: image.type,
+      ACL: 'public-read',
     }));
 
     const uploadUrls = S3Params.map((S3Param) =>
