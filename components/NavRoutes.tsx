@@ -38,6 +38,11 @@ const NavRoutes = ({
       href: `/${params.storeId}`,
     },
     {
+      label: 'Sales',
+      active: pathname === `/${params.storeId}/sales`,
+      href: `/${params.storeId}/sales`,
+    },
+    {
       label: 'Billboards',
       active: pathname.includes(`/${params.storeId}/billboards`),
       href: `/${params.storeId}/billboards`,

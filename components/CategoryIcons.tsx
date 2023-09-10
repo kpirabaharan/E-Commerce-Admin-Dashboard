@@ -7,10 +7,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 interface CategoryIconsProps {
   icon: string;
-  setIcon: (icon: string) => void;
+  onChange: (icon: string) => void;
 }
 
-export const CategoryIcons = ({ icon, setIcon }: CategoryIconsProps) => {
+export const CategoryIcons = ({ icon, onChange }: CategoryIconsProps) => {
   const iconList = useIcons();
 
   return (
@@ -25,8 +25,8 @@ export const CategoryIcons = ({ icon, setIcon }: CategoryIconsProps) => {
               key={btn.value}
               type={'button'}
               size={'icon'}
-              variant={icon === `${btn.value}` ? 'default' : 'outline'}
-              onClick={() => setIcon(btn.value)}
+              variant={icon === btn.value ? 'default' : 'outline'}
+              onClick={() => onChange(btn.value)}
             >
               {<btn.icon size={24} />}
             </Button>
