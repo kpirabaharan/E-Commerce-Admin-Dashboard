@@ -9,10 +9,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 interface ColorButtonsProps {
   color: string;
-  setColor: (icon: string) => void;
+  onChange: (icon: string) => void;
 }
 
-export const ColorButtons = ({ color, setColor }: ColorButtonsProps) => {
+export const ColorButtons = ({ color, onChange }: ColorButtonsProps) => {
   const colorList = useColors();
 
   return (
@@ -31,7 +31,7 @@ export const ColorButtons = ({ color, setColor }: ColorButtonsProps) => {
                 backgroundColor: btn.value,
                 scale: color === btn.name ? 1.25 : 1,
               }}
-              onClick={() => setColor(btn.name)}
+              onClick={() => onChange(btn.name)}
             >
               {color === btn.name && <CheckIcon size={20} />}
             </Button>

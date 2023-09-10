@@ -11,7 +11,9 @@ model Store {
   id         String      @id @default(uuid())
   userId     String
   name       String
-  icon       String
+  limit      Int         @default(5)
+  icon       String      @default("store")
+  color      String      @default("zinc")
   billboards Billboard[] @relation("StoreToBillboard")
   categories Category[]  @relation("StoreToCategory")
   sizes      Size[]      @relation("StoreToSize")

@@ -33,13 +33,9 @@ const ThemeButton = () => {
             variant={'outline'}
             size={'sm'}
             onClick={
-              // theme === 'light'
-              //   ? () => setTheme('dark')
-              //   : () => setTheme('light')
-              () => {
-                setTheme('blue');
-                console.log(theme);
-              }
+              theme === 'light'
+                ? () => setTheme('dark')
+                : () => setTheme('light')
             }
           >
             {theme === 'light' ? <SunIcon size={16} /> : <MoonIcon size={16} />}

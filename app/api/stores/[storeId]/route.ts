@@ -40,10 +40,22 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       return new NextResponse('Unauthenticated', { status: 401 });
     }
 
-    const { name, icon } = await req.json();
+    const { name, limit, icon, color } = await req.json();
 
     if (!name) {
       return NextResponse.json('Name is Required', { status: 400 });
+    }
+
+    if (!limit) {
+      return NextResponse.json('Limit is Required', { status: 400 });
+    }
+
+    if (!icon) {
+      return NextResponse.json('Icon is Required', { status: 400 });
+    }
+
+    if (!color) {
+      return NextResponse.json('Color is Required', { status: 400 });
     }
 
     if (!params.storeId) {
@@ -56,8 +68,10 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
         userId,
       },
       data: {
-        icon,
         name,
+        limit,
+        icon,
+        color,
       },
     });
 

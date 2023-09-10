@@ -42,6 +42,8 @@ const formSchema = z.object({
     .int({ message: 'Please enter a valid whole number.' })
     .gte(1)
     .lte(1000000),
+  icon: z.string().min(1),
+  color: z.string().min(1),
 });
 
 type SettingsFormValues = z.infer<typeof formSchema>;
@@ -50,8 +52,6 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
   const params = useParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [icon, setIcon] = useState(initialData.icon);
-  const [color, setColor] = useState('blue');
 
   const origin = useOrigin();
   const { onOpen } = useAlertModal();
@@ -65,10 +65,10 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
     try {
       setIsLoading(true);
 
-      const response = await axios.patch(`/api/stores/${params.storeId}`, {
-        ...values,
-        icon,
-      });
+      const response = await axios.patch(
+        `/api/stores/${params.storeId}`,
+        values,
+      );
 
       if (response.status === 200) {
         setIsLoading(false);
@@ -111,6 +111,7 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
           className='space-y-6 w-full'
         >
           <div className='grid grid-cols-2 gap-x-4 gap-y-4'>
+            {/* Name */}
             <div className='col-span-2 sm:col-span-1'>
               <FormField
                 control={form.control}
@@ -126,6 +127,8 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
                 )}
               />
             </div>
+
+            {/* Limit */}
             <div className='col-span-2 sm:col-span-1'>
               <FormField
                 control={form.control}
@@ -146,20 +149,49 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
                 )}
               />
             </div>
-            <div className='col-span-3'>
-              <FormLabel>Icon</FormLabel>
-              <div
-                className='flex flex-row flex-wrap gap-4 pt-2'
-              >
-                <CategoryIcons icon={icon} setIcon={setIcon} />
-              </div>
+
+            {/* Icons */}
+            <div className='col-span-2'>
+              <FormField
+                control={form.control}
+                name='icon'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Icon</FormLabel>
+                    <FormControl>
+                      <div className='flex flex-row flex-wrap gap-4'>
+                        <CategoryIcons
+                          icon={field.value}
+                          onChange={(icon) => field.onChange(icon)}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
-            <div className='col-span-3'>
-              <FormLabel>Store Theme</FormLabel>
-              <div className='flex flex-row flex-wrap pt-2 gap-6'>
-                <ColorButtons color={color} setColor={setColor} />
-              </div>
+            {/* Colors */}
+            <div className='col-span-2'>
+              <FormField
+                control={form.control}
+                name='color'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Store Theme</FormLabel>
+                    <FormControl>
+                      <div className='flex flex-row flex-wrap gap-6'>
+                        <ColorButtons
+                          color={field.value}
+                          onChange={(color) => field.onChange(color)}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           </div>
           <Button disabled={isLoading} type='submit'>

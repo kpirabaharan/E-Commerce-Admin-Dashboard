@@ -10,6 +10,9 @@ import { toast } from 'react-hot-toast';
 
 import { useStoreModal } from '@/hooks/useStoreModal';
 
+import { ColorButtons } from '../ColorButtons';
+import { CategoryIcons } from '@/components/CategoryIcons';
+
 import { Modal } from '@/components//ui/modal';
 import {
   Form,
@@ -22,21 +25,22 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
-import { CategoryIcons } from '@/components/CategoryIcons';
-
 const formSchema = z.object({
   name: z.string().min(1),
+  icon: z.string().min(1),
+  color: z.string().min(1),
 });
 
 const StoreModal = () => {
   const { isOpen, onClose } = useStoreModal();
   const [isLoading, setIsLoading] = useState(false);
-  const [icon, setIcon] = useState('store');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
+      icon: 'store',
+      color: 'zinc',
     },
   });
 
@@ -44,7 +48,7 @@ const StoreModal = () => {
     try {
       setIsLoading(true);
 
-      const response = await axios.post('/api/stores', { ...values, icon });
+      const response = await axios.post('/api/stores', values);
 
       if (response.status === 201) {
         setIsLoading(false);
@@ -74,9 +78,9 @@ const StoreModal = () => {
       isOpen={isOpen}
       onClose={onCloseHandler}
     >
-      <div className='flex flex-col gap-y-4'>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className='flex flex-col gap-y-2'>
             <FormField
               control={form.control}
               name='name'
@@ -92,9 +96,44 @@ const StoreModal = () => {
             />
 
             {/* Icons */}
-            <div className='grid grid-cols-8 pt-4 gap-y-4 place-items-center'>
-              <CategoryIcons icon={icon} setIcon={setIcon} />
-            </div>
+            <FormField
+              control={form.control}
+              name='icon'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Icon</FormLabel>
+                  <FormControl>
+                    <div className='flex flex-row flex-wrap gap-4'>
+                      <CategoryIcons
+                        icon={field.value}
+                        onChange={(icon) => field.onChange(icon)}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Colors */}
+            <FormField
+              control={form.control}
+              name='color'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Store Theme</FormLabel>
+                  <FormControl>
+                    <div className='flex flex-row flex-wrap gap-6'>
+                      <ColorButtons
+                        color={field.value}
+                        onChange={(color) => field.onChange(color)}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className='flex items-center justify-end pt-4 gap-x-2 w-full'>
               <Button
@@ -117,9 +156,9 @@ const StoreModal = () => {
                 )}
               </Button>
             </div>
-          </form>
-        </Form>
-      </div>
+          </div>
+        </form>
+      </Form>
     </Modal>
   );
 };

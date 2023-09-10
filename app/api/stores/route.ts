@@ -15,10 +15,18 @@ export const POST = async (req: Request) => {
       return new NextResponse('Unauthenticated', { status: 401 });
     }
 
-    const { name, icon } = await req.json();
+    const { name, icon, color } = await req.json();
 
     if (!name) {
       return NextResponse.json('Name is Required', { status: 400 });
+    }
+
+    if (!icon) {
+      return NextResponse.json('Icon is Required', { status: 400 });
+    }
+
+    if (!color) {
+      return NextResponse.json('Color is Required', { status: 400 });
     }
 
     const existingStore = await prismadb.store.findFirst({
@@ -31,7 +39,7 @@ export const POST = async (req: Request) => {
       });
     } else {
       const store = await prismadb.store.create({
-        data: { name, icon, userId },
+        data: { name, icon, color, userId },
       });
 
       return NextResponse.json(store, { status: 201 });
