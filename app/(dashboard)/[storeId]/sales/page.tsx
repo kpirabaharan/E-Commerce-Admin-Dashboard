@@ -1,5 +1,5 @@
 const SalesPage = () => {
-  return <div>SalesPage</div>;
+  return <div>SalesPage Ongoing</div>;
 };
 
 export default SalesPage;
