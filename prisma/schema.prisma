@@ -105,6 +105,8 @@ model Order {
   id         String      @id @default(uuid())
   storeId    String
   isPaid     Boolean     @default(false)
+  name       String      @default("")
+  email      String      @default("")
   phone      String      @default("")
   address    String      @default("")
   store      Store       @relation("StoreToOrder", fields: [storeId], references: [id])

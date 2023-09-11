@@ -43,6 +43,8 @@ export const POST = async (req: Request) => {
           where: { id: session?.metadata?.orderId },
           data: {
             isPaid: true,
+            name: session.customer_details?.name || '',
+            email: session.customer_details?.email || '',
             address: addressString,
             phone: session?.customer_details?.phone || '',
           },
