@@ -17,7 +17,9 @@ export const GET = async (req: Request, { params }: RequestProps) => {
         id: params.orderId,
       },
       include: {
-        orderItems: { include: { product: true } },
+        orderItems: {
+          include: { product: { include: { images: true } } },
+        },
         store: { select: { name: true } },
       },
     });
