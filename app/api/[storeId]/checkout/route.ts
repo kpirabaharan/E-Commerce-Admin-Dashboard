@@ -65,12 +65,20 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       storeId: params.storeId,
       isPaid: false,
       orderItems: {
-        create: orderedProducts.map((product) => ({
-          quantity: product.quantity,
-          product: {
-            connect: { id: product.productId },
-          },
-        })),
+        create: orderedProducts.map((product) => {
+          const randomDay = 3 + Math.random() * 3;
+          const deliveryDate = new Date(
+            new Date().getTime() + randomDay * 24 * 60 * 60 * 1000,
+          );
+
+          return {
+            deliveryDate,
+            quantity: product.quantity,
+            product: {
+              connect: { id: product.productId },
+            },
+          };
+        }),
       },
     },
   });

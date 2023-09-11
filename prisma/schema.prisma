@@ -116,10 +116,11 @@ model Order {
 }
 
 model OrderItem {
-  id        String  @id @default(uuid())
-  productId String
-  quantity  Int     @default(1)
-  orderId   String
-  product   Product @relation(fields: [productId], references: [id])
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id           String   @id @default(uuid())
+  productId    String
+  quantity     Int      @default(1)
+  orderId      String
+  deliveryDate DateTime
+  product      Product  @relation(fields: [productId], references: [id])
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
