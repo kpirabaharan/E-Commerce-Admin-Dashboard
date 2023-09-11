@@ -90,7 +90,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     line_items,
     mode: 'payment',
     allow_promotion_codes: true,
-    success_url: `${storeUrl}/order/success/${order.id}`,
+    success_url: `${storeUrl}/cart?success=${order.id}`,
     cancel_url: `${storeUrl}/cart?canceled=1`,
     metadata: { orderId: order.id },
   });

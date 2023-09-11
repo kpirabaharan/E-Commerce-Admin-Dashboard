@@ -24,10 +24,6 @@ export const GET = async (req: Request, { params }: RequestProps) => {
       },
     });
 
-    // if (order) {
-    //   order.createdAt = format(order?.createdAt, 'MMMM do, yyyy');
-    // }
-
     return NextResponse.json(order, { status: 200 });
   } catch (err) {
     console.log('[ORDER_GET]:', err);
