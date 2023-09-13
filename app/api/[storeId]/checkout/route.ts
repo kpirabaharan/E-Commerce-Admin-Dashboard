@@ -66,11 +66,10 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       isPaid: false,
       orderItems: {
         create: orderedProducts.map((product) => {
-          const randomDay = 3 + Math.random() * 3;
+          const randomDay = 2 + Math.random() * 2;
           const deliveryDate = new Date(
             new Date().getTime() + randomDay * 24 * 60 * 60 * 1000,
           );
-
           return {
             deliveryDate,
             quantity: product.quantity,
