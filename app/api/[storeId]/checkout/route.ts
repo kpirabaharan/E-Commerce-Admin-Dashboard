@@ -92,7 +92,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     allow_promotion_codes: true,
     success_url: `${storeUrl}/cart?success=${order.id}`,
     cancel_url: `${storeUrl}/cart?canceled=1`,
-    metadata: { orderId: order.id },
+    metadata: { orderId: order.id, storeUrl },
   });
 
   return NextResponse.json({ url: session.url }, { headers: corsHeaders });
