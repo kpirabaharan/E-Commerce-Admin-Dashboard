@@ -8,6 +8,10 @@ interface RequestProps {
 
 export const GET = async (req: Request, { params }: RequestProps) => {
   try {
+    if (!params.storeId) {
+      return NextResponse.json('Store Id is Required', { status: 400 });
+    }
+
     if (!params.orderId) {
       return NextResponse.json('Order Id is Required', { status: 400 });
     }
@@ -15,6 +19,7 @@ export const GET = async (req: Request, { params }: RequestProps) => {
     const order = await prismadb.order.findUnique({
       where: {
         id: params.orderId,
+        storeId: params.storeId,
       },
       include: {
         orderItems: {
