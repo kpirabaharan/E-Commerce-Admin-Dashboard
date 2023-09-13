@@ -4,6 +4,7 @@ import { headers } from 'next/headers';
 
 import stripe from '@/lib/stripe';
 import prismadb from '@/lib/prismadb';
+import { sendEmail, sendEmailConfig } from '@/lib/sendEmail';
 
 export const POST = async (req: Request) => {
   const body = await req.text();
@@ -48,7 +49,7 @@ export const POST = async (req: Request) => {
             address: addressString,
             phone: session?.customer_details?.phone || '',
           },
-          include: { orderItems: { include: { product: true } } },
+          include: { orderItems: { include: { product: true } }, store: true },
         });
 
         const orderedProducts = order.orderItems.map((orderItem) => ({
@@ -70,6 +71,25 @@ export const POST = async (req: Request) => {
             where: { id: orderItem.productId },
             data: { amount, isArchived },
           });
+
+          const totalItems = order.orderItems.reduce(
+            (total, item) => total + item.quantity,
+            0,
+          );
+
+          const subject = `Your ${order.store.name}, Inc. order #${
+            order.id
+          } of ${totalItems} item${totalItems > 1 && 's'} has been placed`;
+
+          const body = `<p>Click <a href="${session?.metadata?.storeUrl}/order/${order.id}">here</a> to check the status of your order.</p>`;
+
+          const configEmailData: sendEmailConfig = {
+            toEmail: order.email,
+            subject,
+            body,
+          };
+
+          sendEmail(configEmailData);
         });
 
         break;
