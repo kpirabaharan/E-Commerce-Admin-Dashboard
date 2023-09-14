@@ -4,30 +4,35 @@ Welcome to the E-commerce Admin Dashboard, your centralized hub for managing mul
 
 ## Key Features
 
-- **Multi-Store Management:**
+### Multi-Store Management
 
-  - Seamlessly manage multiple stores, such as clothes, food, computers etc., all from one centralized dashboard.
-  - Create, update, or delete billboards, categories, sizes, colors, and products across different stores.
+- Seamlessly manage multiple stores, such as clothes, food, computers etc., all from one centralized dashboard.
+- Create, update, or delete billboards, categories, sizes, colors, and products across different stores.
 
-- **Efficient Data Handling:**
+### Efficient Data Handling
 
-  - Utilize tables with pagination and search functionalities to efficiently view and manage data.
-  - Streamline inventory management and easily feature products on the homepage or archive them.
+- Utilize tables with pagination and search functionalities to efficiently view and manage data.
+- Streamline inventory management and easily feature products on the homepage or archive them.
 
-- **Data Visualization:**
+### Data Visualization
 
-  - Gain insights into your e-commerce performance with graphical representations of orders, sales, and revenue using Recharts.
+- Gain insights into your e-commerce performance with graphical representations of orders, sales, and revenue using Recharts.
 
-- **Authentication with Clerk:**
+### Authentication with Clerk
 
-  - Securely authenticate administrators using Clerk, allowing them to sign in with either their Google accounts using OAuth2 or Email and Password.
+- Securely authenticate administrators using Clerk, allowing them to sign in with either their Google accounts using OAuth2 or Email and Password.
 
-- **Payment Management with Stripe:**
+### Payment Management with Stripe
 
-  - Manage payments effortlessly with Stripe integration, providing a seamless transaction experience.
+- Manage payments effortlessly with Stripe integration, providing a seamless transaction experience.
 
-- **Theme Modes:**
-  - Enjoy a personalized user experience with support for both light and dark theme modes, enhancing readability and aesthetics.
+### Theme Modes
+
+- Enjoy a personalized user experience with support for both light and dark theme modes, enhancing readability and aesthetics.
+
+### Order Confirmation
+
+- Receive automatic email confirmations including a unique order tracking number once an order is placed, ensuring you're always in the know about your purchase.
 
 ## Demo
 
