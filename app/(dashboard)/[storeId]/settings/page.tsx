@@ -20,6 +20,10 @@ const SettingsPage = async ({ params }: SettingsPageProps) => {
     where: { id: params.storeId, userId },
   });
 
+  const billboards = await prismadb.billboard.findMany({
+    where: { storeId: params.storeId },
+  });
+
   if (!store) {
     redirect('/');
   }
@@ -27,7 +31,7 @@ const SettingsPage = async ({ params }: SettingsPageProps) => {
   return (
     <div className='flex flex-col'>
       <div className='flex-1 flex flex-col gap-y-4 p-8 pt-6'>
-        <SettingsForm initialData={store} />
+        <SettingsForm initialData={store} billboards={billboards} />
       </div>
     </div>
   );

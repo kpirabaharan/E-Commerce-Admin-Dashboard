@@ -8,20 +8,21 @@ datasource db {
 }
 
 model Store {
-  id         String      @id @default(uuid())
-  userId     String
-  name       String
-  limit      Int         @default(5)
-  icon       String      @default("store")
-  color      String      @default("zinc")
-  billboards Billboard[] @relation("StoreToBillboard")
-  categories Category[]  @relation("StoreToCategory")
-  sizes      Size[]      @relation("StoreToSize")
-  colors     Color[]     @relation("StoreToColor")
-  products   Product[]   @relation("StoreToProduct")
-  orders     Order[]     @relation("StoreToOrder")
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id              String      @id @default(uuid())
+  userId          String
+  name            String
+  limit           Int         @default(5)
+  icon            String      @default("store")
+  color           String      @default("zinc")
+  homeBillboardId String      @default(" ")
+  billboards      Billboard[] @relation("StoreToBillboard")
+  categories      Category[]  @relation("StoreToCategory")
+  sizes           Size[]      @relation("StoreToSize")
+  colors          Color[]     @relation("StoreToColor")
+  products        Product[]   @relation("StoreToProduct")
+  orders          Order[]     @relation("StoreToOrder")
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 }
 
 model Billboard {

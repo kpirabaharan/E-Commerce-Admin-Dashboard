@@ -10,9 +10,14 @@ import { ScaleLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
 import { Trash } from 'lucide-react';
 
-import { Store } from '@prisma/client';
+import { Store, Billboard } from '@prisma/client';
 import { useAlertModal } from '@/hooks/useAlertModal';
 import { useOrigin } from '@/hooks/useOrigin';
+
+import { CategoryIcons } from '@/components/CategoryIcons';
+import Heading from '@/components/Heading';
+import { ApiAlert } from '@/components/ApiAlert';
+import { ColorButtons } from '@/components/ColorButtons';
 
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
@@ -25,14 +30,17 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-
-import { CategoryIcons } from '@/components/CategoryIcons';
-import Heading from '@/components/Heading';
-import { ApiAlert } from '@/components/ApiAlert';
-import { ColorButtons } from '@/components/ColorButtons';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface SettingsFormProps {
   initialData: Store;
+  billboards: Billboard[];
 }
 
 const formSchema = z.object({
@@ -44,11 +52,12 @@ const formSchema = z.object({
     .lte(1000000),
   icon: z.string().min(1),
   color: z.string().min(1),
+  homeBillboardId: z.string().min(1),
 });
 
 type SettingsFormValues = z.infer<typeof formSchema>;
 
-const SettingsForm = ({ initialData }: SettingsFormProps) => {
+const SettingsForm = ({ initialData, billboards }: SettingsFormProps) => {
   const params = useParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -188,6 +197,42 @@ const SettingsForm = ({ initialData }: SettingsFormProps) => {
                         />
                       </div>
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Home Billboard */}
+            <div className='col-span-1'>
+              <FormField
+                control={form.control}
+                name='homeBillboardId'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Home Billboard</FormLabel>
+                    <Select
+                      disabled={isLoading}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            defaultValue={field.value}
+                            placeholder='Select a billboard'
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {billboards.map((billboard) => (
+                          <SelectItem key={billboard.id} value={billboard.id}>
+                            {billboard.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

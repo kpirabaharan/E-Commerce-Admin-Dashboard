@@ -40,7 +40,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       return new NextResponse('Unauthenticated', { status: 401 });
     }
 
-    const { name, limit, icon, color } = await req.json();
+    const { name, limit, icon, color, homeBillboardId } = await req.json();
 
     if (!name) {
       return NextResponse.json('Name is Required', { status: 400 });
@@ -58,9 +58,15 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       return NextResponse.json('Color is Required', { status: 400 });
     }
 
+    if (!homeBillboardId) {
+      return NextResponse.json('Home Billboard is Required', { status: 400 });
+    }
+
     if (!params.storeId) {
       return NextResponse.json('Store Id is Required', { status: 400 });
     }
+
+    console.log(homeBillboardId);
 
     const store = await prismadb.store.update({
       where: {
@@ -72,6 +78,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
         limit,
         icon,
         color,
+        homeBillboardId,
       },
     });
 

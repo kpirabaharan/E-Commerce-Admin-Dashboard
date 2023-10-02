@@ -29,7 +29,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     if (process.env.NODE_ENV === 'production') {
       return new NextResponse('Blocked Admin Routes for Demo', { status: 401 });
     }
-    
+
     const { userId } = auth();
 
     if (!userId) {
