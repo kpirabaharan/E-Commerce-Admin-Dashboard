@@ -28,9 +28,14 @@ export const POST = async (req: Request, { params }: RequestProps) => {
   const {
     orderedProducts,
     storeUrl,
+    isMobile,
     billingData,
-  }: { orderedProducts: orderedProduct[]; storeUrl: string; billingData: any } =
-    await req.json();
+  }: {
+    orderedProducts: orderedProduct[];
+    storeUrl: string;
+    isMobile: boolean;
+    billingData: any;
+  } = await req.json();
 
   if (!orderedProducts || orderedProducts.length === 0) {
     return new NextResponse('Products are required', { status: 400 });
@@ -85,25 +90,28 @@ export const POST = async (req: Request, { params }: RequestProps) => {
   });
 
   // Mobile
-  if (storeUrl === 'mobile') {
+  if (isMobile) {
     const totalAmount = line_items.reduce(
       (total, product) =>
         total + product.price_data!.unit_amount! * product.quantity!,
       0,
     );
 
-    // const shipping: Stripe.PaymentIntentCreateParams.Shipping = {
-    //   name: billingData.name,
-    //   address: {
-    //     line1: billingData.address,
-    //     line2: '',
-    //     city: billingData.city,
-    //     state: billingData.state,
-    //     postal_code: billingData.zip,
-    //     country: billingData.country,
-    //   },
-    //   phone: billingData.phone,
-    // };
+    /* 
+    ? This is for the shipping address not implemented yet
+    const shipping: Stripe.PaymentIntentCreateParams.Shipping = {
+        name: billingData.name,
+        address: {
+            line1: billingData.address,
+            line2: '',
+            city: billingData.city,
+            state: billingData.state,
+            postal_code: billingData.zip,
+            country: billingData.country,
+          },
+          phone: billingData.phone,
+        };
+    */
 
     const customer = await stripe.customers.create({
       name: billingData.name,
@@ -126,10 +134,9 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       customer: customer.id,
       metadata: { orderId: order.id },
       payment_method_types: ['card'],
-      statement_descriptor: 'Custom descriptor',
-      description: 'Custom description',
+      description: 'Mobile Payment',
     });
-    console.log(paymentIntent);
+
     return NextResponse.json(paymentIntent, {
       status: 200,
       headers: corsHeaders,

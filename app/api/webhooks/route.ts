@@ -4,7 +4,6 @@ import { headers } from 'next/headers';
 
 import stripe from '@/lib/stripe';
 import prismadb from '@/lib/prismadb';
-import { Order } from '@prisma/client';
 import { sendEmail, sendEmailConfig } from '@/lib/sendEmail';
 
 export const POST = async (req: Request) => {
@@ -79,8 +78,8 @@ export const POST = async (req: Request) => {
           });
         });
 
-        await stripe.customers.del(customer.id);
-
+        /*  
+        * Send Email Feature Disabled 
         const totalItems = order.orderItems.reduce(
           (total, item) => total + item.quantity,
           0,
@@ -100,6 +99,11 @@ export const POST = async (req: Request) => {
         };
 
         sendEmail(configEmailData);
+        * End Email Feature
+        */
+
+        await stripe.customers.del(session.customer as string);
+
         break;
       }
       case 'checkout.session.completed': {
@@ -170,6 +174,7 @@ export const POST = async (req: Request) => {
         };
 
         sendEmail(configEmailData);
+
         break;
       }
       case 'checkout.session.expired': {
