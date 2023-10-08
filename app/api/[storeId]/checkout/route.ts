@@ -28,7 +28,9 @@ export const POST = async (req: Request, { params }: RequestProps) => {
   const {
     orderedProducts,
     storeUrl,
-  }: { orderedProducts: orderedProduct[]; storeUrl: string } = await req.json();
+    billingData,
+  }: { orderedProducts: orderedProduct[]; storeUrl: string; billingData: any } =
+    await req.json();
 
   if (!orderedProducts || orderedProducts.length === 0) {
     return new NextResponse('Products are required', { status: 400 });
@@ -82,6 +84,59 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     },
   });
 
+  // Mobile
+  if (storeUrl === 'mobile') {
+    const totalAmount = line_items.reduce(
+      (total, product) =>
+        total + product.price_data!.unit_amount! * product.quantity!,
+      0,
+    );
+
+    // const shipping: Stripe.PaymentIntentCreateParams.Shipping = {
+    //   name: billingData.name,
+    //   address: {
+    //     line1: billingData.address,
+    //     line2: '',
+    //     city: billingData.city,
+    //     state: billingData.state,
+    //     postal_code: billingData.zip,
+    //     country: billingData.country,
+    //   },
+    //   phone: billingData.phone,
+    // };
+
+    const customer = await stripe.customers.create({
+      name: billingData.name,
+      email: billingData.email,
+      phone: billingData.phone,
+      address: {
+        line1: billingData.address,
+        postal_code: billingData.zip,
+        city: billingData.city,
+        state: billingData.state,
+        country: billingData.country,
+      },
+      metadata: { orderId: order.id },
+    });
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      expand: ['payment_method'],
+      amount: totalAmount,
+      currency: 'usd',
+      customer: customer.id,
+      metadata: { orderId: order.id },
+      payment_method_types: ['card'],
+      statement_descriptor: 'Custom descriptor',
+      description: 'Custom description',
+    });
+    console.log(paymentIntent);
+    return NextResponse.json(paymentIntent, {
+      status: 200,
+      headers: corsHeaders,
+    });
+  }
+
+  // Web
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     billing_address_collection: 'required',
