@@ -28,7 +28,7 @@ export const GET = async (req: Request, { params }: RequestProps) => {
         categoryId,
         sizeId,
         colorId,
-        isFeatured: isFeatured ? true : undefined,
+        isFeatured: isFeatured === 'true' ? true : undefined,
         isArchived: false,
       },
       include: { images: true, category: true, size: true, color: true },
