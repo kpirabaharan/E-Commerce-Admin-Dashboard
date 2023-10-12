@@ -19,7 +19,7 @@ const Overview = ({ data }: OverviewProps) => {
 
   return (
     <ResponsiveContainer width={'100%'} height={350}>
-      <LineChart width={500} height={300} data={data}>
+      <LineChart width={500} height={300} margin={{ left: -20 }} data={data}>
         <XAxis
           dataKey={'name'}
           stroke={theme === 'dark' ? '#bbbbbb' : '#666666'}
