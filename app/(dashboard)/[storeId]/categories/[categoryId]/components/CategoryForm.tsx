@@ -178,7 +178,7 @@ const CategoryForm = ({ initialData, billboards }: CategoryFormProps) => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {billboards.map((billboard) => (
+                        {billboards.map(billboard => (
                           <SelectItem key={billboard.id} value={billboard.id}>
                             {billboard.label}
                           </SelectItem>

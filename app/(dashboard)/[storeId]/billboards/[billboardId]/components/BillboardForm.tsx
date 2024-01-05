@@ -12,7 +12,6 @@ import { Trash } from 'lucide-react';
 
 import { Billboard } from '@prisma/client';
 import { useAlertModal } from '@/hooks/useAlertModal';
-import { ImageFile } from '@/types';
 
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
@@ -43,15 +42,12 @@ const formSchema = z.object({
       file: z.any(),
       url: z.string().min(1),
     })
-    .refine((image) => image.url, {
+    .refine(image => image.url, {
       message: 'Drag and drop an image above.',
     })
-    .refine(
-      (image) => !image?.file?.size || image?.file?.size <= MAX_FILE_SIZE,
-      {
-        message: 'Max image size is 10MB.',
-      },
-    ),
+    .refine(image => !image?.file?.size || image?.file?.size <= MAX_FILE_SIZE, {
+      message: 'Max image size is 10MB.',
+    }),
 });
 
 type BillboardFormValues = z.infer<typeof formSchema>;
@@ -239,7 +235,7 @@ const BillboardForm = ({ initialData }: BillboardFormProps) => {
                   <FormControl>
                     <ImageUpload
                       image={field.value}
-                      onChange={(file) =>
+                      onChange={file =>
                         field.onChange({
                           key: file.path,
                           url: URL.createObjectURL(file),
