@@ -30,7 +30,7 @@ const RootLayout = ({ children }: RootLayoutprops) => {
       }}
     >
       <html lang='en'>
-        <body className={font.className}>
+        <body className={font.className} suppressHydrationWarning>
           <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
             <ToastProvider />
             <ModalProvider />
