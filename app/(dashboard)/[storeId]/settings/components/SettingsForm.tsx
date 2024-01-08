@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import * as z from 'zod';
@@ -61,6 +61,11 @@ const SettingsForm = ({ initialData, billboards }: SettingsFormProps) => {
   const params = useParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const origin = useOrigin();
   const { onOpen } = useAlertModal();
@@ -94,6 +99,10 @@ const SettingsForm = ({ initialData, billboards }: SettingsFormProps) => {
       setIsLoading(false);
     }
   };
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <>
@@ -171,7 +180,7 @@ const SettingsForm = ({ initialData, billboards }: SettingsFormProps) => {
                       <div className='flex flex-row flex-wrap gap-4'>
                         <CategoryIcons
                           icon={field.value}
-                          onChange={(icon) => field.onChange(icon)}
+                          onChange={icon => field.onChange(icon)}
                         />
                       </div>
                     </FormControl>
@@ -193,7 +202,7 @@ const SettingsForm = ({ initialData, billboards }: SettingsFormProps) => {
                       <div className='flex flex-row flex-wrap gap-6'>
                         <ColorButtons
                           color={field.value}
-                          onChange={(color) => field.onChange(color)}
+                          onChange={color => field.onChange(color)}
                         />
                       </div>
                     </FormControl>
@@ -226,7 +235,7 @@ const SettingsForm = ({ initialData, billboards }: SettingsFormProps) => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {billboards.map((billboard) => (
+                        {billboards.map(billboard => (
                           <SelectItem key={billboard.id} value={billboard.id}>
                             {billboard.label}
                           </SelectItem>

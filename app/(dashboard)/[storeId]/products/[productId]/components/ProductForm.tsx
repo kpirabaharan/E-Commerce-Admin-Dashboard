@@ -61,16 +61,16 @@ const formSchema = z.object({
       url: z.string().min(1),
     })
     .array()
-    .refine((images) => images.length != 0, {
+    .refine(images => images.length != 0, {
       message: 'Atleast one image is required',
     })
-    .refine((images) => images.length <= 3, {
+    .refine(images => images.length <= 3, {
       message: 'Max Number of Images is 3',
     })
     .refine(
-      (images) =>
+      images =>
         images.map(
-          (image) => !image.file.size || image.file.size <= MAX_FILE_SIZE,
+          image => !image.file.size || image.file.size <= MAX_FILE_SIZE,
         ),
       {
         message: 'Max image size is 10MB',
@@ -115,7 +115,7 @@ const ProductForm = ({
       ? {
           ...initialData,
           price: parseFloat(String(initialData?.price)),
-          images: initialData.images.map((image) => ({
+          images: initialData.images.map(image => ({
             key: image.key,
             url: image.url,
             file: {},
@@ -157,7 +157,7 @@ const ProductForm = ({
             ...values,
             oldImages: oldImages.map(({ key }) => ({ key })),
             deletedImages: deletedImages.map(({ key }) => ({ key })),
-            newImages: newImages.map((image) => ({
+            newImages: newImages.map(image => ({
               type: image.file?.type,
             })),
           },
@@ -177,11 +177,11 @@ const ProductForm = ({
           });
 
           const uploadStatuses: number[] = map(
-            await Promise.all(uploadFunctions.map((fn) => fn())),
+            await Promise.all(uploadFunctions.map(fn => fn())),
             'status',
           );
 
-          const failedStatuses = uploadStatuses.filter((st) => st != 200);
+          const failedStatuses = uploadStatuses.filter(st => st != 200);
 
           if (failedStatuses.length == 0) {
             toast.success(message);
@@ -206,7 +206,7 @@ const ProductForm = ({
           `/api/${params.storeId}/products`,
           {
             ...values,
-            newImages: newImages.map((image) => ({
+            newImages: newImages.map(image => ({
               type: image.file?.type,
             })),
           },
@@ -230,11 +230,11 @@ const ProductForm = ({
           );
 
           const uploadStatuses: number[] = map(
-            await Promise.all(uploadFunctions.map((fn) => fn())),
+            await Promise.all(uploadFunctions.map(fn => fn())),
             'status',
           );
 
-          const failedStatuses = uploadStatuses.filter((st) => st != 200);
+          const failedStatuses = uploadStatuses.filter(st => st != 200);
 
           if (failedStatuses.length == 0) {
             toast.success(message);
@@ -362,7 +362,7 @@ const ProductForm = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {categories.map((category) => (
+                        {categories.map(category => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
                           </SelectItem>
@@ -395,7 +395,7 @@ const ProductForm = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {sizes.map((size) => (
+                        {sizes.map(size => (
                           <SelectItem key={size.id} value={size.id}>
                             {size.name}
                           </SelectItem>
@@ -428,7 +428,7 @@ const ProductForm = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {colors.map((color) => (
+                        {colors.map(color => (
                           <SelectItem key={color.id} value={color.id}>
                             <div className='flex flex-row items-center gap-x-8 justify-between'>
                               <p className=''>{color.name}</p>
@@ -498,10 +498,10 @@ const ProductForm = ({
                   <FormControl>
                     <MultiImageUpload
                       images={field.value}
-                      onChange={(files) =>
+                      onChange={files =>
                         field.onChange(
                           field.value.concat(
-                            files.map((file) => ({
+                            files.map(file => ({
                               key: file.path,
                               url: URL.createObjectURL(file),
                               file,
@@ -509,10 +509,10 @@ const ProductForm = ({
                           ),
                         )
                       }
-                      onRemove={(file) =>
+                      onRemove={file =>
                         field.onChange([
                           ...field.value.filter(
-                            (current) => current.file !== file,
+                            current => current.file !== file,
                           ),
                         ])
                       }

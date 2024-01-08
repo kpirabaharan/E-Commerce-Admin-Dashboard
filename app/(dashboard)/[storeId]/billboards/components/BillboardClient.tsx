@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
@@ -17,6 +18,15 @@ interface BillboardClientProps {
 export const BillboardClient = ({ billboards }: BillboardClientProps) => {
   const router = useRouter();
   const params = useParams();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <>
