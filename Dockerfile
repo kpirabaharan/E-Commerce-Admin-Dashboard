@@ -8,8 +8,6 @@ RUN npm i
 
 COPY . .
 
-RUN chown -R node:node /usr/src/app
-
 ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
 
