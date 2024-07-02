@@ -31,7 +31,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
     if (process.env.NODE_ENV === 'production') {
       return new NextResponse('Blocked Admin Routes for Demo', { status: 401 });
     }
-    
+
     const { userId } = auth();
 
     if (!userId) {
@@ -80,7 +80,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
       data: {
         label,
         imageKey: newImageData.key,
-        imageUrl: `https://ecommerce-admin-kpirabaharan-billboards.s3.amazonaws.com/${newImageData.key}`,
+        imageUrl: `https://${process.env.S3_BILLBOARD_BUCKET}.s3.amazonaws.com/${newImageData.key}`,
         storeId: params.storeId,
       },
     });

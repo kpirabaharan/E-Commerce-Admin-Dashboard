@@ -74,7 +74,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       data: {
         label,
         imageKey: imageData.key,
-        imageUrl: `https://ecommerce-admin-kpirabaharan-billboards.s3.amazonaws.com/${imageData.key}`,
+        imageUrl: `https://${process.env.S3_BILLBOARD_BUCKET}.s3.amazonaws.com/${imageData.key}`,
       },
     });
 

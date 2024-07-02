@@ -135,7 +135,7 @@ export const POST = async (req: Request, { params }: RequestProps) => {
           createMany: {
             data: newImageKeys.map((image) => ({
               key: image.key,
-              url: `https://ecommerce-admin-kpirabaharan-products.s3.amazonaws.com/${image.key}`,
+              url: `https://${process.env.S3_PRODUCT_BUCKET}.s3.amazonaws.com/${image.key}`,
             })),
           },
         },

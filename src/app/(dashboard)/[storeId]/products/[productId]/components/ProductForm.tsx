@@ -11,7 +11,7 @@ import { ScaleLoader } from 'react-spinners';
 import { toast } from 'react-hot-toast';
 import { Trash } from 'lucide-react';
 
-import { ImageFile } from '@/types';
+import type { ImageFile } from '@/types';
 import { Product, Image, Category, Size, Color } from '@prisma/client';
 import { useAlertModal } from '@/hooks/useAlertModal';
 

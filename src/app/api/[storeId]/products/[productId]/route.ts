@@ -106,7 +106,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       return NextResponse.json('Unauthorized', { status: 403 });
     }
 
-    const newImageKeys = newImages.map((image) => ({
+    const newImageKeys = newImages.map(image => ({
       key: `${randomUUID()}.${image.type.split('/')[1]}`,
       type: image.type,
     }));
@@ -132,13 +132,13 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
         images: {
           createMany: {
             data: [
-              ...oldImages.map((image) => ({
+              ...oldImages.map(image => ({
                 key: image.key,
-                url: `https://ecommerce-admin-kpirabaharan-products.s3.amazonaws.com/${image.key}`,
+                url: `https://${process.env.S3_PRODUCT_BUCKET}.s3.amazonaws.com/${image.key}`,
               })),
-              ...newImageKeys.map((image) => ({
+              ...newImageKeys.map(image => ({
                 key: image.key,
-                url: `https://ecommerce-admin-kpirabaharan-products.s3.amazonaws.com/${image.key}`,
+                url: `https://${process.env.S3_PRODUCT_BUCKET}.s3.amazonaws.com/${image.key}`,
               })),
             ],
           },
@@ -147,7 +147,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
     });
 
     /* Deleted Old Images (Not Used Anymore) */
-    deletedImages.forEach(async (image) => {
+    deletedImages.forEach(async image => {
       const S3DeleteParams = {
         Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
         Key: image.key,
@@ -157,7 +157,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
     });
 
     /* Created New Image URLs */
-    const S3Params = newImageKeys.map((image) => ({
+    const S3Params = newImageKeys.map(image => ({
       Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
       Key: image.key,
       Expires: 60,
@@ -165,7 +165,7 @@ export const PATCH = async (req: Request, { params }: RequestProps) => {
       ACL: 'public-read',
     }));
 
-    const uploadUrls = S3Params.map((S3Param) =>
+    const uploadUrls = S3Params.map(S3Param =>
       s3.getSignedUrl('putObject', S3Param),
     );
 
@@ -216,13 +216,13 @@ export const DELETE = async (req: Request, { params }: RequestProps) => {
       include: { images: true },
     });
 
-    const S3DeleteParams = product.images.map((image) => ({
+    const S3DeleteParams = product.images.map(image => ({
       Bucket: process.env.S3_PRODUCT_BUCKET ?? '',
       Key: image.key,
     }));
 
     S3DeleteParams.map(
-      async (S3DeleteParam) => await s3.deleteObject(S3DeleteParam).promise(),
+      async S3DeleteParam => await s3.deleteObject(S3DeleteParam).promise(),
     );
 
     return NextResponse.json(
