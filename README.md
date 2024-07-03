@@ -38,7 +38,7 @@ Welcome to the E-commerce Admin Dashboard, your centralized hub for managing mul
 
 For demonstration purposes, admin routes has been intentionally disabled for production so that all visitors can view the admin website in its current state. Two separate stores, one for clothing and another for shoes, have been created with pre-configured products.
 
-Explore the [E-commerce Admin Dashboard Demo](https://e-commerce-admin-dashboard-kpirabaharan.vercel.app/) to experience these features in action.
+Explore the [E-commerce Admin Dashboard Demo](https://e-commerce-admin-dashboard-keeshigan.vercel.app/) to experience these features in action.
 
 ## Accompanied Store
 
@@ -54,8 +54,8 @@ Discover the multi-store feature by exploring the two distinct stores, showcasin
 
 **Click the links to explore the live websites:**
 
-- [E-commerce Clothing Store Website](https://e-commerce-store-clothes-kpirabaharan.vercel.app/)
-- [E-commerce Shoe Store Website](https://e-commerce-store-shoes-kpirabaharan.vercel.app/)
+- [E-commerce Clothing Store Website](https://e-commerce-store-clothes-keeshigan.vercel.app/)
+- [E-commerce Shoe Store Website](https://e-commerce-store-shoes-keeshigan.vercel.app/)
 
 ## Technologies Used
 
